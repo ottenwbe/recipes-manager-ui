@@ -1,9 +1,9 @@
-FROM node:13.12.0-alpine
+FROM node:15
 
 # install app dependencies
-RUN npm install serve
+RUN npm install -g serve
 
-COPY build build
+COPY build app
 
 # start app
-CMD ["serve", "-s", "build"]
+CMD ["serve", "-s", "app"]
