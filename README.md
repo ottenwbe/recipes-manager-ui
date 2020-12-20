@@ -55,4 +55,14 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
 
 ### Build Docker Container
 
-    sh make_docker.sh
+    GO_COOK_UI_ARCH=<arch> sh make_docker.sh
+
+Builds the docker container, labels it, and tags it.
+
+The default tag is the version grabbed from ```package.json``` (e.g., 0.1.0).
+By providing the environment variable ```GO_COOK_UI_ARCH``` the tag is extended to add the given data (e.g., 0.1.0-amd64).
+
+### Build Docker Container
+
+    GO_COOK_UI_ARCH=<arch> sh push_docker.sh <docker user> <docker pw>
+
