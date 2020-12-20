@@ -1,0 +1,17 @@
+language: node_js
+node_js:
+  - 13
+
+env:
+  CI=true
+
+cache:
+  directories:
+    - node_modules
+
+install:
+  - npm i
+
+script:
+  - npm test
+  - npm run build
