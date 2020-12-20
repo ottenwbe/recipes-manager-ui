@@ -19,4 +19,10 @@ install:
 script:
   - npm test
   - npm run build
-  - sh make_docker.sh
+  - GO_COOK_UI_ARCH=$TRAVIS_CPU_ARCH sh make_docker.sh
+
+deploy:
+  provider: script
+  script: GO_COOK_UI_ARCH=$TRAVIS_CPU_ARCH sh push_docker.sh
+  on:
+    tags: true
