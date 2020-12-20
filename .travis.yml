@@ -25,4 +25,4 @@ deploy:
   provider: script
   script: GO_COOK_UI_ARCH=$TRAVIS_CPU_ARCH sh push_docker.sh
   on:
-    tags: true
+    all_branches: true
