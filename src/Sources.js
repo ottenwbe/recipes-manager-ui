@@ -32,7 +32,8 @@ function Source (props) {
     const [loading, setLoading] = React.useState(false);
 
     const onConnectClick = () => {
-        fetch('/api/v1/sources/' + props.source.id + '/connect')
+        console.log(window.location.href);
+        fetch('/api/v1/sources/' + props.source.id + '/connect' + '?redirect=' + encodeURIComponent(window.location.href) )
             .then(response => response.json())
             .then(responseJSON => window.location.href = responseJSON.oAuthURL)
             .catch(err => console.error(err));
