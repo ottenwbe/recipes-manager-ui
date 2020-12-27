@@ -87,7 +87,8 @@ function RecipesRouterBody(props) {
     return (<div className="GoCookUIContent" style={{ align: 'center', paddingRight: 50, paddingLeft: 50 }}>
         <div className="GoCookUIRoutes">
             <Route exact path="/" component={Home} />
-            <Route path="/recipes" render={(props) => (<Recipes {...props} onRecipesChange={handleRecipeChange} />)} />
+            <Route exact path="/recipes" render={(props) => (<Recipes {...props} onRecipesChange={handleRecipeChange} />)} />
+            <Route path="/recipes/:recipe" render={(props) => (<Recipes {...props} onRecipesChange={handleRecipeChange} />)} />
             <Route path="/add" render={(props) => (<RecipeForm {...props} onRecipesChange={handleRecipeChange} />)} />
             <Route path="/rand" component={RandomRecipe} />
             <Route path="/src" component={Sources} />

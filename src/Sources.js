@@ -33,7 +33,7 @@ function Source (props) {
 
     const onConnectClick = () => {
         console.log(window.location.href);
-        fetch('/api/v1/sources/' + props.source.id + '/connect' + '?redirect=' + encodeURIComponent(window.location.href) )
+        fetch('/api/v1/sources/' + props.source.id + '/connect?redirect=' + encodeURIComponent(window.location.href) )
             .then(response => response.json())
             .then(responseJSON => window.location.href = responseJSON.oAuthURL)
             .catch(err => console.error(err));
@@ -52,7 +52,7 @@ function Source (props) {
             <CardHeader title={props.source.name} style={{ textAlign: 'center', backgroundColor: "#2196f3" }} />
             <CardContent>
                 <Button variant="contained" disabled={loading} color="primary" onClick={onConnectClick}>Connect</Button>
-                <Button variant="contained" disabled={!props.source.connected || loading} onClick={onSyncClick} color="primary">Synchronize</Button>
+                <Button variant="contained" disabled={!props.source.connected || loading} onClick={onSyncClick} color="primary">Import</Button>
                 {loading && <CircularProgress size={45} />}                
             </CardContent>
         </Card>

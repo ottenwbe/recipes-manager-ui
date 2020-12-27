@@ -39,6 +39,18 @@ export class Recipes extends Component {
     }
 
     refreshRecipes = () => {
+        if (this.shouldGetAllRecipes()) {
+            this.getAllRecipes();
+        } else {
+            this.setState({recipes: [this.props.match.params.recipe]});
+        }
+    }
+
+    shouldGetAllRecipes = () => {
+        return this.props.match.params.recipe == null;
+    }
+
+    getAllRecipes = () => {
         this.setState({ loading: true });
         fetch('/api/v1/recipes')
             .then(response => response.json())
@@ -68,7 +80,7 @@ export class Recipes extends Component {
         return result;
     }
 
-    render() {
+    render() {        
         return (
             <div>
                 <PageHeader pageName="Recipes" />
@@ -315,7 +327,7 @@ export class RandomRecipe extends Component {
             .catch(err => this.setState({ recipe: null }));
     }
 
-    render() {
+    render() {        
         return (
             <div>
                 <PageHeader pageName="Random Recipe" />
