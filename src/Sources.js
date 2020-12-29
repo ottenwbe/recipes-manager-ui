@@ -33,7 +33,11 @@ function Source (props) {
 
     const onConnectClick = () => {
         console.log(window.location.href);
+<<<<<<< HEAD
         fetch('/api/v1/sources/' + props.source.id + '/connect?redirect=' + encodeURIComponent(window.location.href) )
+=======
+        fetch('/api/v1/sources/' + props.source.id + '/connect?redirect=' + encodeURIComponent(window.location.href))
+>>>>>>> origin/master
             .then(response => response.json())
             .then(responseJSON => window.location.href = responseJSON.oAuthURL)
             .catch(err => console.error(err));
