@@ -16,11 +16,8 @@ import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import Grow from '@material-ui/core/Grow';
 import Paper from '@material-ui/core/Paper';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import OutlinedInput from '@material-ui/core/OutlinedInput';
-import InputAdornment from '@material-ui/core/InputAdornment';
 
 import UpdateIcon from '@material-ui/icons/Update';
-import SearchIcon from '@material-ui/icons/Search';
 import LaunchIcon from '@material-ui/icons/Launch';
 
 import { PageHeader } from "./PageHeader";
@@ -50,20 +47,38 @@ export class Recipes extends Component {
     }
 
     refreshRecipes = () => {
-        if (this.shouldGetAllRecipes()) {
+
+        const queryString = require('query-string');
+        let parsed = queryString.parse(this.props.location.search);
+        console.log('parsed: ' + parsed.search); // replace param with your own 
+
+        if (this.shouldGetAllRecipes(parsed.search)) {
             this.getAllRecipes();
+        } else if (this.shouldSearch(parsed.search)) {
+            this.getSearchedRecipes(parsed.search);
         } else {
             this.setState({ recipes: [this.props.match.params.recipe] });
         }
     }
+    shouldSearch = (search) => {
+        return search != null;
+    }
 
-    shouldGetAllRecipes = () => {
-        return this.props.match.params.recipe == null;
+    shouldGetAllRecipes = (search) => {
+        return this.props.match.params.recipe == null && search == null;
     }
 
     getAllRecipes = () => {
         this.setState({ loading: true });
         fetch('/api/v1/recipes')
+            .then(response => response.json())
+            .then(responseJSON => this.setState({ recipes: responseJSON }))
+            .finally(() => this.setState({ loading: false }));
+    }
+
+    getSearchedRecipes = (search) => {
+        this.setState({ loading: true });
+        fetch('/api/v1/recipes?name='+search+'&description='+search)
             .then(response => response.json())
             .then(responseJSON => this.setState({ recipes: responseJSON }))
             .finally(() => this.setState({ loading: false }));
@@ -99,16 +114,6 @@ export class Recipes extends Component {
         return (
             <main>
                 <PageHeader pageName="Recipes" />
-                <OutlinedInput
-                    id="search-input"
-                    fullWidth
-                    variant="outlined"
-                    startAdornment={
-                        <InputAdornment position="start">
-                            <SearchIcon />
-                        </InputAdornment>
-                    }
-                />
                 <p />
                 {this.renderRecipes()}
             </main>);
@@ -193,7 +198,6 @@ class Recipe extends Component {
         if (updateVersion) {
             recipeRevision += 1
         }
-        console.log(url)
         fetch(url)
             .then(response => response.json())
             .then(data => this.setState({ recipe: data, name: data.name, recipeRevision: recipeRevision }))
