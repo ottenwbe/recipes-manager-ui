@@ -18,6 +18,7 @@ import { Home } from './Home';
 import { Footer } from './Footer';
 import { Sources } from './Sources';
 import { RecipeForm } from './RecipeForm';
+import { PersistentDrawerRight } from './SearchDrawer';
 
 const { REACT_APP_APP_NAME } = process.env;
 class RecipesRouter extends Component {
@@ -62,7 +63,7 @@ function RecipesRouterMenu(props) {
                     <Typography variant="h6" color="inherit">
                         { REACT_APP_APP_NAME }
                     </Typography>
-                    <NavLink to="/"><Button><HomeIcon />Overview</Button></NavLink>
+                    <NavLink to="/"><Button><HomeIcon />News</Button></NavLink>
                     <NavLink to="/recipes">
                         <Badge badgeContent={props.numRecipes} color="secondary">
                             <Button>Recipes</Button>
@@ -71,7 +72,7 @@ function RecipesRouterMenu(props) {
                     <NavLink to="/add"><Button>Add Recipe</Button></NavLink>
                     <NavLink to="/rand"><Button>Random Recipe</Button></NavLink>
                     <NavLink to="/src"><Button>Recipe Sources</Button></NavLink>
-                    <NavLink to="/login"><Button>Login</Button></NavLink>
+                    <NavLink disabled to="/login"><Button disabled>Login</Button></NavLink>
                 </Toolbar>
             </AppBar>
         </div>

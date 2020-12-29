@@ -15,8 +15,13 @@ import MenuList from '@material-ui/core/MenuList';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import Grow from '@material-ui/core/Grow';
 import Paper from '@material-ui/core/Paper';
-import UpdateIcon from '@material-ui/icons/Update';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import OutlinedInput from '@material-ui/core/OutlinedInput';
+import InputAdornment from '@material-ui/core/InputAdornment';
+
+import UpdateIcon from '@material-ui/icons/Update';
+import SearchIcon from '@material-ui/icons/Search';
+import LaunchIcon from '@material-ui/icons/Launch';
 
 import { PageHeader } from "./PageHeader";
 import { RecipeAlert } from './RecipeAlerts.js'
@@ -27,22 +32,28 @@ export class Recipes extends Component {
         super(props);
         this.state = {
             recipes: null,
-            loading: false
+            loading: false,
+            search: ''
         };
     }
 
-    handleDeleteRecipe = (index) => {
+    handleDeleteRecipe = (removedID) => {
         if (this.props.onRecipesChange !== undefined) {
             this.props.onRecipesChange();
         }
-        this.refreshRecipes();
+
+        let filtered = this.state.recipes.filter(function (value, index, arr) {
+            return value !== removedID;
+        });
+
+        this.setState({ recipes: filtered });
     }
 
     refreshRecipes = () => {
         if (this.shouldGetAllRecipes()) {
             this.getAllRecipes();
         } else {
-            this.setState({recipes: [this.props.match.params.recipe]});
+            this.setState({ recipes: [this.props.match.params.recipe] });
         }
     }
 
@@ -80,12 +91,27 @@ export class Recipes extends Component {
         return result;
     }
 
-    render() {        
+    updateSearch = (search) => {
+        this.setState({ search });
+    };
+
+    render() {
         return (
-            <div>
+            <main>
                 <PageHeader pageName="Recipes" />
+                <OutlinedInput
+                    id="search-input"
+                    fullWidth
+                    variant="outlined"
+                    startAdornment={
+                        <InputAdornment position="start">
+                            <SearchIcon />
+                        </InputAdornment>
+                    }
+                />
+                <p />
                 {this.renderRecipes()}
-            </div>);
+            </main>);
     }
 }
 
@@ -100,6 +126,7 @@ function RecipeMenu(props) {
                     <Paper>
                         <ClickAwayListener onClickAway={props.onClose}>
                             <MenuList autoFocusItem={props.open} id="menu-list-grow" onKeyDown={props.onListKeyDown}>
+                                <MenuItem onClick={props.onOpen}>Open</MenuItem>                                
                                 <MenuItem onClick={props.onEdit}>Edit</MenuItem>
                                 <MenuItem onClick={props.onDelete}>Delete</MenuItem>
                             </MenuList>
@@ -134,6 +161,10 @@ class Recipe extends Component {
         this.handleMoreClick = this.handleMoreClick.bind(this);
     }
 
+    handleOpen = () => {
+        window.location.href = '/#/recipes/' + this.state.recipe.id
+    }
+
     handleDelete = () => {
         fetch('/api/v1/recipes/r/' + this.state.recipe.id, {
             method: 'delete'
@@ -142,10 +173,10 @@ class Recipe extends Component {
                 if (!response.ok) {
                     this.setState({ lastError: "Could not delete recipe. Try again later..." });
                 }
-                this.props.onDeleteRecipe()
+                this.props.onDeleteRecipe(this.state.recipe.id)
             })
             .catch(
-                err => this.setState({ lastError: "Could not delete recipe!" })
+                err => { console.error(err); this.setState({ lastError: "Could not delete recipe!" }); }
             );
     }
 
@@ -236,7 +267,7 @@ class Recipe extends Component {
     }
 
     handleReset = () => {
-        this.refreshRecipe(undefined, true)        
+        this.refreshRecipe(undefined, true)
     }
 
     keyName = (prefix) => {
@@ -250,6 +281,9 @@ class Recipe extends Component {
                 <Card key={this.keyName("card")}>
                     <CardHeader key={this.keyName("cardheader")} title={this.state.recipe != null ? this.state.recipe.name : ""} subheader="Recipe" style={{ backgroundColor: "#2196f3" }}
                         action={<div>
+                            <IconButton onClick={this.handleOpen} aria-expanded={this.state.expanded} aria-label="Show more">
+                                <LaunchIcon />
+                            </IconButton>
                             <IconButton onClick={this.handleExpandClick} aria-expanded={this.state.expanded} aria-label="Show more">
                                 <ExpandMoreIcon />
                             </IconButton>
@@ -257,7 +291,6 @@ class Recipe extends Component {
                                 <MoreVertIcon />
                             </IconButton>
                         </div>} />
-                    <RecipeMenu open={this.state.open} onListKeyDown={this.handleListKeyDown} menuRef={this.anchorRef} onEdit={this.handleEdit} onDelete={this.handleDelete} onClose={this.handleClose} />
                     <RecipeAlert
                         key={this.keyName("recipeAlert")}
                         enabled={this.state.lastError !== ""}
@@ -267,7 +300,7 @@ class Recipe extends Component {
                     <Collapse key={this.keyName("collapse")} in={this.state.expanded} timeout="auto" unmountOnExit>
                         {this.renderCardMedia()}
                         <CardContent key={this.keyName("cardcontent")}>
-                            <Typography component="div" align='right'>                            
+                            <Typography component="div" align='right'>
                                 <IconButton onClick={this.handleReset} color="primary">
                                     <UpdateIcon label="Update" />
                                 </IconButton>
@@ -284,6 +317,7 @@ class Recipe extends Component {
                             <RecipeDescription recipe={this.state.recipe} />
                         </CardContent>
                     </Collapse>
+                    <RecipeMenu open={this.state.open} onListKeyDown={this.handleListKeyDown} menuRef={this.anchorRef} onEdit={this.handleEdit} onDelete={this.handleDelete} onClose={this.handleClose} onOpen={this.handleOpen} />                    
                 </Card></div>);
     }
     renderIngredients() {
@@ -327,7 +361,7 @@ export class RandomRecipe extends Component {
             .catch(err => this.setState({ recipe: null }));
     }
 
-    render() {        
+    render() {
         return (
             <div>
                 <PageHeader pageName="Random Recipe" />
@@ -379,7 +413,7 @@ export class Ingredients extends Component {
 }
 
 function RecipeDescription(props) {
-    let recipeParts = '';        
+    let recipeParts = '';
     if (props.recipe != null) {
         recipeParts = props.recipe.description.split('\n').map((textPart, index) => <RecipeDescriptionPart key={index} text={textPart} />);
     }
@@ -387,5 +421,5 @@ function RecipeDescription(props) {
 }
 
 function RecipeDescriptionPart(props) {
-    return (<div><p> {props.text} </p><p/></div>);
+    return (<div><p> {props.text} </p><p /></div>);
 }
