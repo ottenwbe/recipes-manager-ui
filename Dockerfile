@@ -7,6 +7,8 @@ COPY . /app
 
 WORKDIR /app
 
+RUN npm i
+
 # compile and start app 
 # NOTE: npm run build at start time allows us to change environment variables
 CMD ["sh","-c","npm run build && serve -s build"]
