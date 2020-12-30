@@ -13,7 +13,7 @@ cache:
 
 arch:
   - amd64
-  - arm64
+#  - arm64
 
 before_install:
   - sudo rm -rf /var/lib/apt/lists/*
@@ -29,9 +29,10 @@ install:
   - npm i
 
 script:
+  - docker buildx version
   - npm test
-  - npm run build
-  - GO_COOK_UI_ARCH=-$TRAVIS_CPU_ARCH sh scripts/make_docker.sh
+  - npm run build  
+  #- GO_COOK_UI_ARCH=-$TRAVIS_CPU_ARCH sh scripts/make_docker.sh
 
 deploy:
   provider: script
