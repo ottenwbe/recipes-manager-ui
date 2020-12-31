@@ -39,6 +39,4 @@ deploy:
   provider: script
   script: sh scripts/docker_buildx.sh $DOCKER_USERNAME $DOCKER_PASSWORD --push
   on:
-    all_branches: true
-  #on:
-  #  tags: true
+    tags: true
