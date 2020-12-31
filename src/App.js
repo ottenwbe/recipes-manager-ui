@@ -95,7 +95,7 @@ function RecipesRouterMenu(props) {
                         <Typography variant="h6" color="inherit">
                             {REACT_APP_APP_NAME}
                         </Typography>
-                        <NavLink to="/"><IconButton><HomeIcon />News</IconButton></NavLink>
+                        <NavLink to="/"><Button><HomeIcon />News</Button></NavLink>
                         <NavLink to="/recipes">
                             <Badge badgeContent={props.numRecipes} color="secondary">
                                 <Button>Recipes</Button>
