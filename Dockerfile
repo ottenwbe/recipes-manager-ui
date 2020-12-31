@@ -1,4 +1,4 @@
-FROM node:15.4.0-buster-slim
+FROM node:15.5.0-buster-slim
 
 # install server
 RUN npm install -g serve
@@ -6,8 +6,6 @@ RUN npm install -g serve
 COPY . /app
 
 WORKDIR /app
-
-RUN npm i
 
 # compile and start app 
 # NOTE: npm run build at start time allows us to change environment variables
