@@ -33,7 +33,7 @@ script:
   - docker buildx version
   - npm test
   - npm run build  
-  - sh scripts/make_docker.sh $DOCKER_USERNAME $DOCKER_PASSWORD
+  - sh scripts/docker_buildx.sh $DOCKER_USERNAME $DOCKER_PASSWORD
 
 deploy:
   provider: script
