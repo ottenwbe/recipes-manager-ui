@@ -33,11 +33,11 @@ script:
   - docker buildx version
   - npm test
   - npm run build  
-  - GO_COOK_UI_ARCH=-$TRAVIS_CPU_ARCH sh scripts/make_docker.sh $DOCKER_USERNAME $DOCKER_PASSWORD
+  - sh scripts/make_docker.sh $DOCKER_USERNAME $DOCKER_PASSWORD
 
 deploy:
   provider: script
-  script: GO_COOK_UI_ARCH=-$TRAVIS_CPU_ARCH sh scripts/push_docker.sh $DOCKER_USERNAME $DOCKER_PASSWORD
+  script: sh scripts/docker_buildx.sh $DOCKER_USERNAME $DOCKER_PASSWORD --push
   on:
     all_branches: true
   #on:
