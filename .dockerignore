@@ -3,3 +3,6 @@ scripts
 
 .travis.yml
 Dockerfile
+
+.gitignore
+.dockerignore
