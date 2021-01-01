@@ -1,8 +1,8 @@
-# Go-Cook-UI
+# recipes-manager-UI
 
-[![Build Status](https://travis-ci.org/ottenwbe/go-cook-ui.svg?branch=master)](https://travis-ci.org/ottenwbe/go-cook-ui)
+[![Build Status](https://travis-ci.org/ottenwbe/recipes-manager-ui.svg?branch=master)](https://travis-ci.org/ottenwbe/recipes-manager-ui)
 
-User Interface to manage recipes with [go-cook](https://github.com/ottenwbe/go-cook).
+User Interface to manage recipes with [recipes-manager](https://github.com/ottenwbe/recipes-manager).
 
 # Deployment and Configuration
 
