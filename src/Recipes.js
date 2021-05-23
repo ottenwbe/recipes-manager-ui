@@ -49,17 +49,26 @@ export class Recipes extends Component {
     refreshRecipes = () => {
 
         const queryString = require('query-string');
+        
         let parsed = queryString.parse(this.props.location.search);
-        console.log('parsed: ' + parsed.search); // replace param with your own 
+        console.log('Request Search String: ' + parsed.search); // replace param with your own 
+        console.log('Request Similarity To: ' + parsed.similarTo); // replace param with your own 
 
         if (this.shouldGetAllRecipes(parsed.search)) {
             this.getAllRecipes();
+        } else if (this.shouldGetSimilarResults(parsed.similarTo)) {
+            this.getSimilarRecipes()        
         } else if (this.shouldSearch(parsed.search)) {
             this.getSearchedRecipes(parsed.search);
         } else {
             this.setState({ recipes: [this.props.match.params.recipe] });
         }
     }
+
+    shouldGetSimilarResults = (similarTo) => {
+        return similarTo != null
+    }
+
     shouldSearch = (search) => {
         return search != null;
     }
@@ -72,13 +81,21 @@ export class Recipes extends Component {
         this.setState({ loading: true });
         fetch('/api/v1/recipes')
             .then(response => response.json())
-            .then(responseJSON => this.setState({ recipes: responseJSON }))
+            .then(responseJSON => this.setState({ recipes: responseJSON.recipes }))
             .finally(() => this.setState({ loading: false }));
     }
 
     getSearchedRecipes = (search) => {
         this.setState({ loading: true });
         fetch('/api/v1/recipes?name='+search+'&description='+search)
+            .then(response => response.json())
+            .then(responseJSON => this.setState({ recipes: responseJSON }))
+            .finally(() => this.setState({ loading: false }));
+    }
+
+    getSimilarRecipes = (similarTo) => {
+        this.setState({ loading: true });
+        fetch('/api/v1/recommendation/' + similarTo + '/components')
             .then(response => response.json())
             .then(responseJSON => this.setState({ recipes: responseJSON }))
             .finally(() => this.setState({ loading: false }));
