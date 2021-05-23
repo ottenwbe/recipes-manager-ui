@@ -89,7 +89,7 @@ export class Recipes extends Component {
         this.setState({ loading: true });
         fetch('/api/v1/recipes?name='+search+'&description='+search)
             .then(response => response.json())
-            .then(responseJSON => this.setState({ recipes: responseJSON }))
+            .then(responseJSON => this.setState({ recipes: responseJSON.recipes }))
             .finally(() => this.setState({ loading: false }));
     }
 
@@ -97,7 +97,7 @@ export class Recipes extends Component {
         this.setState({ loading: true });
         fetch('/api/v1/recommendation/' + similarTo + '/components')
             .then(response => response.json())
-            .then(responseJSON => this.setState({ recipes: responseJSON }))
+            .then(responseJSON => this.setState({ recipes: responseJSON.json }))
             .finally(() => this.setState({ loading: false }));
     }
 
