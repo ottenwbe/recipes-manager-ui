@@ -49,15 +49,15 @@ export class Recipes extends Component {
     refreshRecipes = () => {
 
         const queryString = require('query-string');
-        
+
         let parsed = queryString.parse(this.props.location.search);
         console.log('Request Search String: ' + parsed.search); // replace param with your own 
         console.log('Request Similarity To: ' + parsed.similarTo); // replace param with your own 
 
-        if (this.shouldGetAllRecipes(parsed.search)) {
+        if (this.shouldGetAllRecipes(parsed)) {
             this.getAllRecipes();
         } else if (this.shouldGetSimilarResults(parsed.similarTo)) {
-            this.getSimilarRecipes()        
+            this.getSimilarRecipes()
         } else if (this.shouldSearch(parsed.search)) {
             this.getSearchedRecipes(parsed.search);
         } else {
@@ -74,7 +74,7 @@ export class Recipes extends Component {
     }
 
     shouldGetAllRecipes = (search) => {
-        return this.props.match.params.recipe == null && search == null;
+        return this.props.match.params.recipe == null && search.search == null && search.similarTo == null;
     }
 
     getAllRecipes = () => {
@@ -87,7 +87,7 @@ export class Recipes extends Component {
 
     getSearchedRecipes = (search) => {
         this.setState({ loading: true });
-        fetch('/api/v1/recipes?name='+search+'&description='+search)
+        fetch('/api/v1/recipes?name=' + search + '&description=' + search)
             .then(response => response.json())
             .then(responseJSON => this.setState({ recipes: responseJSON.recipes }))
             .finally(() => this.setState({ loading: false }));
@@ -148,7 +148,7 @@ function RecipeMenu(props) {
                     <Paper>
                         <ClickAwayListener onClickAway={props.onClose}>
                             <MenuList autoFocusItem={props.open} id="menu-list-grow" onKeyDown={props.onListKeyDown}>
-                                <MenuItem onClick={props.onOpen}>Open</MenuItem>                                
+                                <MenuItem onClick={props.onOpen}>Open</MenuItem>
                                 <MenuItem onClick={props.onEdit}>Edit</MenuItem>
                                 <MenuItem onClick={props.onDelete}>Delete</MenuItem>
                             </MenuList>
@@ -338,7 +338,7 @@ class Recipe extends Component {
                             <RecipeDescription recipe={this.state.recipe} />
                         </CardContent>
                     </Collapse>
-                    <RecipeMenu open={this.state.open} onListKeyDown={this.handleListKeyDown} menuRef={this.anchorRef} onEdit={this.handleEdit} onDelete={this.handleDelete} onClose={this.handleClose} onOpen={this.handleOpen} />                    
+                    <RecipeMenu open={this.state.open} onListKeyDown={this.handleListKeyDown} menuRef={this.anchorRef} onEdit={this.handleEdit} onDelete={this.handleDelete} onClose={this.handleClose} onOpen={this.handleOpen} />
                 </Card></div>);
     }
     renderIngredients() {
