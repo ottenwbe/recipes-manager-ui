@@ -7,7 +7,7 @@ COPY . /app
 
 WORKDIR /app
 
-RUN npm i
+RUN npm ci
 
 # compile and start app 
 # NOTE: npm run build at start time allows us to change environment variables
