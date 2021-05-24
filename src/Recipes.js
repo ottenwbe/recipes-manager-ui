@@ -57,7 +57,7 @@ export class Recipes extends Component {
         if (this.shouldGetAllRecipes(parsed)) {
             this.getAllRecipes();
         } else if (this.shouldGetSimilarResults(parsed.similarTo)) {
-            this.getSimilarRecipes()
+            this.getSimilarRecipes(parsed.similarTo)
         } else if (this.shouldSearch(parsed.search)) {
             this.getSearchedRecipes(parsed.search);
         } else {
