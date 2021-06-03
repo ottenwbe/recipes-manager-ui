@@ -151,6 +151,7 @@ function RecipeMenu(props) {
                                 <MenuItem onClick={props.onOpen}>Open</MenuItem>
                                 <MenuItem onClick={props.onEdit}>Edit</MenuItem>
                                 <MenuItem onClick={props.onDelete}>Delete</MenuItem>
+                                <MenuItem onClick={props.onFindSimilar}>Find Similar Recipes</MenuItem>
                             </MenuList>
                         </ClickAwayListener>
                     </Paper>
@@ -291,6 +292,10 @@ class Recipe extends Component {
         this.refreshRecipe(undefined, true)
     }
 
+    handleSimilar = () => {
+        window.location.href = '/#/recipes?similarTo=' + this.state.recipe.id
+    }
+
     keyName = (prefix) => {
         return prefix + this.state.name + this.state.recipeRevision
     }
@@ -338,7 +343,7 @@ class Recipe extends Component {
                             <RecipeDescription recipe={this.state.recipe} />
                         </CardContent>
                     </Collapse>
-                    <RecipeMenu open={this.state.open} onListKeyDown={this.handleListKeyDown} menuRef={this.anchorRef} onEdit={this.handleEdit} onDelete={this.handleDelete} onClose={this.handleClose} onOpen={this.handleOpen} />
+                    <RecipeMenu open={this.state.open} onListKeyDown={this.handleListKeyDown} menuRef={this.anchorRef} onEdit={this.handleEdit} onDelete={this.handleDelete} onClose={this.handleClose} onFindSimilar={this.handleSimilar} onOpen={this.handleOpen} />
                 </Card></div>);
     }
     renderIngredients() {
