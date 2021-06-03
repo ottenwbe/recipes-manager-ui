@@ -109,7 +109,7 @@ export class Recipes extends Component {
         let result = null;
         if (this.state.recipes != null) {
             result = (
-                this.state.recipes.map((recipeID) => <Recipe onDeleteRecipe={this.handleDeleteRecipe} key={recipeID} recipe={recipeID} />));
+                this.state.recipes.map((recipeID) => <Recipe onRefresh={this.refreshRecipes} onDeleteRecipe={this.handleDeleteRecipe} key={recipeID} recipe={recipeID} />));
         } else if (this.state.loading) {
             result = (
                 <div>
@@ -294,6 +294,7 @@ class Recipe extends Component {
 
     handleSimilar = () => {
         window.location.href = '/#/recipes?similarTo=' + this.state.recipe.id
+        this.props.onRefresh()
     }
 
     keyName = (prefix) => {
