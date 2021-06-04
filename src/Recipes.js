@@ -32,11 +32,11 @@ export class Recipes extends Component {
 
         const queryString = require('query-string');
         let parsedData = queryString.parse(this.props.location.search);
-        
+
         this.state = {
             recipes: null,
             loading: false,
-            data: parsedData
+            data: parsedData //all filters managed
         };
     }
 
@@ -52,7 +52,7 @@ export class Recipes extends Component {
         this.setState({ recipes: filtered });
     }
 
-    refreshRecipes = () => {        
+    refreshRecipes = () => {
         if (this.shouldSearch()) {
             this.getSearchedRecipes();
         } else if (this.shouldGetSimilarResults()) {
@@ -105,6 +105,18 @@ export class Recipes extends Component {
         this.refreshRecipes()
     }
 
+    // on url change or navbar clicks update the internal state
+    componentDidUpdate(prevProps, prevState) {
+        const queryString = require('query-string');
+        let parsedData = queryString.parse(this.props.location.search);
+
+        if (this.state.data !== undefined
+            && JSON.stringify(parsedData) !== JSON.stringify(prevState.data)) {
+            this.setState({ data: parsedData })            
+            this.refreshRecipes()
+        }
+    }
+
     handleChipDelete = (delData) => () => {
         let tmpData = this.state.data;
         let ref = '/#/recipes';
@@ -118,8 +130,9 @@ export class Recipes extends Component {
             }
         }
 
-        window.location.href = ref
-        this.setState({ data: tmpData })
+        window.location.href = ref;
+        //this.setState({ data: tmpData });
+        //this.refreshRecipes();
     }
 
     renderRecipes = () => {
@@ -145,42 +158,37 @@ export class Recipes extends Component {
         return result;
     }
 
-    // on url change or navbar clicks update the internal state
-    componentDidUpdate(prevProps, prevState) {
-        const queryString = require('query-string');
-        let parsedData = queryString.parse(this.props.location.search);
-
-        if(this.state.data !== undefined 
-            && JSON.stringify(parsedData) !== JSON.stringify(prevState.data)) {
-                this.setState({ data: parsedData })
-        }
-    }
-
     render() {
-        let chips = [];
-
-        for (const paramName in this.state.data) {
-            if (this.state.data[paramName] !== undefined) {
-                chips.push(<Chip
-                    color="default"
-                    key={paramName}
-                    label={paramName + '=' + this.state.data[paramName]}
-                    onDelete={this.handleChipDelete(paramName)}
-                />);
-            }
-        }
-
         return (
             <main>
                 <PageHeader pageName="Recipes" />
                 <p />
-                <Paper>
-                    {chips}
-                </Paper>
+                <RecipeChips data={this.state.data} handleChipDelete={this.handleChipDelete} />
                 <p />
                 {this.renderRecipes()}
             </main>);
     }
+}
+
+function RecipeChips(props) {
+    let chips = [];
+
+    for (const paramName in props.data) {
+        if (props.data[paramName] !== undefined) {
+            chips.push(<Chip
+                color="secondary"
+                key={paramName}
+                label={paramName + '=' + props.data[paramName]}
+                onDelete={props.handleChipDelete(paramName)}
+            />);
+        }
+    }
+
+    return (
+        <Paper>
+            {chips}
+        </Paper>
+    );
 }
 
 function RecipeMenu(props) {
@@ -340,7 +348,7 @@ class Recipe extends Component {
 
     handleSimilar = () => {
         window.location.href = '/#/recipes?similarTo=' + this.state.recipe.id;
-        this.setState({open: false});
+        this.setState({ open: false });
         window.location.reload();
     }
 
