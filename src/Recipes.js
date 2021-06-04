@@ -119,6 +119,7 @@ export class Recipes extends Component {
         }
 
         window.location.href = ref
+        this.setState({ data: tmpData })
     }
 
     renderRecipes = () => {
@@ -161,6 +162,7 @@ export class Recipes extends Component {
         for (const paramName in this.state.data) {
             if (this.state.data[paramName] !== undefined) {
                 chips.push(<Chip
+                    color="default"
                     key={paramName}
                     label={paramName + '=' + this.state.data[paramName]}
                     onDelete={this.handleChipDelete(paramName)}
@@ -337,8 +339,9 @@ class Recipe extends Component {
     }
 
     handleSimilar = () => {
-        window.location.href = '/#/recipes?similarTo=' + this.state.recipe.id
-        window.location.reload()
+        window.location.href = '/#/recipes?similarTo=' + this.state.recipe.id;
+        this.setState({open: false});
+        window.location.reload();
     }
 
     keyName = (prefix) => {
