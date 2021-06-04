@@ -137,6 +137,8 @@ function RecipesRouterBody(props) {
             <Route exact path="/" component={Home} />
             <Route exact path="/recipes" render={(props) => (<Recipes {...props} onRecipesChange={handleRecipeChange} />)} />
             <Route path="/recipes/:recipe" render={(props) => (<Recipes {...props} onRecipesChange={handleRecipeChange} />)} />
+            <Route path="/recipes/search/:search" render={(props) => (<Recipes {...props} onRecipesChange={handleRecipeChange} />)} />
+            <Route path="/recipes/similar/:similarTo" render={(props) => (<Recipes {...props} onRecipesChange={handleRecipeChange} />)} />
             <Route path="/add" render={(props) => (<RecipeForm {...props} onRecipesChange={handleRecipeChange} />)} />
             <Route path="/rand" component={RandomRecipe} />
             <Route path="/src" component={Sources} />

@@ -16,6 +16,8 @@ import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import Grow from '@material-ui/core/Grow';
 import Paper from '@material-ui/core/Paper';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Chip from '@material-ui/core/Chip';
+import Backdrop from '@material-ui/core/Backdrop';
 
 import UpdateIcon from '@material-ui/icons/Update';
 import LaunchIcon from '@material-ui/icons/Launch';
@@ -30,7 +32,10 @@ export class Recipes extends Component {
         this.state = {
             recipes: null,
             loading: false,
-            search: ''
+            data: {
+                search: '',
+                similarTo: ''
+            }
         };
     }
 
@@ -53,12 +58,14 @@ export class Recipes extends Component {
         let parsed = queryString.parse(this.props.location.search);
         console.log('Request Search String: ' + parsed.search); // replace param with your own 
         console.log('Request Similarity To: ' + parsed.similarTo); // replace param with your own 
+        console.log(this.props.match.params)
 
         if (this.shouldGetAllRecipes(parsed)) {
             this.getAllRecipes();
         } else if (this.shouldGetSimilarResults(parsed.similarTo)) {
             this.getSimilarRecipes(parsed.similarTo)
         } else if (this.shouldSearch(parsed.search)) {
+            //this.updateSearch(parsed.search)
             this.getSearchedRecipes(parsed.search);
         } else {
             this.setState({ recipes: [this.props.match.params.recipe] });
@@ -105,16 +112,27 @@ export class Recipes extends Component {
         this.refreshRecipes()
     }
 
+    handleChipDelete = (delData) => () => {
+        let tmpData = this.state.data;
+        tmpData[delData] = ''
+        this.setState({ data: tmpData })
+    }
+
     renderRecipes = () => {
         let result = null;
         if (this.state.recipes != null) {
             result = (
-                this.state.recipes.map((recipeID) => <Recipe onRefresh={this.refreshRecipes} onDeleteRecipe={this.handleDeleteRecipe} key={recipeID} recipe={recipeID} />));
+                <div>
+                    {this.state.recipes.map((recipeID) => <Recipe onRefresh={this.refreshRecipes} onDeleteRecipe={this.handleDeleteRecipe} key={recipeID} recipe={recipeID} />)}
+                </div>
+            );
         } else if (this.state.loading) {
             result = (
                 <div>
-                    <CircularProgress size={50} />
-                    "Loading Recipes"
+                    <Backdrop open={true}>
+                        <CircularProgress size={50} />
+                        "Loading Recipes"
+                    </Backdrop>
                 </div>
             );
         } else {
@@ -124,13 +142,31 @@ export class Recipes extends Component {
     }
 
     updateSearch = (search) => {
-        this.setState({ search });
+        let tmpData = this.state.data;
+        tmpData.search = search;
+        this.setState({ data: tmpData });
     };
 
     render() {
+        let chips = []
+
+        for (const d in this.state.data) {
+            if (this.state.data[d] !== '') {
+                chips.push(<Chip
+                    key={d}
+                    label={d + '=' + this.state.data[d]}
+                    onDelete={this.handleChipDelete(d)}
+                />)
+            }
+        }
+
         return (
             <main>
                 <PageHeader pageName="Recipes" />
+                <p />
+                <Paper>
+                    {chips}
+                </Paper>
                 <p />
                 {this.renderRecipes()}
             </main>);
@@ -294,7 +330,7 @@ class Recipe extends Component {
 
     handleSimilar = () => {
         window.location.href = '/#/recipes?similarTo=' + this.state.recipe.id
-        this.props.onRefresh()
+        window.location.reload()
     }
 
     keyName = (prefix) => {
