@@ -36,7 +36,7 @@ export class Recipes extends Component {
         this.state = {
             recipes: null,
             loading: false,
-            data: parsedData //all filters managed
+            data: parsedData //all url based filters: ?search=''&similarTo=''
         };
     }
 
@@ -131,8 +131,8 @@ export class Recipes extends Component {
         }
 
         window.location.href = ref;
-        //this.setState({ data: tmpData });
-        //this.refreshRecipes();
+        this.setState({ data: tmpData });
+        this.refreshRecipes();
     }
 
     renderRecipes = () => {
