@@ -29,13 +29,14 @@ import { RecipeDialog } from './RecipeDialog.js'
 export class Recipes extends Component {
     constructor(props) {
         super(props);
+
+        const queryString = require('query-string');
+        let parsedData = queryString.parse(this.props.location.search);
+        
         this.state = {
             recipes: null,
             loading: false,
-            data: {
-                search: '',
-                similarTo: ''
-            }
+            data: parsedData
         };
     }
 
@@ -51,37 +52,28 @@ export class Recipes extends Component {
         this.setState({ recipes: filtered });
     }
 
-    refreshRecipes = () => {
-
-        const queryString = require('query-string');
-
-        let parsed = queryString.parse(this.props.location.search);
-        console.log('Request Search String: ' + parsed.search); // replace param with your own 
-        console.log('Request Similarity To: ' + parsed.similarTo); // replace param with your own 
-        console.log(this.props.match.params)
-
-        if (this.shouldGetAllRecipes(parsed)) {
-            this.getAllRecipes();
-        } else if (this.shouldGetSimilarResults(parsed.similarTo)) {
-            this.getSimilarRecipes(parsed.similarTo)
-        } else if (this.shouldSearch(parsed.search)) {
-            //this.updateSearch(parsed.search)
-            this.getSearchedRecipes(parsed.search);
+    refreshRecipes = () => {        
+        if (this.shouldSearch()) {
+            this.getSearchedRecipes();
+        } else if (this.shouldGetSimilarResults()) {
+            this.getSimilarRecipes()
+        } else if (this.shouldGetAllRecipes()) {
+            this.getAllRecipes()
         } else {
             this.setState({ recipes: [this.props.match.params.recipe] });
         }
     }
 
-    shouldGetSimilarResults = (similarTo) => {
-        return similarTo != null
+    shouldGetSimilarResults = () => {
+        return this.state.data.similarTo !== undefined
     }
 
-    shouldSearch = (search) => {
-        return search != null;
+    shouldSearch = () => {
+        return this.state.data.search !== undefined;
     }
 
-    shouldGetAllRecipes = (search) => {
-        return this.props.match.params.recipe == null && search.search == null && search.similarTo == null;
+    shouldGetAllRecipes = () => {
+        return this.props.match.params.recipe === undefined;
     }
 
     getAllRecipes = () => {
@@ -92,17 +84,18 @@ export class Recipes extends Component {
             .finally(() => this.setState({ loading: false }));
     }
 
-    getSearchedRecipes = (search) => {
+    getSearchedRecipes = () => {
         this.setState({ loading: true });
+        let search = this.state.data.search
         fetch('/api/v1/recipes?name=' + search + '&description=' + search)
             .then(response => response.json())
             .then(responseJSON => this.setState({ recipes: responseJSON.recipes }))
             .finally(() => this.setState({ loading: false }));
     }
 
-    getSimilarRecipes = (similarTo) => {
+    getSimilarRecipes = () => {
         this.setState({ loading: true });
-        fetch('/api/v1/recommendation/' + similarTo + '/components')
+        fetch('/api/v1/recommendation/' + this.state.data.similarTo + '/components')
             .then(response => response.json())
             .then(responseJSON => this.setState({ recipes: responseJSON.recipes }))
             .finally(() => this.setState({ loading: false }));
@@ -114,8 +107,18 @@ export class Recipes extends Component {
 
     handleChipDelete = (delData) => () => {
         let tmpData = this.state.data;
-        tmpData[delData] = ''
-        this.setState({ data: tmpData })
+        let ref = '/#/recipes';
+        let tmp = '?';
+        tmpData[delData] = undefined;
+
+        for (const paramName in this.state.data) {
+            if (this.state.data[paramName] !== undefined) {
+                ref = ref + tmp + paramName + '=' + this.state.data[paramName];
+                tmp = '&';
+            }
+        }
+
+        window.location.href = ref
     }
 
     renderRecipes = () => {
@@ -141,22 +144,27 @@ export class Recipes extends Component {
         return result;
     }
 
-    updateSearch = (search) => {
-        let tmpData = this.state.data;
-        tmpData.search = search;
-        this.setState({ data: tmpData });
-    };
+    // on url change or navbar clicks update the internal state
+    componentDidUpdate(prevProps, prevState) {
+        const queryString = require('query-string');
+        let parsedData = queryString.parse(this.props.location.search);
+
+        if(this.state.data !== undefined 
+            && JSON.stringify(parsedData) !== JSON.stringify(prevState.data)) {
+                this.setState({ data: parsedData })
+        }
+    }
 
     render() {
-        let chips = []
+        let chips = [];
 
-        for (const d in this.state.data) {
-            if (this.state.data[d] !== '') {
+        for (const paramName in this.state.data) {
+            if (this.state.data[paramName] !== undefined) {
                 chips.push(<Chip
-                    key={d}
-                    label={d + '=' + this.state.data[d]}
-                    onDelete={this.handleChipDelete(d)}
-                />)
+                    key={paramName}
+                    label={paramName + '=' + this.state.data[paramName]}
+                    onDelete={this.handleChipDelete(paramName)}
+                />);
             }
         }
 
