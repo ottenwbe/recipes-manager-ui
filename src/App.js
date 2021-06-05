@@ -4,7 +4,6 @@ import OutlinedInput from '@material-ui/core/OutlinedInput';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import CssBaseline from '@material-ui/core/CssBaseline'
 import SearchIcon from '@material-ui/icons/Search';
-import Button from '@material-ui/core/Button';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
@@ -82,7 +81,7 @@ class RecipesRouter extends Component {
 
     render() {
         return (<HashRouter>
-            <RecipesDrawer num={this.state.numRecipes} open={this.state.open} handleDrawerClose={this.handleDrawerClose} />
+            <RecipesDrawer open={this.state.open} numRecipes={this.state.numRecipes} handleDrawerClose={this.handleDrawerClose} />
             <RecipesRouterMenu open={this.state.open} numRecipes={this.state.numRecipes} handleDrawerOpen={this.handleDrawerOpen} />
             <RecipesRouterBody open={this.state.open} onRecipeCountChange={this.handleRecipeCountChange} />
         </HashRouter>);
@@ -107,11 +106,17 @@ function RecipesRouterMenu(props) {
     const [searchTerm, setSearchTerm] = React.useState("");
 
     const handleSearchClick = () => {
-        window.location.href = "/#/recipes?search=" + searchTerm;        
+        window.location.href = "/#/recipes?search=" + searchTerm;
     }
 
     const handleSearchTermChange = (event) => {
-        setSearchTerm(event.target.value)
+        setSearchTerm(event.target.value);
+    }
+
+    const handleKeyClick = (event) => {
+        if (event.key === 'Enter') {
+            handleSearchClick()
+        }
     }
 
     return (
@@ -122,22 +127,23 @@ function RecipesRouterMenu(props) {
                         [classes.appBarShift]: props.open,
                     })}>
                     <Toolbar>
-                        <IconButton className="menu-icon" color="inherit" aria-label="Menu"
+                        <IconButton className={clsx(classes.menuButton, props.open && classes.hide)}
+                            color="inherit"
+                            aria-label="Menu"
                             onClick={props.handleDrawerOpen}>
                             <MenuIcon />
                         </IconButton>
                         <Typography variant="h6" color="inherit">
                             {REACT_APP_APP_NAME}
                         </Typography>
-                        <NavLink to="/recipes"><Badge badgeContent={props.numRecipes} color="secondary"><Button>My Recipes</Button></Badge></NavLink>
-                        <NavLink to="/add"><Button>Add Recipes</Button></NavLink>
-                        <NavLink to="/rand"><Button>Random Recipes</Button></NavLink>
                         <div style={{ flexGrow: 1, }} />
                         <OutlinedInput
+                            fullWidth
                             id="search-input"
                             variant="outlined"
                             placeholder="Search for recipes"
                             onChange={handleSearchTermChange}
+                            onKeyPress={handleKeyClick}
                             endAdornment={
                                 <InputAdornment position="end">
                                     <IconButton onClick={handleSearchClick}>
@@ -145,13 +151,16 @@ function RecipesRouterMenu(props) {
                                     </IconButton>
                                 </InputAdornment>
                             }
-                        />
-                        <NavLink disabled to="/login"><Button disabled>Login</Button></NavLink>
+                        />                        
                     </Toolbar>
                 </AppBar>
             </ThemeProvider>
         </div>
     );
+    //<NavLink to="/recipes"><Badge badgeContent={props.numRecipes} color="secondary"><Button>My Recipes</Button></Badge></NavLink>
+    //<NavLink to="/add"><Button>Add Recipes</Button></NavLink>
+    //<NavLink to="/rand"><Button>Random Recipes</Button></NavLink>
+    //<NavLink disabled to="/login"><Button disabled>Login</Button></NavLink>
 }
 
 function RecipesRouterBody(props) {
@@ -167,6 +176,7 @@ function RecipesRouterBody(props) {
             [classes.contentShift]: !props.open,
         })}>
             <div className={classes.drawerHeader} />
+            <CssBaseline />
             <Switch>
                 <Route exact path="/" ><Redirect to="/recipes" /></Route>
                 <Route path="/news" component={Home} />
@@ -186,12 +196,12 @@ function RecipesRouterBody(props) {
 
 function NotFoundPage(props) {
     return (
-        <div>
+        <div style={{ textAlign: 'center' }}>
             <PageHeader pageName="404" />
-            <Typography variant="h4">
+            <Typography variant="h4">            
                 Error - Something went wrong!
                 <p />
-                Go Back to Square One: <Link to="/recipes">Recipes</Link>
+                Go Back to Square One: <Link to="/recipes">Recipes</Link>            
             </Typography>
         </div>
     );
@@ -228,7 +238,7 @@ function RecipesDrawer(props) {
                             <ListItemIcon>
                                 <LocalDiningIcon style={{ color: '#505050' }} />
                             </ListItemIcon>
-                            <Badge badgeContent={props.num} color="secondary">
+                            <Badge badgeContent={props.numRecipes} color="secondary">
                                 <ListItemText primary="My Recipes      " />
                             </Badge>
                         </ListItem>
@@ -329,7 +339,6 @@ function App() {
 
     return (
         <div>
-            <CssBaseline />
             <RecipesRouter />
         </div>
     );

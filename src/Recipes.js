@@ -152,7 +152,7 @@ export class Recipes extends Component {
                 </div>
             );
         } else {
-            result = ("No Recipes Found");
+            result = (<div style={{ textAlign: 'center' }}>No Recipes Found</div>);
         }
         return result;
     }
