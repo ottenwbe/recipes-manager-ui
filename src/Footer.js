@@ -4,6 +4,14 @@ const { REACT_APP_PAGE_FOOTER_TEXT } = process.env;
 
 export function Footer() {
     return (<div className="Footer">
-        <p>{ REACT_APP_PAGE_FOOTER_TEXT }</p>
+        <p><hr
+            style={{
+                color: 'black',
+                backgroundColor: 'black',
+                height: 1,
+                width: 100
+            }}
+        /></p>
+        <p>{REACT_APP_PAGE_FOOTER_TEXT}</p>
     </div>);
 }

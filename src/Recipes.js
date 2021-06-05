@@ -1,36 +1,48 @@
-import React, { Component } from 'react';
-import TextField from '@material-ui/core/TextField';
+import Backdrop from '@material-ui/core/Backdrop';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardMedia from '@material-ui/core/CardMedia';
-import IconButton from '@material-ui/core/IconButton';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
+import Chip from '@material-ui/core/Chip';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import Collapse from '@material-ui/core/Collapse';
-import Typography from '@material-ui/core/Typography';
-import Popper from '@material-ui/core/Popper';
+import Grow from '@material-ui/core/Grow';
+import IconButton from '@material-ui/core/IconButton';
 import MenuItem from '@material-ui/core/MenuItem';
 import MenuList from '@material-ui/core/MenuList';
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-import Grow from '@material-ui/core/Grow';
 import Paper from '@material-ui/core/Paper';
-import CircularProgress from '@material-ui/core/CircularProgress';
-
-import UpdateIcon from '@material-ui/icons/Update';
+import Popper from '@material-ui/core/Popper';
+import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import LaunchIcon from '@material-ui/icons/Launch';
-
+import MoreVertIcon from '@material-ui/icons/MoreVert';
+import UpdateIcon from '@material-ui/icons/Update';
+import React, { Component } from 'react';
 import { PageHeader } from "./PageHeader";
-import { RecipeAlert } from './RecipeAlerts.js'
-import { RecipeDialog } from './RecipeDialog.js'
+import { RecipeAlert } from './RecipeAlerts.js';
+import { RecipeDialog } from './RecipeDialog.js';
+
+
+const useStyles = makeStyles((theme) => ({
+    chip: {
+        margin: theme.spacing(0.5),
+    },
+}));
 
 export class Recipes extends Component {
     constructor(props) {
         super(props);
+
+        const queryString = require('query-string');
+        let parsedData = queryString.parse(this.props.location.search);
+
         this.state = {
             recipes: null,
             loading: false,
-            search: ''
+            data: parsedData //all url based filters: ?search=''&similarTo=''
         };
     }
 
@@ -47,40 +59,51 @@ export class Recipes extends Component {
     }
 
     refreshRecipes = () => {
-
-        const queryString = require('query-string');
-        let parsed = queryString.parse(this.props.location.search);
-        console.log('parsed: ' + parsed.search); // replace param with your own 
-
-        if (this.shouldGetAllRecipes(parsed.search)) {
-            this.getAllRecipes();
-        } else if (this.shouldSearch(parsed.search)) {
-            this.getSearchedRecipes(parsed.search);
+        if (this.shouldSearch()) {
+            this.getSearchedRecipes();
+        } else if (this.shouldGetSimilarResults()) {
+            this.getSimilarRecipes()
+        } else if (this.shouldGetAllRecipes()) {
+            this.getAllRecipes()
         } else {
             this.setState({ recipes: [this.props.match.params.recipe] });
         }
     }
-    shouldSearch = (search) => {
-        return search != null;
+
+    shouldGetSimilarResults = () => {
+        return this.state.data.similarTo !== undefined
     }
 
-    shouldGetAllRecipes = (search) => {
-        return this.props.match.params.recipe == null && search == null;
+    shouldSearch = () => {
+        return this.state.data.search !== undefined;
+    }
+
+    shouldGetAllRecipes = () => {
+        return this.props.match.params.recipe === undefined;
     }
 
     getAllRecipes = () => {
         this.setState({ loading: true });
         fetch('/api/v1/recipes')
             .then(response => response.json())
-            .then(responseJSON => this.setState({ recipes: responseJSON }))
+            .then(responseJSON => this.setState({ recipes: responseJSON.recipes }))
             .finally(() => this.setState({ loading: false }));
     }
 
-    getSearchedRecipes = (search) => {
+    getSearchedRecipes = () => {
         this.setState({ loading: true });
-        fetch('/api/v1/recipes?name='+search+'&description='+search)
+        let search = this.state.data.search
+        fetch('/api/v1/recipes?name=' + search + '&description=' + search)
             .then(response => response.json())
-            .then(responseJSON => this.setState({ recipes: responseJSON }))
+            .then(responseJSON => this.setState({ recipes: responseJSON.recipes }))
+            .finally(() => this.setState({ loading: false }));
+    }
+
+    getSimilarRecipes = () => {
+        this.setState({ loading: true });
+        fetch('/api/v1/recommendation/' + this.state.data.similarTo + '/components')
+            .then(response => response.json())
+            .then(responseJSON => this.setState({ recipes: responseJSON.recipes }))
             .finally(() => this.setState({ loading: false }));
     }
 
@@ -88,36 +111,99 @@ export class Recipes extends Component {
         this.refreshRecipes()
     }
 
+    // on url change or navbar clicks update the internal state
+    componentDidUpdate(prevProps, prevState) {
+        const queryString = require('query-string');
+        let parsedData = queryString.parse(this.props.location.search);
+
+        if (this.state.data !== undefined
+            && JSON.stringify(parsedData) !== JSON.stringify(prevState.data)) {
+            this.setState({ data: parsedData })
+            this.refreshRecipes()
+        }
+    }
+
+    handleDataDelete = (delData) => () => {
+        let tmpData = this.state.data;
+        tmpData[delData] = undefined;
+
+        this.setState({ data: tmpData });
+        this.refreshRecipes();
+
+        let url = this.createURL();
+        window.location.href = url;
+    }
+
     renderRecipes = () => {
         let result = null;
         if (this.state.recipes != null) {
             result = (
-                this.state.recipes.map((recipeID) => <Recipe onDeleteRecipe={this.handleDeleteRecipe} key={recipeID} recipe={recipeID} />));
+                <div>
+                    {this.state.recipes.map((recipeID) => <Recipe onRefresh={this.refreshRecipes} onDeleteRecipe={this.handleDeleteRecipe} key={recipeID} recipe={recipeID} />)}
+                </div>
+            );
         } else if (this.state.loading) {
             result = (
                 <div>
-                    <CircularProgress size={50} />
-                    "Loading Recipes"
+                    <Backdrop open={true}>
+                        <CircularProgress size={50} />
+                        "Loading Recipes"
+                    </Backdrop>
                 </div>
             );
         } else {
-            result = ("No Recipes Found");
+            result = (<div style={{ textAlign: 'center' }}>No Recipes Found</div>);
         }
         return result;
     }
 
-    updateSearch = (search) => {
-        this.setState({ search });
-    };
+    createURL() {
+        let url = '/#/recipes';
+        let urlPart = '?';
+
+        for (const paramName in this.state.data) {
+            if (this.state.data[paramName] !== undefined) {
+                url = url + urlPart + paramName + '=' + this.state.data[paramName];
+                urlPart = '&';
+            }
+        }
+        return url;
+    }
 
     render() {
         return (
-            <main>
+            <div>
                 <PageHeader pageName="Recipes" />
                 <p />
+                <RecipeChips data={this.state.data} loading={this.state.loading} handleChipDelete={this.handleDataDelete} />
+                <p />
                 {this.renderRecipes()}
-            </main>);
+            </div>);
     }
+}
+
+function RecipeChips(props) {
+
+    const classes = useStyles();
+    let chips = [];
+
+    for (const paramName in props.data) {
+        if (props.data[paramName] !== undefined) {
+            chips.push(<Chip
+                color="secondary"
+                key={paramName}
+                label={paramName + '=' + props.data[paramName]}
+                onDelete={props.handleChipDelete !== undefined ? props.handleChipDelete(paramName) : undefined}
+                className={classes.chip}
+            />);
+        }
+    }
+
+    return (
+        <Paper>
+            {props.loading ? "" : chips}
+        </Paper>
+    );
 }
 
 function RecipeMenu(props) {
@@ -131,9 +217,10 @@ function RecipeMenu(props) {
                     <Paper>
                         <ClickAwayListener onClickAway={props.onClose}>
                             <MenuList autoFocusItem={props.open} id="menu-list-grow" onKeyDown={props.onListKeyDown}>
-                                <MenuItem onClick={props.onOpen}>Open</MenuItem>                                
+                                <MenuItem onClick={props.onOpen}>Open</MenuItem>
                                 <MenuItem onClick={props.onEdit}>Edit</MenuItem>
                                 <MenuItem onClick={props.onDelete}>Delete</MenuItem>
+                                <MenuItem onClick={props.onFindSimilar}>Find Similar Recipes</MenuItem>
                             </MenuList>
                         </ClickAwayListener>
                     </Paper>
@@ -274,6 +361,12 @@ class Recipe extends Component {
         this.refreshRecipe(undefined, true)
     }
 
+    handleSimilar = () => {
+        window.location.href = '/#/recipes?similarTo=' + this.state.recipe.id;
+        this.setState({ open: false });
+        window.location.reload();
+    }
+
     keyName = (prefix) => {
         return prefix + this.state.name + this.state.recipeRevision
     }
@@ -321,7 +414,7 @@ class Recipe extends Component {
                             <RecipeDescription recipe={this.state.recipe} />
                         </CardContent>
                     </Collapse>
-                    <RecipeMenu open={this.state.open} onListKeyDown={this.handleListKeyDown} menuRef={this.anchorRef} onEdit={this.handleEdit} onDelete={this.handleDelete} onClose={this.handleClose} onOpen={this.handleOpen} />                    
+                    <RecipeMenu open={this.state.open} onListKeyDown={this.handleListKeyDown} menuRef={this.anchorRef} onEdit={this.handleEdit} onDelete={this.handleDelete} onClose={this.handleClose} onFindSimilar={this.handleSimilar} onOpen={this.handleOpen} />
                 </Card></div>);
     }
     renderIngredients() {

@@ -66,3 +66,6 @@ By providing the environment variable ```RECIPES_MANAGER_UI_ARCH``` the tag is e
 
     RECIPES_MANAGER_UI_ARCH=<arch> sh push_docker.sh <docker user> <docker pw>
 
+### Update Process (WIP)
+
+    semver $(node -p -e "require('./package.json').version") -i minor

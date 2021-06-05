@@ -4,6 +4,7 @@ import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
 import { PageHeader } from './PageHeader';
+import { Link } from 'react-router-dom';
 
 
 const { REACT_APP_WELCOME_TEXT, REACT_APP_WELCOME_SUB_TEXT } = process.env;
@@ -29,13 +30,13 @@ export class Home extends Component {
                         Look at all our recipes at:
 
                         <p>
-                            <li><a href="#!/recipes">Recipes</a></li>
+                            <Link to="/recipes">Recipes</Link>
                         </p>
 
                         Or get a random Recipe at:
 
                         <p>
-                            <li><a href="#!/rand">Random Recipe</a></li>
+                            <Link to="/rand">Random Recipes</Link>
                         </p>
                 </CardContent>
             </Card>

@@ -1,6 +1,8 @@
 build
 scripts
+node_modules
 
+.github
 .travis.yml
 Dockerfile
 
