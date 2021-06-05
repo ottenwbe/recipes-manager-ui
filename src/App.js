@@ -48,6 +48,7 @@ import { PageHeader } from './PageHeader';
 const { REACT_APP_APP_NAME } = process.env;
 
 class RecipesRouter extends Component {
+
     constructor(props) {
         super(props);
         this.state = {
@@ -79,12 +80,11 @@ class RecipesRouter extends Component {
         this.setState({ open: false });
     };
 
-
     render() {
         return (<HashRouter>
             <RecipesDrawer num={this.state.numRecipes} open={this.state.open} handleDrawerClose={this.handleDrawerClose} />
             <RecipesRouterMenu open={this.state.open} numRecipes={this.state.numRecipes} handleDrawerOpen={this.handleDrawerOpen} />
-            <RecipesRouterBody onRecipeCountChange={this.handleRecipeCountChange} />
+            <RecipesRouterBody open={this.state.open} onRecipeCountChange={this.handleRecipeCountChange} />
         </HashRouter>);
     }
 }
@@ -107,8 +107,7 @@ function RecipesRouterMenu(props) {
     const [searchTerm, setSearchTerm] = React.useState("");
 
     const handleSearchClick = () => {
-        window.location.href = "/#/recipes?search=" + searchTerm;
-        window.location.reload()
+        window.location.href = "/#/recipes?search=" + searchTerm;        
     }
 
     const handleSearchTermChange = (event) => {
@@ -157,12 +156,17 @@ function RecipesRouterMenu(props) {
 
 function RecipesRouterBody(props) {
 
+    const classes = useStyles();
+
     const handleRecipeChange = () => {
-        props.onRecipeCountChange()
+        props.onRecipeCountChange();
     }
 
     return (<div className="GoCookUIContent" style={{ align: 'center', paddingRight: 50, paddingLeft: 50 }}>
-        <main className="GoCookUIRoutes">
+        <main className={clsx(classes.content, {
+            [classes.contentShift]: !props.open,
+        })}>
+            <div className={classes.drawerHeader} />
             <Switch>
                 <Route exact path="/" ><Redirect to="/recipes" /></Route>
                 <Route path="/news" component={Home} />
@@ -174,6 +178,7 @@ function RecipesRouterBody(props) {
                 <Route path="/login" component={Home} />
                 <Route path="*" component={NotFoundPage} />
             </Switch>
+            <div></div>
         </main>
         <Footer />
     </div>);
@@ -186,8 +191,8 @@ function NotFoundPage(props) {
             <Typography variant="h4">
                 Error - Something went wrong!
                 <p />
-                Go Back to Square One: <Link to="/recipes">Recipes</Link>                
-            </Typography>            
+                Go Back to Square One: <Link to="/recipes">Recipes</Link>
+            </Typography>
         </div>
     );
 }
@@ -309,7 +314,7 @@ const useStyles = makeStyles((theme) => ({
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
         }),
-        marginLeft: -drawerWidth,
+        marginLeft: drawerWidth,
     },
     contentShift: {
         transition: theme.transitions.create('margin', {
