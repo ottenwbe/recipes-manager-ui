@@ -171,7 +171,7 @@ export function RecipeEdit(props) {
 
     const handleChange = (event) => {
         const target = event.target;
-        const value = target.type === 'number' ? parseInt(target.value) : target.value;
+        const value = target.type === 'number' ? parseInt(target.value, 10) : target.value;
         const name = target.name;
 
         editableRecipe[name] = value
