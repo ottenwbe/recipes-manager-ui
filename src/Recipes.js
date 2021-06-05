@@ -1,30 +1,36 @@
-import React, { Component } from 'react';
-import TextField from '@material-ui/core/TextField';
+import Backdrop from '@material-ui/core/Backdrop';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardMedia from '@material-ui/core/CardMedia';
-import IconButton from '@material-ui/core/IconButton';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
+import Chip from '@material-ui/core/Chip';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import Collapse from '@material-ui/core/Collapse';
-import Typography from '@material-ui/core/Typography';
-import Popper from '@material-ui/core/Popper';
+import Grow from '@material-ui/core/Grow';
+import IconButton from '@material-ui/core/IconButton';
 import MenuItem from '@material-ui/core/MenuItem';
 import MenuList from '@material-ui/core/MenuList';
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-import Grow from '@material-ui/core/Grow';
 import Paper from '@material-ui/core/Paper';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Chip from '@material-ui/core/Chip';
-import Backdrop from '@material-ui/core/Backdrop';
-
-import UpdateIcon from '@material-ui/icons/Update';
+import Popper from '@material-ui/core/Popper';
+import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import LaunchIcon from '@material-ui/icons/Launch';
-
+import MoreVertIcon from '@material-ui/icons/MoreVert';
+import UpdateIcon from '@material-ui/icons/Update';
+import React, { Component } from 'react';
 import { PageHeader } from "./PageHeader";
-import { RecipeAlert } from './RecipeAlerts.js'
-import { RecipeDialog } from './RecipeDialog.js'
+import { RecipeAlert } from './RecipeAlerts.js';
+import { RecipeDialog } from './RecipeDialog.js';
+
+
+const useStyles = makeStyles((theme) => ({
+    chip: {
+        margin: theme.spacing(0.5),
+    },
+}));
 
 export class Recipes extends Component {
     constructor(props) {
@@ -112,25 +118,18 @@ export class Recipes extends Component {
 
         if (this.state.data !== undefined
             && JSON.stringify(parsedData) !== JSON.stringify(prevState.data)) {
-            this.setState({ data: parsedData })            
+            this.setState({ data: parsedData })
             this.refreshRecipes()
         }
     }
 
-    handleChipDelete = (delData) => () => {
+    handleDataDelete = (delData) => () => {
         let tmpData = this.state.data;
-        let ref = '/#/recipes';
-        let tmp = '?';
         tmpData[delData] = undefined;
 
-        for (const paramName in this.state.data) {
-            if (this.state.data[paramName] !== undefined) {
-                ref = ref + tmp + paramName + '=' + this.state.data[paramName];
-                tmp = '&';
-            }
-        }
+        let url = this.createURL();
 
-        window.location.href = ref;
+        window.location.href = url;
         this.setState({ data: tmpData });
         this.refreshRecipes();
     }
@@ -158,12 +157,25 @@ export class Recipes extends Component {
         return result;
     }
 
+    createURL() {
+        let url = '/#/recipes';
+        let urlPart = '?';
+
+        for (const paramName in this.state.data) {
+            if (this.state.data[paramName] !== undefined) {
+                url = url + urlPart + paramName + '=' + this.state.data[paramName];
+                urlPart = '&';
+            }
+        }
+        return url;
+    }
+
     render() {
         return (
             <main>
                 <PageHeader pageName="Recipes" />
                 <p />
-                <RecipeChips data={this.state.data} handleChipDelete={this.handleChipDelete} />
+                <RecipeChips data={this.state.data} handleChipDelete={this.handleDataDelete} />
                 <p />
                 {this.renderRecipes()}
             </main>);
@@ -171,6 +183,8 @@ export class Recipes extends Component {
 }
 
 function RecipeChips(props) {
+
+    const classes = useStyles();
     let chips = [];
 
     for (const paramName in props.data) {
@@ -179,7 +193,8 @@ function RecipeChips(props) {
                 color="secondary"
                 key={paramName}
                 label={paramName + '=' + props.data[paramName]}
-                onDelete={props.handleChipDelete(paramName)}
+                onDelete={props.handleChipDelete !== undefined ? props.handleChipDelete(paramName) : undefined}
+                className={classes.chip}
             />);
         }
     }
