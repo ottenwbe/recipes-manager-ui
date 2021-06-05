@@ -127,11 +127,11 @@ export class Recipes extends Component {
         let tmpData = this.state.data;
         tmpData[delData] = undefined;
 
-        let url = this.createURL();
-
-        window.location.href = url;
         this.setState({ data: tmpData });
         this.refreshRecipes();
+
+        let url = this.createURL();
+        window.location.href = url;
     }
 
     renderRecipes = () => {
@@ -172,13 +172,13 @@ export class Recipes extends Component {
 
     render() {
         return (
-            <main>
+            <div>
                 <PageHeader pageName="Recipes" />
                 <p />
-                <RecipeChips data={this.state.data} handleChipDelete={this.handleDataDelete} />
+                <RecipeChips data={this.state.data} loading={this.state.loading} handleChipDelete={this.handleDataDelete} />
                 <p />
                 {this.renderRecipes()}
-            </main>);
+            </div>);
     }
 }
 
@@ -201,7 +201,7 @@ function RecipeChips(props) {
 
     return (
         <Paper>
-            {chips}
+            {props.loading ? "" : chips}
         </Paper>
     );
 }

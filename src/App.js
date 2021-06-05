@@ -17,6 +17,8 @@ import {
     NavLink,
     HashRouter,
     Redirect,
+    Switch,
+    Link,
 } from "react-router-dom";
 
 import { Recipes, RandomRecipe } from './Recipes';
@@ -40,6 +42,7 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+import { PageHeader } from './PageHeader';
 
 
 const { REACT_APP_APP_NAME } = process.env;
@@ -159,18 +162,34 @@ function RecipesRouterBody(props) {
     }
 
     return (<div className="GoCookUIContent" style={{ align: 'center', paddingRight: 50, paddingLeft: 50 }}>
-        <div className="GoCookUIRoutes">
-            <Route exact path="/" ><Redirect to="/recipes" /></Route>
-            <Route path="/news" component={Home} />
-            <Route exact path="/recipes" render={(props) => (<Recipes {...props} onRecipesChange={handleRecipeChange} />)} />
-            <Route path="/recipes/:recipe" render={(props) => (<Recipes {...props} onRecipesChange={handleRecipeChange} />)} />
-            <Route path="/add" render={(props) => (<RecipeForm {...props} onRecipesChange={handleRecipeChange} />)} />
-            <Route path="/rand" component={RandomRecipe} />
-            <Route path="/src" component={Sources} />
-            <Route path="/login" component={Home} />
-        </div>
+        <main className="GoCookUIRoutes">
+            <Switch>
+                <Route exact path="/" ><Redirect to="/recipes" /></Route>
+                <Route path="/news" component={Home} />
+                <Route exact path="/recipes" render={(props) => (<Recipes {...props} onRecipesChange={handleRecipeChange} />)} />
+                <Route path="/recipes/:recipe" render={(props) => (<Recipes {...props} onRecipesChange={handleRecipeChange} />)} />
+                <Route path="/add" render={(props) => (<RecipeForm {...props} onRecipesChange={handleRecipeChange} />)} />
+                <Route path="/rand" component={RandomRecipe} />
+                <Route path="/src" component={Sources} />
+                <Route path="/login" component={Home} />
+                <Route path="*" component={NotFoundPage} />
+            </Switch>
+        </main>
         <Footer />
     </div>);
+}
+
+function NotFoundPage(props) {
+    return (
+        <div>
+            <PageHeader pageName="404" />
+            <Typography variant="h4">
+                Error - Something went wrong!
+                <p />
+                Go Back to Square One: <Link to="/recipes">Recipes</Link>                
+            </Typography>            
+        </div>
+    );
 }
 
 function RecipesDrawer(props) {
@@ -304,11 +323,9 @@ const useStyles = makeStyles((theme) => ({
 function App() {
 
     return (
-        <div className="GoCookUIApp">
+        <div>
             <CssBaseline />
-
             <RecipesRouter />
-
         </div>
     );
 }
