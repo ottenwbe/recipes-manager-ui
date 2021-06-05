@@ -114,7 +114,6 @@ function RecipesRouterMenu(props) {
 
     return (
         <div>
-
             <ThemeProvider theme={theme}>
                 <AppBar style={{ backgroundColor: "#2196f3" }} position="fixed"
                     className={clsx(classes.appBar, {
@@ -128,6 +127,9 @@ function RecipesRouterMenu(props) {
                         <Typography variant="h6" color="inherit">
                             {REACT_APP_APP_NAME}
                         </Typography>
+                        <NavLink to="/recipes"><Badge badgeContent={props.numRecipes} color="secondary"><Button>My Recipes</Button></Badge></NavLink>
+                        <NavLink to="/add"><Button>Add Recipes</Button></NavLink>
+                        <NavLink to="/rand"><Button>Random Recipes</Button></NavLink>
                         <div style={{ flexGrow: 1, }} />
                         <OutlinedInput
                             id="search-input"
