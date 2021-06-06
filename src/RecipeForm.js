@@ -12,6 +12,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 import { PageHeader } from './PageHeader';
+import { Table, TableBody, TableContainer, TableHead, TableRow } from '@material-ui/core';
 
 function newIngredient() {
     return {
@@ -73,18 +74,20 @@ const IngredientsEdit = (props) => {
 
     return (
         <div>
-            <table className="table">
-                <thead>
-                    <tr>
+            <TableContainer>
+            <Table className="table">
+                <TableHead>
+                    <TableRow>
                         <td>
                             Ingredients
                         </td>
-                    </tr>
-                </thead>
-                <tbody>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
                     {rows}
-                </tbody>
-            </table>
+                </TableBody>
+            </Table>
+            </TableContainer>
             <p />
             <Button
                 disabled={props.disabled}
@@ -115,7 +118,7 @@ const IngredientsRowEdit = (props) => {
     }
 
     return (
-        <tr>
+        <TableRow>
             <td>
                 <TextField
                     disabled={props.disabled}
@@ -156,7 +159,7 @@ const IngredientsRowEdit = (props) => {
                     <DeleteIcon />
                 </IconButton>
             </td>
-        </tr>
+        </TableRow>
     );
 }
 
