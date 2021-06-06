@@ -27,7 +27,7 @@ import { ThemeProvider } from 'react-bootstrap';
 import {
     HashRouter,
     NavLink,
-    Redirect, 
+    Redirect,
     Route,
     Switch
 } from "react-router-dom";
@@ -108,7 +108,7 @@ function RecipesRouterMenu(props) {
         setSearchTerm(event.target.value);
     }
 
-    const handleKeyClick = (event) => {
+    const handleKeyPress = (event) => {
         if (event.key === 'Enter') {
             handleSearchClick()
         }
@@ -128,9 +128,6 @@ function RecipesRouterMenu(props) {
                             onClick={props.handleDrawerOpen}>
                             <MenuIcon />
                         </IconButton>
-                        <Typography variant="h6" color="inherit">
-                            {REACT_APP_APP_NAME}
-                        </Typography>
                         <div style={{ flexGrow: 1, }} />
                         <OutlinedInput
                             fullWidth
@@ -138,7 +135,7 @@ function RecipesRouterMenu(props) {
                             variant="outlined"
                             placeholder="Search for recipes"
                             onChange={handleSearchTermChange}
-                            onKeyPress={handleKeyClick}
+                            onKeyPress={handleKeyPress}
                             endAdornment={
                                 <InputAdornment position="end">
                                     <IconButton onClick={handleSearchClick}>
@@ -146,7 +143,7 @@ function RecipesRouterMenu(props) {
                                     </IconButton>
                                 </InputAdornment>
                             }
-                        />                        
+                        />
                     </Toolbar>
                 </AppBar>
             </ThemeProvider>
@@ -166,7 +163,7 @@ function RecipesRouterBody(props) {
         props.onRecipeCountChange();
     }
 
-    return (<div className="GoCookUIContent" style={{ align: 'center' }}> 
+    return (<div className="GoCookUIContent" style={{ align: 'center' }}>
         <main className={clsx(classes.content, {
             [classes.contentShift]: !props.open,
         })}>
@@ -209,6 +206,9 @@ function RecipesDrawer(props) {
         >
             <div onClick={props.handleDrawerClose}>
                 <div className={classes.drawerHeader}>
+                    <Typography variant="h6" color="inherit">
+                        {REACT_APP_APP_NAME}
+                    </Typography>
                     <IconButton onClick={props.handleDrawerClose}>
                         {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
                     </IconButton>
@@ -261,9 +261,6 @@ function RecipesDrawer(props) {
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
-    root: {
-        display: 'flex',
-    },
     appBar: {
         transition: theme.transitions.create(['margin', 'width'], {
             easing: theme.transitions.easing.sharp,
@@ -295,7 +292,6 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         alignItems: 'center',
         padding: theme.spacing(0, 1),
-        // necessary for content to be below app bar
         ...theme.mixins.toolbar,
         justifyContent: 'flex-end',
     },

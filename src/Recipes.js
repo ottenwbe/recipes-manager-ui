@@ -61,13 +61,10 @@ export class Recipes extends Component {
 
     refreshRecipes = () => {
         if (this.shouldSearch()) {
-            console.log("search recipes");
             this.getSearchedRecipes();
         } else if (this.shouldGetSimilarResults()) {
-            console.log("similar recipes");            
             this.getSimilarRecipes()
-        } else if (this.shouldGetAllRecipes()) {
-            console.log("all recipes");                        
+        } else if (this.shouldGetAllRecipes()) {                       
             this.getAllRecipes()
         } else {
             this.setState({ recipes: [this.props.match.params.recipe] });
