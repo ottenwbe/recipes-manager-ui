@@ -26,7 +26,6 @@ import React, { Component } from 'react';
 import { ThemeProvider } from 'react-bootstrap';
 import {
     HashRouter,
-    Link, 
     NavLink,
     Redirect, 
     Route,
@@ -35,7 +34,7 @@ import {
 import './App.css';
 import { Footer } from './Footer';
 import { Home } from './Home';
-import { PageHeader } from './PageHeader';
+import { NotFoundPage } from './NotFoundPage';
 import { RecipeForm } from './RecipeForm';
 import { RandomRecipe, Recipes } from './Recipes';
 import { Sources } from './Sources';
@@ -167,7 +166,7 @@ function RecipesRouterBody(props) {
         props.onRecipeCountChange();
     }
 
-    return (<div className="GoCookUIContent" style={{ align: 'center', paddingRight: 50, paddingLeft: 50 }}>
+    return (<div className="GoCookUIContent" style={{ align: 'center' }}> 
         <main className={clsx(classes.content, {
             [classes.contentShift]: !props.open,
         })}>
@@ -188,19 +187,6 @@ function RecipesRouterBody(props) {
         </main>
         <Footer />
     </div>);
-}
-
-function NotFoundPage(props) {
-    return (
-        <div style={{ textAlign: 'center' }}>
-            <PageHeader pageName="404" />
-            <Typography variant="h4">            
-                Error - Something went wrong!
-                <p />
-                Go Back to Square One: <Link to="/recipes">Recipes</Link>            
-            </Typography>
-        </div>
-    );
 }
 
 function RecipesDrawer(props) {

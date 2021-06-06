@@ -61,10 +61,13 @@ export class Recipes extends Component {
 
     refreshRecipes = () => {
         if (this.shouldSearch()) {
+            console.log("search recipes");
             this.getSearchedRecipes();
         } else if (this.shouldGetSimilarResults()) {
+            console.log("similar recipes");            
             this.getSimilarRecipes()
         } else if (this.shouldGetAllRecipes()) {
+            console.log("all recipes");                        
             this.getAllRecipes()
         } else {
             this.setState({ recipes: [this.props.match.params.recipe] });
@@ -128,10 +131,12 @@ export class Recipes extends Component {
         let tmpData = this.state.data;
         tmpData[delData] = undefined;
 
+        console.log(tmpData);
         let url = this.createURL(tmpData);
         window.location.href = url;
-        this.setState({ data: tmpData });
-        this.refreshRecipes();
+        window.location.reload();
+        //this.setState({ data: tmpData });
+        //this.refreshRecipes();
     }
 
     renderRecipes = () => {
@@ -254,7 +259,8 @@ class Recipe extends Component {
     }
 
     handleOpen = () => {
-        window.location.href = '/#/recipes/' + this.state.recipe.id
+        window.location.href = '/#/recipes/' + this.state.recipe.id;
+        window.location.reload();
     }
 
     handleDelete = () => {
