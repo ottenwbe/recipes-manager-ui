@@ -128,11 +128,10 @@ export class Recipes extends Component {
         let tmpData = this.state.data;
         tmpData[delData] = undefined;
 
+        let url = this.createURL(tmpData);
+        window.location.href = url;
         this.setState({ data: tmpData });
         this.refreshRecipes();
-
-        let url = this.createURL();
-        window.location.href = url;
     }
 
     renderRecipes = () => {
@@ -158,13 +157,13 @@ export class Recipes extends Component {
         return result;
     }
 
-    createURL() {
+    createURL(data) {
         let url = '/#/recipes';
         let urlPart = '?';
 
-        for (const paramName in this.state.data) {
-            if (this.state.data[paramName] !== undefined) {
-                url = url + urlPart + paramName + '=' + this.state.data[paramName];
+        for (const paramName in data) {
+            if (data[paramName] !== undefined) {
+                url = url + urlPart + paramName + '=' + data[paramName];
                 urlPart = '&';
             }
         }
