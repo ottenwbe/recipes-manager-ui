@@ -1,48 +1,44 @@
-import React, { Component } from 'react';
-import './App.css';
-import OutlinedInput from '@material-ui/core/OutlinedInput';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import CssBaseline from '@material-ui/core/CssBaseline'
-import SearchIcon from '@material-ui/icons/Search';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
-import HomeIcon from '@material-ui/icons/Home';
-import Badge from '@material-ui/core/Badge';
-import {
-    Route,
-    NavLink,
-    HashRouter,
-    Redirect,
-    Switch,
-    Link,
-} from "react-router-dom";
-
-import { Recipes, RandomRecipe } from './Recipes';
-import { Home } from './Home';
-import { Footer } from './Footer';
-import { Sources } from './Sources';
-import { RecipeForm } from './RecipeForm';
-import { ThemeProvider } from 'react-bootstrap';
 import { createMuiTheme } from '@material-ui/core';
-
-import LocalDiningIcon from '@material-ui/icons/LocalDining';
-import StorageIcon from '@material-ui/icons/Storage';
-
-import clsx from 'clsx';
-import { makeStyles } from '@material-ui/core/styles';
-import Drawer from '@material-ui/core/Drawer';
-import List from '@material-ui/core/List';
+import AppBar from '@material-ui/core/AppBar';
+import Badge from '@material-ui/core/Badge';
+import CssBaseline from '@material-ui/core/CssBaseline';
 import Divider from '@material-ui/core/Divider';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import Drawer from '@material-ui/core/Drawer';
+import IconButton from '@material-ui/core/IconButton';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+import OutlinedInput from '@material-ui/core/OutlinedInput';
+import { makeStyles } from '@material-ui/core/styles';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import HomeIcon from '@material-ui/icons/Home';
+import LocalDiningIcon from '@material-ui/icons/LocalDining';
+import MenuIcon from '@material-ui/icons/Menu';
+import SearchIcon from '@material-ui/icons/Search';
+import StorageIcon from '@material-ui/icons/Storage';
+import clsx from 'clsx';
+import React, { Component } from 'react';
+import { ThemeProvider } from 'react-bootstrap';
+import {
+    HashRouter,
+    Link, 
+    NavLink,
+    Redirect, 
+    Route,
+    Switch
+} from "react-router-dom";
+import './App.css';
+import { Footer } from './Footer';
+import { Home } from './Home';
 import { PageHeader } from './PageHeader';
-
+import { RecipeForm } from './RecipeForm';
+import { RandomRecipe, Recipes } from './Recipes';
+import { Sources } from './Sources';
 
 const { REACT_APP_APP_NAME } = process.env;
 
