@@ -29,7 +29,8 @@ import {
     NavLink,
     Redirect,
     Route,
-    Switch
+    Switch,
+    useHistory
 } from "react-router-dom";
 import './App.css';
 import { Footer } from './Footer';
@@ -100,8 +101,13 @@ function RecipesRouterMenu(props) {
 
     const [searchTerm, setSearchTerm] = React.useState("");
 
+    let history = useHistory();
+
     const handleSearchClick = () => {
-        window.location.href = "/#/recipes?search=" + searchTerm;
+        history.push({
+            pathname: '/recipes',
+            search: '?search=' + searchTerm
+        });
     }
 
     const handleSearchTermChange = (event) => {

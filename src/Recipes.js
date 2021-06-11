@@ -26,7 +26,6 @@ import { PageHeader } from "./PageHeader";
 import { RecipeAlert } from './RecipeAlerts.js';
 import { RecipeDialog } from './RecipeDialog.js';
 
-
 const useStyles = makeStyles((theme) => ({
     chip: {
         margin: theme.spacing(0.5),
@@ -64,7 +63,7 @@ export class Recipes extends Component {
             this.getSearchedRecipes();
         } else if (this.shouldGetSimilarResults()) {
             this.getSimilarRecipes()
-        } else if (this.shouldGetAllRecipes()) {                       
+        } else if (this.shouldGetAllRecipes()) {
             this.getAllRecipes()
         } else {
             this.setState({ recipes: [this.props.match.params.recipe] });
@@ -117,6 +116,9 @@ export class Recipes extends Component {
         const queryString = require('query-string');
         let parsedData = queryString.parse(this.props.location.search);
 
+        console.log("update")
+        console.log(parsedData)
+
         if (this.state.data !== undefined
             && JSON.stringify(parsedData) !== JSON.stringify(prevState.data)) {
             this.setState({ data: parsedData })
@@ -130,8 +132,15 @@ export class Recipes extends Component {
 
         console.log(tmpData);
         let url = this.createURL(tmpData);
-        window.location.href = url;
-        window.location.reload();
+
+        this.props.history.push({
+            pathname: '/recipes',
+            search: url
+        });
+
+        //let history = useHistory()
+        //window.location.href = url;
+        //window.location.reload();
         //this.setState({ data: tmpData });
         //this.refreshRecipes();
     }
@@ -160,7 +169,7 @@ export class Recipes extends Component {
     }
 
     createURL(data) {
-        let url = '/#/recipes';
+        let url = '';
         let urlPart = '?';
 
         for (const paramName in data) {

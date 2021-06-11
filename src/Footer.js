@@ -5,6 +5,13 @@ const { REACT_APP_PAGE_FOOTER_TEXT } = process.env;
 export function Footer() {
     // draw a black line and the footer text
     return (<div className="Footer">
+        <Blackline />
+        <p>{REACT_APP_PAGE_FOOTER_TEXT}</p>
+    </div>);
+}
+
+function Blackline() {
+    return (
         <p><hr
             style={{
                 color: 'black',
@@ -13,6 +20,5 @@ export function Footer() {
                 width: 100
             }}
         /></p>
-        <p>{REACT_APP_PAGE_FOOTER_TEXT}</p>
-    </div>);
+    );
 }
