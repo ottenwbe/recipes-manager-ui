@@ -1,3 +1,4 @@
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
 import Backdrop from '@material-ui/core/Backdrop';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
@@ -25,7 +26,6 @@ import { PageHeader } from "./PageHeader";
 import { RecipeAlert } from './RecipeAlerts.js';
 import { RecipeDialog } from './RecipeDialog.js';
 
-
 const useStyles = makeStyles((theme) => ({
     chip: {
         margin: theme.spacing(0.5),
@@ -40,7 +40,7 @@ export class Recipes extends Component {
         let parsedData = queryString.parse(this.props.location.search);
 
         this.state = {
-            recipes: null,
+            recipes: null, //e.g., ["1"]
             loading: false,
             data: parsedData //all url based filters: ?search=''&similarTo=''
         };
@@ -116,6 +116,9 @@ export class Recipes extends Component {
         const queryString = require('query-string');
         let parsedData = queryString.parse(this.props.location.search);
 
+        console.log("update")
+        console.log(parsedData)
+
         if (this.state.data !== undefined
             && JSON.stringify(parsedData) !== JSON.stringify(prevState.data)) {
             this.setState({ data: parsedData })
@@ -127,11 +130,19 @@ export class Recipes extends Component {
         let tmpData = this.state.data;
         tmpData[delData] = undefined;
 
-        this.setState({ data: tmpData });
-        this.refreshRecipes();
+        console.log(tmpData);
+        let url = this.createURL(tmpData);
 
-        let url = this.createURL();
-        window.location.href = url;
+        this.props.history.push({
+            pathname: '/recipes',
+            search: url
+        });
+
+        //let history = useHistory()
+        //window.location.href = url;
+        //window.location.reload();
+        //this.setState({ data: tmpData });
+        //this.refreshRecipes();
     }
 
     renderRecipes = () => {
@@ -157,13 +168,13 @@ export class Recipes extends Component {
         return result;
     }
 
-    createURL() {
-        let url = '/#/recipes';
+    createURL(data) {
+        let url = '';
         let urlPart = '?';
 
-        for (const paramName in this.state.data) {
-            if (this.state.data[paramName] !== undefined) {
-                url = url + urlPart + paramName + '=' + this.state.data[paramName];
+        for (const paramName in data) {
+            if (data[paramName] !== undefined) {
+                url = url + urlPart + paramName + '=' + data[paramName];
                 urlPart = '&';
             }
         }
@@ -254,7 +265,8 @@ class Recipe extends Component {
     }
 
     handleOpen = () => {
-        window.location.href = '/#/recipes/' + this.state.recipe.id
+        window.location.href = '/#/recipes/' + this.state.recipe.id;
+        window.location.reload();
     }
 
     handleDelete = () => {
@@ -285,6 +297,7 @@ class Recipe extends Component {
         if (updateVersion) {
             recipeRevision += 1
         }
+
         fetch(url)
             .then(response => response.json())
             .then(data => this.setState({ recipe: data, name: data.name, recipeRevision: recipeRevision }))
@@ -470,17 +483,17 @@ export class RandomRecipe extends Component {
 
 const IngredientsRow = (props) => {
     return (
-        <tr>
-            <td>
+        <TableRow>
+            <TableCell>
                 {props.ingredient.amount !== -1 ? props.ingredient.amount : ""}
-            </td>
-            <td>
+            </TableCell>
+            <TableCell>
                 {props.ingredient.unit}
-            </td>
-            <td>
+            </TableCell>
+            <TableCell>
                 {props.ingredient.name}
-            </td>
-        </tr>
+            </TableCell>
+        </TableRow>
     );
 };
 
@@ -491,18 +504,21 @@ export class Ingredients extends Component {
             let rows = this.props.ingredients.map((ingredient, index) => {
                 return <IngredientsRow key={index} ingredient={ingredient} />
             });
-            return (<table className="table">
-                <thead>
-                    <tr>
-                        <th>Amount</th>
-                        <th>Unit</th>
-                        <th>Ingredients</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {rows}
-                </tbody>
-            </table>);
+            return (
+                <TableContainer >
+                    <Table className="recipes-table">
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>Amount</TableCell>
+                                <TableCell>Unit</TableCell>
+                                <TableCell>Ingredients</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {rows}
+                        </TableBody>
+                    </Table>
+                </TableContainer>);
         } else {
             return ""
         }

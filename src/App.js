@@ -1,48 +1,44 @@
-import React, { Component } from 'react';
-import './App.css';
-import OutlinedInput from '@material-ui/core/OutlinedInput';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import CssBaseline from '@material-ui/core/CssBaseline'
-import SearchIcon from '@material-ui/icons/Search';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
-import HomeIcon from '@material-ui/icons/Home';
-import Badge from '@material-ui/core/Badge';
-import {
-    Route,
-    NavLink,
-    HashRouter,
-    Redirect,
-    Switch,
-    Link,
-} from "react-router-dom";
-
-import { Recipes, RandomRecipe } from './Recipes';
-import { Home } from './Home';
-import { Footer } from './Footer';
-import { Sources } from './Sources';
-import { RecipeForm } from './RecipeForm';
-import { ThemeProvider } from 'react-bootstrap';
 import { createMuiTheme } from '@material-ui/core';
-
-import LocalDiningIcon from '@material-ui/icons/LocalDining';
-import StorageIcon from '@material-ui/icons/Storage';
-
-import clsx from 'clsx';
-import { makeStyles } from '@material-ui/core/styles';
-import Drawer from '@material-ui/core/Drawer';
-import List from '@material-ui/core/List';
+import AppBar from '@material-ui/core/AppBar';
+import Badge from '@material-ui/core/Badge';
+import CssBaseline from '@material-ui/core/CssBaseline';
 import Divider from '@material-ui/core/Divider';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import Drawer from '@material-ui/core/Drawer';
+import IconButton from '@material-ui/core/IconButton';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import { PageHeader } from './PageHeader';
-
+import OutlinedInput from '@material-ui/core/OutlinedInput';
+import { makeStyles } from '@material-ui/core/styles';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import HomeIcon from '@material-ui/icons/Home';
+import LocalDiningIcon from '@material-ui/icons/LocalDining';
+import MenuIcon from '@material-ui/icons/Menu';
+import SearchIcon from '@material-ui/icons/Search';
+import StorageIcon from '@material-ui/icons/Storage';
+import clsx from 'clsx';
+import React, { Component } from 'react';
+import { ThemeProvider } from 'react-bootstrap';
+import {
+    HashRouter,
+    NavLink,
+    Redirect,
+    Route,
+    Switch,
+    useHistory
+} from "react-router-dom";
+import './App.css';
+import { Footer } from './Footer';
+import { Home } from './Home';
+import { NotFoundPage } from './NotFoundPage';
+import { RecipeForm } from './RecipeForm';
+import { RandomRecipe, Recipes } from './Recipes';
+import { Sources } from './Sources';
 
 const { REACT_APP_APP_NAME } = process.env;
 
@@ -105,15 +101,20 @@ function RecipesRouterMenu(props) {
 
     const [searchTerm, setSearchTerm] = React.useState("");
 
+    let history = useHistory();
+
     const handleSearchClick = () => {
-        window.location.href = "/#/recipes?search=" + searchTerm;
+        history.push({
+            pathname: '/recipes',
+            search: '?search=' + searchTerm
+        });
     }
 
     const handleSearchTermChange = (event) => {
         setSearchTerm(event.target.value);
     }
 
-    const handleKeyClick = (event) => {
+    const handleKeyPress = (event) => {
         if (event.key === 'Enter') {
             handleSearchClick()
         }
@@ -133,9 +134,6 @@ function RecipesRouterMenu(props) {
                             onClick={props.handleDrawerOpen}>
                             <MenuIcon />
                         </IconButton>
-                        <Typography variant="h6" color="inherit">
-                            {REACT_APP_APP_NAME}
-                        </Typography>
                         <div style={{ flexGrow: 1, }} />
                         <OutlinedInput
                             fullWidth
@@ -143,7 +141,7 @@ function RecipesRouterMenu(props) {
                             variant="outlined"
                             placeholder="Search for recipes"
                             onChange={handleSearchTermChange}
-                            onKeyPress={handleKeyClick}
+                            onKeyPress={handleKeyPress}
                             endAdornment={
                                 <InputAdornment position="end">
                                     <IconButton onClick={handleSearchClick}>
@@ -151,7 +149,7 @@ function RecipesRouterMenu(props) {
                                     </IconButton>
                                 </InputAdornment>
                             }
-                        />                        
+                        />
                     </Toolbar>
                 </AppBar>
             </ThemeProvider>
@@ -171,7 +169,7 @@ function RecipesRouterBody(props) {
         props.onRecipeCountChange();
     }
 
-    return (<div className="GoCookUIContent" style={{ align: 'center', paddingRight: 50, paddingLeft: 50 }}>
+    return (<div className="GoCookUIContent" style={{ align: 'center' }}>
         <main className={clsx(classes.content, {
             [classes.contentShift]: !props.open,
         })}>
@@ -194,19 +192,6 @@ function RecipesRouterBody(props) {
     </div>);
 }
 
-function NotFoundPage(props) {
-    return (
-        <div style={{ textAlign: 'center' }}>
-            <PageHeader pageName="404" />
-            <Typography variant="h4">            
-                Error - Something went wrong!
-                <p />
-                Go Back to Square One: <Link to="/recipes">Recipes</Link>            
-            </Typography>
-        </div>
-    );
-}
-
 function RecipesDrawer(props) {
     const classes = useStyles();
 
@@ -227,6 +212,9 @@ function RecipesDrawer(props) {
         >
             <div onClick={props.handleDrawerClose}>
                 <div className={classes.drawerHeader}>
+                    <Typography variant="h6" color="inherit">
+                        {REACT_APP_APP_NAME}
+                    </Typography>
                     <IconButton onClick={props.handleDrawerClose}>
                         {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
                     </IconButton>
@@ -279,9 +267,6 @@ function RecipesDrawer(props) {
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
-    root: {
-        display: 'flex',
-    },
     appBar: {
         transition: theme.transitions.create(['margin', 'width'], {
             easing: theme.transitions.easing.sharp,
@@ -313,7 +298,6 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         alignItems: 'center',
         padding: theme.spacing(0, 1),
-        // necessary for content to be below app bar
         ...theme.mixins.toolbar,
         justifyContent: 'flex-end',
     },
