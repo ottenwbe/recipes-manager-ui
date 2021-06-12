@@ -11,8 +11,9 @@ on:
       - "fix/**"
   pull_request:
     branches: [ master ]
-  deployment:
-  
+  release:
+    types: 
+      - created
 
 jobs:
   build:
