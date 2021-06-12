@@ -131,7 +131,7 @@ export class Recipes extends Component {
         tmpData[delData] = undefined;
 
         console.log(tmpData);
-        let url = this.createURL(tmpData);
+        let url = this.createPath(tmpData);
 
         this.props.history.push({
             pathname: '/recipes',
@@ -168,17 +168,17 @@ export class Recipes extends Component {
         return result;
     }
 
-    createURL(data) {
-        let url = '';
-        let urlPart = '?';
+    createPath(data) {
+        let path = '';
+        let pathPart = '?';
 
         for (const paramName in data) {
             if (data[paramName] !== undefined) {
-                url = url + urlPart + paramName + '=' + data[paramName];
-                urlPart = '&';
+                path = path + pathPart + paramName + '=' + data[paramName];
+                pathPart = '&';
             }
         }
-        return url;
+        return path;
     }
 
     render() {
@@ -196,6 +196,7 @@ export class Recipes extends Component {
 function RecipeChips(props) {
 
     const classes = useStyles();
+    
     let chips = [];
 
     for (const paramName in props.data) {

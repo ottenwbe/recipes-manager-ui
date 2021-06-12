@@ -103,10 +103,10 @@ function RecipesRouterMenu(props) {
 
     let history = useHistory();
 
-    const handleSearchClick = () => {
+    const handleSearchClick = () => {        
         history.push({
             pathname: '/recipes',
-            search: '?search=' + searchTerm
+            search: searchTerm !== '' ? '?search=' + searchTerm : ''
         });
     }
 
@@ -121,7 +121,7 @@ function RecipesRouterMenu(props) {
     }
 
     return (
-        <div>
+        <div className="RecipesRouterMenu">
             <ThemeProvider theme={theme}>
                 <AppBar style={{ backgroundColor: "#2196f3" }} position="fixed"
                     className={clsx(classes.appBar, {
@@ -169,10 +169,9 @@ function RecipesRouterBody(props) {
         props.onRecipeCountChange();
     }
 
-    return (<div className="GoCookUIContent" style={{ align: 'center' }}>
-        <main className={clsx(classes.content, {
-            [classes.contentShift]: !props.open,
-        })}>
+    //{ flexGrow: 1, align: 'center' }
+    return (<div className="DivRecipesContent" >
+        <main className={classes.recipesContent}>
             <div className={classes.drawerHeader} />
             <CssBaseline />
             <Switch>
@@ -300,6 +299,11 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(0, 1),
         ...theme.mixins.toolbar,
         justifyContent: 'flex-end',
+    },
+    recipesContent: {
+        flexGrow: 1,
+        padding: theme.spacing(3),
+        align: 'center'
     },
     content: {
         flexGrow: 1,

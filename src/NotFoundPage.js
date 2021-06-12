@@ -7,10 +7,12 @@ export function NotFoundPage(props) {
     return (
         <div style={{ textAlign: 'center' }}>
             <PageHeader pageName="404" />
-            <Typography variant="h4">
+            <Typography variant="h6">
                 Error - Something went wrong!
                 <p />
-                Go Back to Square One: <Link to="/recipes">Recipes</Link>
+                Go Back to Square One!
+                <p />
+                <Link to="/recipes">Recipes</Link>
             </Typography>
         </div>
     );
