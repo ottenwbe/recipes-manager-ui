@@ -11,6 +11,7 @@ on:
       - "fix/**"
   pull_request:
     branches: [ master ]
+  deployment:
   
 
 jobs:
