@@ -1,6 +1,7 @@
 # recipes-manager-UI
 
 [![Build](https://github.com/ottenwbe/recipes-manager-ui/actions/workflows/node.js.yml/badge.svg)](https://github.com/ottenwbe/recipes-manager-ui/actions/workflows/node.js.yml)
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/ottenwbe/recipes-manager-ui/blob/master/LICENSE)
 
 User Interface to manage recipes with [recipes-manager](https://github.com/ottenwbe/recipes-manager).
 
