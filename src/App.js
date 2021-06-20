@@ -183,6 +183,7 @@ function RecipesRouterBody(props) {
                 <Route path="/rand" component={RandomRecipe} />
                 <Route path="/src" component={Sources} />
                 <Route path="/login" component={Home} />
+                <Route path="/health"><div style={{ textAlign: 'center' }}>I'm Up</div></Route>
                 <Route path="*" component={NotFoundPage} />
             </Switch>
             <div></div>
