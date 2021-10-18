@@ -256,6 +256,12 @@ export class RecipeForm extends Component {
     };
 
     handleDialogClose = () => {
+        if (this.props.submitSuccess) {
+            this.props.history.push({
+                pathname: '/recipes',
+                search: ''
+            });
+        }
         this.setState({
             openDialog: false,
             submitSuccess: true
@@ -331,9 +337,12 @@ export function RecipeUpdateDialog(props) {
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={props.onClose} color="primary" disabled={props.submitting}>
+                    <Button onClick={props.onClose} color="primary" disabled={!props.submitSuccess}>
                         Ok
                     </Button>
+                    <Button onClick={props.onClose} color="primary" disabled={props.submitting}>
+                        Cancel
+                    </Button>                    
                 </DialogActions>
             </Dialog>
         </div>
