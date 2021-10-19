@@ -1,4 +1,4 @@
-FROM node:15.14-buster-slim
+FROM docker.io/node:16.11-buster-slim
 
 # install server
 RUN npm install -g serve

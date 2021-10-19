@@ -7,12 +7,14 @@ import { PageHeader } from './PageHeader';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 export class Sources extends Component {
+    
     constructor(props) {
         super(props);
         this.state = {
             sources: null,
         };
     }
+
     componentDidMount() {
         fetch('/api/v1/sources')
             .then(response => response.json())
