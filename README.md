@@ -2,36 +2,54 @@
 
 [![Build](https://github.com/ottenwbe/recipes-manager-ui/actions/workflows/node.js.yml/badge.svg)](https://github.com/ottenwbe/recipes-manager-ui/actions/workflows/node.js.yml)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/ottenwbe/recipes-manager-ui/blob/master/LICENSE)
+[![Known Vulnerabilities](https://snyk.io/test/github/ottenwbe/recipes-manager-ui/badge.svg)](https://snyk.io/test/github/ottenwbe/recipes-manager-ui)
 
 User Interface to manage recipes with [recipes-manager](https://github.com/ottenwbe/recipes-manager).
+How to use the UI in k8s together with all related components, is explained here: [Deployment](https://github.com/ottenwbe/recipes-manager-deployment).
 
-# Deployment and Configuration
+# Getting Started - Basic Deployment and Configuration
 
-## .env file
+Before you start, ensure that npm is installed.
 
-Environment variables are used to configure the application.
+1. _Get the Code_
 
-### Text Configuration
+    ```
+    git clone https://github.com/ottenwbe/recipes-manager-ui.git
+    ```
 
-    REACT_APP_APP_NAME=<Appears as Name in the Menu Bar>
-    REACT_APP_PAGE_HEADER_SUB=<Subtitle Shown on Each Page>    
-    REACT_APP_PAGE_FOOTER_TEXT=That's all folks ...
-    REACT_APP_WELCOME_TEXT=<Welcome Text on Home Screen>
-    REACT_APP_WELCOME_SUB_TEXT=<Sub Welcome Text on Home Screen>
+1. _Configure the App_. Environment variables are used to configure the application. In particular the texts diplayed in the UI.
+
+    ```sh
+    export REACT_APP_APP_NAME=<Appears as Name in the Menu Bar>
+    export REACT_APP_PAGE_HEADER_SUB=<Subtitle Shown on Each Page>    
+    export REACT_APP_PAGE_FOOTER_TEXT=That is all folks ...
+    export REACT_APP_WELCOME_TEXT=<Welcome Text on Home Screen>
+    export REACT_APP_WELCOME_SUB_TEXT=<Sub Welcome Text on Home Screen>
+    ```
+
+1. _Start the app with npm_
+
+    ```sh
+    npm i
+    npm start
+    ```
+
+    
+1.   _Open_ [http://localhost:3000](http://    localhost:3000) to view it in the browser. Note, the app assumes that recipes-manager runs on the same h
+
 
 # Development
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Start  
+## Start
 
-    `npm start`
+   `npm start`
 
 Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
+Open [http://localhost:3000](http://   localhost:3000) to view it in the browser.
+The page will reload if you make edits<br>
+You will also see any lint errors inthe    console.
 
 ## Test 
 
@@ -52,21 +70,53 @@ It correctly bundles React in production mode and optimizes the build for the be
 The build is minified and the filenames include the hashes.<br>
 Your app is ready to be deployed!
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
 ### Build Docker Container
 
-    RECIPES_MANAGER_UI_ARCH=<arch> sh make_docker.sh
+    docker build -t "recipes-manager-ui:SNAPSHOT" -f Dockerfile .
 
-Builds the docker container, labels it, and tags it.
+While building the docker container, all dpendencies are installed. The app, however, is built when starting the container to reflect changes to the environment variables.
 
-The default tag is the version grabbed from ```package.json``` (e.g., 0.1.0).
-By providing the environment variable ```RECIPES_MANAGER_UI_ARCH``` the tag is extended to add the given data (e.g., 0.1.0-amd64).
+### Build Scripts
 
-### Build Docker Container
+All build scripts are found in scripts directory.
 
-    RECIPES_MANAGER_UI_ARCH=<arch> sh push_docker.sh <docker user> <docker pw>
+```
+.
+├── docker_buildx.sh 
+├── make_docker_for_minikube.sh
+├── make_snapshot.sh
+└── push_docker.sh
+```
 
-### Update Process (WIP)
+* docker_buildx.sh <should_push>
 
-    semver $(node -p -e "require('./package.json').version") -i minor
+    Opinionated way to build the docker image for arm and amd64. This multi-arch build it relies on buildx. The version is determined by a git tag and written to ```package.json``` (e.g., 0.1.0) as well as tagged to the docker image (e.g., v0.1.0). It is tailored for the CI/CD pipelines.
+
+* make_docker_for_minikube.sh
+
+    Builds a container with a development tag and pushes it to a local minikube registry.
+
+### Release Process
+
+Read the current version:
+
+```sh
+node -p -e "require('./package.json').version"
+```
+
+Then simply tag the git repository with the next version. This triggers the release pipeline.
+
+```sh
+git tag v1.2.3
+git push origin v1.2.3
+```
+
+Fix the version in the repository, i.e., with semver.
+
+```sh
+semver $(node -p -e "require('./package.json').version") -i minor
+```
+
+## Disclaimer
+
+I created this project for the purpose of educating myself and personal use. If you are interested in the outcome, feel free to contribute; this work is published under the MIT license.

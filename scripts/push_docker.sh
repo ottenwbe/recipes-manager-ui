@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 APP_VERSION=$(node -p -e "require('./package.json').version")
 
