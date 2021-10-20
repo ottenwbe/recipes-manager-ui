@@ -15,8 +15,9 @@ APP_GIT_HASH=$(git rev-parse --short HEAD)
 APP_REPO="github.com/ottenwbe/recipes-manager-ui"
 
 APP_VERSION=$(git describe --tags --always --match=v* 2> /dev/null || echo v0.0.0)
+APP_VERSION_ABBR=$(echo ${APP_VERSION} | awk '{ print substr( $0, 2 ) }' )
 # set current version to package.json
-$(node -e "let pkg=require('./package.json'); pkg.version='${APP_VERSION}'; require('fs').writeFileSync('package.json', JSON.stringify(pkg, null, 2));")
+node -e "let pkg=require('./package.json'); pkg.version='${APP_VERSION_ABBR}'; require('fs').writeFileSync('package.json', JSON.stringify(pkg, null, 2));"
 
 docker buildx build --output "type=image,push=${SHOULD_PUSH}" \
     --platform linux/arm/v7,linux/arm64/v8,linux/amd64 \
