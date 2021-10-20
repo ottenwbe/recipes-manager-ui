@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+# This script is used only for testing purposes
 
 MAINTAINER="Beate Ottenwaelder <ottenwbe.public@gmail.com>"
 APP_VERSION=$(node -p -e "require('./package.json').version")
