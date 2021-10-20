@@ -69,4 +69,11 @@ By providing the environment variable ```RECIPES_MANAGER_UI_ARCH``` the tag is e
 
 ### Update Process (WIP)
 
-    semver $(node -p -e "require('./package.json').version") -i minor
+Read the current version
+
+```sh
+node -p -e "require('./package.json').version"
+```
+```sh
+semver $(node -p -e "require('./package.json').version") -i minor
+```
