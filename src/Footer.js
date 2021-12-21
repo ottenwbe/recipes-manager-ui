@@ -1,12 +1,11 @@
 import React from 'react';
-
-const { REACT_APP_PAGE_FOOTER_TEXT } = process.env;
+import config from "./strings.json";
 
 export function Footer() {
     // draw a black line and the footer text
     return (<div className="Footer">
         <Blackline />
-        <p>{REACT_APP_PAGE_FOOTER_TEXT}</p>
+        <p>{config.footer.text}</p>
     </div>);
 }
 

@@ -1,8 +1,7 @@
 import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import Jumbotron from 'react-bootstrap/Jumbotron';
-
-const { REACT_APP_PAGE_HEADER_SUB } = process.env;
+import config from "./strings.json";
 
 const useStyles = makeStyles(() => ({
     header: {
@@ -19,7 +18,7 @@ export function PageHeader(props) {
     return (<div className={classes.header}>
         <Jumbotron>
             <h1>{props.pageName}</h1>
-            <h3>{REACT_APP_PAGE_HEADER_SUB}</h3>
+            <h3>{config.pageHeader.sub}</h3>
         </Jumbotron>
     </div>);
 }

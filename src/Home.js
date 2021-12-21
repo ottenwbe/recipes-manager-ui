@@ -5,9 +5,7 @@ import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
 import { PageHeader } from './PageHeader';
 import { Link } from 'react-router-dom';
-
-
-const { REACT_APP_WELCOME_TEXT, REACT_APP_WELCOME_SUB_TEXT } = process.env;
+import config from "./strings.json";
 
 export class Home extends Component {
 
@@ -23,7 +21,7 @@ export class Home extends Component {
         return (<div>
             <PageHeader pageName="Recipe News" />
             <Card style={{ align: 'center' }}>
-                <CardHeader title={REACT_APP_WELCOME_TEXT} subheader={REACT_APP_WELCOME_SUB_TEXT} style={{ textAlign: 'center', backgroundColor: "#2196f3" }} />
+                <CardHeader title={config.welcome} subheader={config.welcomeSub} style={{ textAlign: 'center', backgroundColor: "#2196f3" }} />
                 <CardContent>
                     <Paper />
 

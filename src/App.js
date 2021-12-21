@@ -39,8 +39,7 @@ import { NotFoundPage } from './NotFoundPage';
 import { RecipeForm } from './RecipeForm';
 import { RandomRecipe, Recipes } from './Recipes';
 import { Sources } from './Sources';
-
-const { REACT_APP_APP_NAME } = process.env;
+import config from "./strings.json";
 
 class RecipesRouter extends Component {
 
@@ -103,7 +102,7 @@ function RecipesRouterMenu(props) {
 
     let history = useHistory();
 
-    const handleSearchClick = () => {        
+    const handleSearchClick = () => {
         history.push({
             pathname: '/recipes',
             search: searchTerm !== '' ? '?search=' + searchTerm : ''
@@ -213,7 +212,7 @@ function RecipesDrawer(props) {
             <div onClick={props.handleDrawerClose}>
                 <div className={classes.drawerHeader}>
                     <Typography variant="h6" color="inherit">
-                        {REACT_APP_APP_NAME}
+                        {config.appName}
                     </Typography>
                     <IconButton onClick={props.handleDrawerClose}>
                         {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
