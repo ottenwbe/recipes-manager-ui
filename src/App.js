@@ -1,4 +1,4 @@
-import { createMuiTheme } from '@material-ui/core';
+import { createTheme } from '@material-ui/core';
 import AppBar from '@material-ui/core/AppBar';
 import Badge from '@material-ui/core/Badge';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -39,8 +39,7 @@ import { NotFoundPage } from './NotFoundPage';
 import { RecipeForm } from './RecipeForm';
 import { RandomRecipe, Recipes } from './Recipes';
 import { Sources } from './Sources';
-
-const { REACT_APP_APP_NAME } = process.env;
+import config from "./strings.json";
 
 class RecipesRouter extends Component {
 
@@ -84,7 +83,7 @@ class RecipesRouter extends Component {
     }
 }
 
-const theme = createMuiTheme(
+const theme = createTheme(
     {
         primary: {
             main: '#90caf9',
@@ -103,7 +102,7 @@ function RecipesRouterMenu(props) {
 
     let history = useHistory();
 
-    const handleSearchClick = () => {        
+    const handleSearchClick = () => {
         history.push({
             pathname: '/recipes',
             search: searchTerm !== '' ? '?search=' + searchTerm : ''
@@ -213,7 +212,7 @@ function RecipesDrawer(props) {
             <div onClick={props.handleDrawerClose}>
                 <div className={classes.drawerHeader}>
                     <Typography variant="h6" color="inherit">
-                        {REACT_APP_APP_NAME}
+                        {config.appName}
                     </Typography>
                     <IconButton onClick={props.handleDrawerClose}>
                         {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}

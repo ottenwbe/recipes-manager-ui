@@ -5,14 +5,14 @@ name: Build
 
 on:
   push:
-    branches: 
+    branches:
       - master
       - "feature/**"
       - "fix/**"
   pull_request:
     branches: [ master ]
   release:
-    types: 
+    types:
       - created
 
 jobs:
@@ -31,7 +31,7 @@ jobs:
       uses: actions/setup-node@v2
       with:
         node-version: ${{ matrix.node-version }}
-    
+  
     # build and test app
     - run: npm ci
     - run: npm run build --if-present
@@ -43,7 +43,7 @@ jobs:
       uses: docker/setup-qemu-action@v1
     - name: Set up Docker Buildx
       if: success() && github.event_name == 'pull_request'
-      uses: docker/setup-buildx-action@v1        
+      uses: docker/setup-buildx-action@v1
     - name: Docker Buildx (build)
       if: success() && github.event_name == 'pull_request'
       run: |

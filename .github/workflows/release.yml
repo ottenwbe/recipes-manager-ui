@@ -10,13 +10,13 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [16.x]    
+        node-version: [16.x] 
     #env:
-    #  APP_SHOULD_PUSH: true      
+    #  APP_SHOULD_PUSH: true 
     steps:
 
       - name: Checkout code
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
 
       # install build environment (buildx)
       - name: Set up QEMU
@@ -37,12 +37,12 @@ jobs:
       # build docker image and push to dockerhub
       - name: Get tagged version
         id: get_version
-        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}  
+        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
       - name: Fix version in package.json
         run: |
           node -e "let pkg=require('./package.json'); pkg.version='{{ steps.get_version.outputs.VERSION }}'; require('fs').writeFileSync('package.json', JSON.stringify(pkg, null, 2));"
       - name: Docker Buildx (including push)
-        if: success() 
+        if: success()
         run: |
           sh scripts/docker_buildx.sh true
 

@@ -17,14 +17,16 @@ Before you start, ensure that npm is installed.
     git clone https://github.com/ottenwbe/recipes-manager-ui.git
     ```
 
-1. _Configure the App_. Environment variables are used to configure the application. In particular the texts diplayed in the UI.
+1. _Configure the strings of the App_. A strings.json file is used to configure the texts diplayed in the UI. Configuration happens at _build time_.
 
-    ```sh
-    export REACT_APP_APP_NAME=<Appears as Name in the Menu Bar>
-    export REACT_APP_PAGE_HEADER_SUB=<Subtitle Shown on Each Page>    
-    export REACT_APP_PAGE_FOOTER_TEXT=That is all folks ...
-    export REACT_APP_WELCOME_TEXT=<Welcome Text on Home Screen>
-    export REACT_APP_WELCOME_SUB_TEXT=<Sub Welcome Text on Home Screen>
+    ```json
+    {
+        "appName": "theAppName",
+        "pageHeader" : {"sub" : "theSubHeader"},
+        "footer" : {"text": "theFooter"},
+        "welcome" : "theWelcomeText",
+        "welcomesSub" : "theWelcomeSub"
+    }
     ```
 
 1. _Start the app with npm_
