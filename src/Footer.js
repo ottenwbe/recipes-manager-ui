@@ -11,13 +11,13 @@ export function Footer() {
 
 function Blackline() {
     return (
-        <p><hr
+        <hr
             style={{
                 color: 'black',
                 backgroundColor: 'black',
                 height: 1,
                 width: 100
             }}
-        /></p>
+        />
     );
 }

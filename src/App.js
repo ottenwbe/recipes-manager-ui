@@ -1,4 +1,4 @@
-import { createMuiTheme } from '@material-ui/core';
+import { createTheme } from '@material-ui/core';
 import AppBar from '@material-ui/core/AppBar';
 import Badge from '@material-ui/core/Badge';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -83,7 +83,7 @@ class RecipesRouter extends Component {
     }
 }
 
-const theme = createMuiTheme(
+const theme = createTheme(
     {
         primary: {
             main: '#90caf9',
