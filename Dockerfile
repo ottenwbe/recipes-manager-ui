@@ -7,8 +7,6 @@ COPY . /app
 
 WORKDIR /app
 
-RUN npm -v
-
 RUN npm ci
 
 # compile and start app 
