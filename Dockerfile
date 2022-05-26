@@ -1,4 +1,4 @@
-FROM docker.io/node:16.15.0-buster-slim
+FROM docker.io/node:17-buster-slim
 
 # install server and update npm
 RUN npm install -g serve && npm install -g npm
@@ -6,6 +6,8 @@ RUN npm install -g serve && npm install -g npm
 COPY . /app
 
 WORKDIR /app
+
+RUN npm -v
 
 RUN npm ci
 
