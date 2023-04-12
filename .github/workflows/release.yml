@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [16.x] 
+        node-version: [17.x] 
     #env:
     #  APP_SHOULD_PUSH: true 
     steps:
