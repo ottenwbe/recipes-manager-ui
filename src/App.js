@@ -23,7 +23,7 @@ import LocalDiningIcon from '@mui/icons-material/LocalDining';
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import StorageIcon from '@mui/icons-material/Storage';
-import clsx from 'clsx';
+//import clsx from 'clsx';
 import React, { Component } from 'react';
 import { ThemeProvider } from 'react-bootstrap';
 import {
@@ -265,7 +265,7 @@ function RecipesDrawer(props) {
     );
 }
 
-const drawerWidth = 240;
+//const drawerWidth = 240;
 
 /*const useStyles = makeStyles((theme) => ({
     appBar: {
