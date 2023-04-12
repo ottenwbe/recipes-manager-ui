@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import Paper from '@material-ui/core/Paper';
-import Card from '@material-ui/core/Card';
-import CardHeader from '@material-ui/core/CardHeader';
-import CardContent from '@material-ui/core/CardContent';
+import Paper from '@mui/material/Paper';
+import Card from '@mui/material/Card';
+import CardHeader from '@mui/material/CardHeader';
+import CardContent from '@mui/material/CardContent';
 import { PageHeader } from './PageHeader';
 import { Link } from 'react-router-dom';
 import config from "./strings.json";

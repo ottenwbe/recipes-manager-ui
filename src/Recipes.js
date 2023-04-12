@@ -1,36 +1,38 @@
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
-import Backdrop from '@material-ui/core/Backdrop';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import CardHeader from '@material-ui/core/CardHeader';
-import CardMedia from '@material-ui/core/CardMedia';
-import Chip from '@material-ui/core/Chip';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-import Collapse from '@material-ui/core/Collapse';
-import Grow from '@material-ui/core/Grow';
-import IconButton from '@material-ui/core/IconButton';
-import MenuItem from '@material-ui/core/MenuItem';
-import MenuList from '@material-ui/core/MenuList';
-import Paper from '@material-ui/core/Paper';
-import Popper from '@material-ui/core/Popper';
-import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import LaunchIcon from '@material-ui/icons/Launch';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
-import UpdateIcon from '@material-ui/icons/Update';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import Backdrop from '@mui/material/Backdrop';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import CardHeader from '@mui/material/CardHeader';
+import CardMedia from '@mui/material/CardMedia';
+import Chip from '@mui/material/Chip';
+import CircularProgress from '@mui/material/CircularProgress';
+import ClickAwayListener from '@mui/material/ClickAwayListener';
+import Collapse from '@mui/material/Collapse';
+import Grow from '@mui/material/Grow';
+import IconButton from '@mui/material/IconButton';
+import MenuItem from '@mui/material/MenuItem';
+import MenuList from '@mui/material/MenuList';
+import Paper from '@mui/material/Paper';
+import Popper from '@mui/material/Popper';
+//import { makeStyles } from '@mui/material/styles';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import LaunchIcon from '@mui/icons-material/Launch';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import UpdateIcon from '@mui/icons-material/Update';
 import React, { Component } from 'react';
 import { PageHeader } from "./PageHeader";
 import { RecipeAlert } from './RecipeAlerts.js';
 import { RecipeDialog } from './RecipeDialog.js';
+import { useSearchParams } from 'react-router-dom';
 
-const useStyles = makeStyles((theme) => ({
+
+/*const useStyles = makeStyles((theme) => ({
     chip: {
         margin: theme.spacing(0.5),
     },
-}));
+}));*/
 
 export class Recipes extends Component {
     constructor(props) {
@@ -138,7 +140,7 @@ export class Recipes extends Component {
             search: url
         });
 
-        //let history = useHistory()
+        //let history = useNavigate()
         //window.location.href = url;
         //window.location.reload();
         //this.setState({ data: tmpData });
@@ -195,7 +197,7 @@ export class Recipes extends Component {
 
 function RecipeChips(props) {
 
-    const classes = useStyles();
+    //const classes = useStyles();
     
     let chips = [];
 
@@ -206,7 +208,7 @@ function RecipeChips(props) {
                 key={paramName}
                 label={paramName + '=' + props.data[paramName]}
                 onDelete={props.handleChipDelete !== undefined ? props.handleChipDelete(paramName) : undefined}
-                className={classes.chip}
+                /*className={classes.chip}*/
             />);
         }
     }

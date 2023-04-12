@@ -1,4 +1,4 @@
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import React from 'react';
 import { Link } from "react-router-dom";
 import { PageHeader } from './PageHeader';
@@ -12,6 +12,9 @@ export function NotFoundPage(props) {
                 <p />
                 Go Back to Square One!
                 <p />
+                Further stuff
+                <p />
+                more text
                 <Link to="/recipes">Recipes</Link>
             </Typography>
         </div>
