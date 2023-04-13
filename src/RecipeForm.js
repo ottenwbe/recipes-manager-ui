@@ -130,6 +130,7 @@ const IngredientsRowEdit = (props) => {
                     fullWidth
                     defaultValue={props.ingredient.amount}
                     onChange={handleChange}
+                    variant="standard"
                 />
             </td>
             <td>
@@ -141,6 +142,7 @@ const IngredientsRowEdit = (props) => {
                     fullWidth
                     defaultValue={props.ingredient.unit}
                     onChange={handleChange}
+                    variant="standard"
                 />
             </td>
             <td>
@@ -152,6 +154,7 @@ const IngredientsRowEdit = (props) => {
                     fullWidth
                     defaultValue={props.ingredient.name}
                     onChange={handleChange}
+                    variant="standard"
                 />
             </td>
             <td>
@@ -195,6 +198,7 @@ export function RecipeEdit(props) {
                     fullWidth
                     defaultValue={editableRecipe.name}
                     onChange={handleChange}
+                    variant="standard"
                 />
             </Box>
             <Box width="50%">
@@ -207,6 +211,7 @@ export function RecipeEdit(props) {
                     fullWidth
                     defaultValue={editableRecipe.servings}
                     onChange={handleChange}
+                    variant="standard"
                 />
             </Box>
             <p />

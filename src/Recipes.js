@@ -25,8 +25,8 @@ import React, { Component } from 'react';
 import { PageHeader } from "./PageHeader";
 import { RecipeAlert } from './RecipeAlerts.js';
 import { RecipeDialog } from './RecipeDialog.js';
-//import { useSearchParams } from 'react-router-dom';
-
+import { useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 /*const useStyles = makeStyles((theme) => ({
     chip: {
@@ -34,87 +34,80 @@ import { RecipeDialog } from './RecipeDialog.js';
     },
 }));*/
 
-export class Recipes extends Component {
-    constructor(props) {
-        super(props);
+export function Recipes(props) {
 
-        const queryString = require('query-string');
-        let parsedData = queryString.parse(this.props.location.search);
+    const [searchParams] = useSearchParams();
+    const [recipes, setRecipes] = React.useState(null);
+    const [loading, setLoading] = React.useState(false);
+    let navigate = useNavigate();
 
-        this.state = {
-            recipes: null, //e.g., ["1"]
-            loading: false,
-            data: parsedData //all url based filters: ?search=''&similarTo=''
-        };
-    }
-
-    handleDeleteRecipe = (removedID) => {
-        if (this.props.onRecipesChange !== undefined) {
-            this.props.onRecipesChange();
+    const handleDeleteRecipe = (removedID) => {
+        if (props.onRecipesChange !== undefined) {
+            props.onRecipesChange();
         }
 
-        let filtered = this.state.recipes.filter(function (value, index, arr) {
+        let filtered = recipes.filter(function (value, index, arr) {
             return value !== removedID;
         });
 
-        this.setState({ recipes: filtered });
+        setRecipes(filtered);
     }
 
-    refreshRecipes = () => {
-        if (this.shouldSearch()) {
-            this.getSearchedRecipes();
-        } else if (this.shouldGetSimilarResults()) {
-            this.getSimilarRecipes()
-        } else if (this.shouldGetAllRecipes()) {
-            this.getAllRecipes()
+    const refreshRecipes = () => {
+        if (shouldSearch()) {
+            getSearchedRecipes();
+        } else if (shouldGetSimilarResults()) {
+            getSimilarRecipes()
+        } else if (shouldGetAllRecipes()) {
+            getAllRecipes()
         } else {
-            this.setState({ recipes: [this.props.match.params.recipe] });
+            setRecipes([props.match.params.recipe]);
         }
     }
 
-    shouldGetSimilarResults = () => {
-        return this.state.data.similarTo !== undefined
+    const shouldGetSimilarResults = () => {
+        return searchParams.get('similar-to') !== undefined
     }
 
-    shouldSearch = () => {
-        return this.state.data.search !== undefined;
+    const shouldSearch = () => {
+        return searchParams.get('search') !== undefined;
     }
 
-    shouldGetAllRecipes = () => {
-        return this.props.match.params.recipe === undefined;
+    const shouldGetAllRecipes = () => {
+        return props.match.params.recipe === undefined;
     }
 
-    getAllRecipes = () => {
-        this.setState({ loading: true });
+    const getAllRecipes = () => {
+        setLoading(true);
         fetch('/api/v1/recipes')
             .then(response => response.json())
-            .then(responseJSON => this.setState({ recipes: responseJSON.recipes }))
-            .finally(() => this.setState({ loading: false }));
+            .then(responseJSON => setRecipes(responseJSON.recipes))
+            .finally(() => setLoading(false));
     }
 
-    getSearchedRecipes = () => {
-        this.setState({ loading: true });
+    const getSearchedRecipes = () => {
+        setLoading(true);
         let search = this.state.data.search
         fetch('/api/v1/recipes?name=' + search + '&description=' + search)
             .then(response => response.json())
             .then(responseJSON => this.setState({ recipes: responseJSON.recipes }))
-            .finally(() => this.setState({ loading: false }));
+            .finally(() => setLoading(false));
     }
 
-    getSimilarRecipes = () => {
-        this.setState({ loading: true });
+    const getSimilarRecipes = () => {
+        setLoading(true);
         fetch('/api/v1/recommendation/' + this.state.data.similarTo + '/components')
             .then(response => response.json())
             .then(responseJSON => this.setState({ recipes: responseJSON.recipes }))
-            .finally(() => this.setState({ loading: false }));
+            .finally(() => setLoading(false));
     }
 
-    componentDidMount() {
-        this.refreshRecipes()
+    const componentDidMount = () => {
+        refreshRecipes();
     }
 
     // on url change or navbar clicks update the internal state
-    componentDidUpdate(prevProps, prevState) {
+    const componentDidUpdate = (prevProps, prevState) => {
         const queryString = require('query-string');
         let parsedData = queryString.parse(this.props.location.search);
 
@@ -128,14 +121,16 @@ export class Recipes extends Component {
         }
     }
 
-    handleDataDelete = (delData) => () => {
-        let tmpData = this.state.data;
+    const handleDataDelete = (delData) => {
+        let tmpData = searchParams;
         tmpData[delData] = undefined;
 
         console.log(tmpData);
-        let url = this.createPath(tmpData);
+        let url = createPath(tmpData);
 
-        this.props.history.push({
+        console.log.apply(url)
+
+        navigate({
             pathname: '/recipes',
             search: url
         });
@@ -147,15 +142,15 @@ export class Recipes extends Component {
         //this.refreshRecipes();
     }
 
-    renderRecipes = () => {
+    const renderRecipes = () => {
         let result = null;
-        if (this.state.recipes != null) {
+        if (recipes != null) {
             result = (
                 <div>
-                    {this.state.recipes.map((recipeID) => <Recipe onRefresh={this.refreshRecipes} onDeleteRecipe={this.handleDeleteRecipe} key={recipeID} recipe={recipeID} />)}
+                    {recipes.map((recipeID) => <Recipe onRefresh={refreshRecipes} onDeleteRecipe={handleDeleteRecipe} key={recipeID} recipe={recipeID} />)}
                 </div>
             );
-        } else if (this.state.loading) {
+        } else if (loading) {
             result = (
                 <div>
                     <Backdrop open={true}>
@@ -170,7 +165,7 @@ export class Recipes extends Component {
         return result;
     }
 
-    createPath(data) {
+    const createPath= (data) => {
         let path = '';
         let pathPart = '?';
 
@@ -183,16 +178,14 @@ export class Recipes extends Component {
         return path;
     }
 
-    render() {
-        return (
-            <div>
-                <PageHeader pageName="Recipes" />
-                <p />
-                <RecipeChips data={this.state.data} loading={this.state.loading} handleChipDelete={this.handleDataDelete} />
-                <p />
-                {this.renderRecipes()}
-            </div>);
-    }
+    return (
+        <div>
+            <PageHeader pageName="Recipes" />
+            <p />
+            {/* <RecipeChips data={searchParams} loading={loading} handleChipDelete={handleDataDelete} /> */}
+            <p />
+            {renderRecipes()}
+        </div>);    
 }
 
 function RecipeChips(props) {

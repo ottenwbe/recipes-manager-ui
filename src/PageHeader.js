@@ -2,6 +2,7 @@
 import React from 'react';
 //import Jumbotron from 'react-bootstrap/Jumbotron';
 import config from "./strings.json";
+import Box from '@mui/material/Box';
 
 /*const useStyles = makeStyles(() => ({
     header: {
@@ -15,10 +16,10 @@ export function PageHeader(props) {
 
    // const classes = useStyles();
  //</Jumbotron>//<Jumbotron>
-    return (<div /*className={classes.header}*/>
-        
-            <h1>{props.pageName}</h1>
-            <h3>{config.pageHeader.sub}</h3>
-       
+    return (<div style={{ textAlign: 'center' }} /*className={classes.header}*/>
+            <Box sx={{ pt: 10 }}>
+                <h1>{props.pageName}</h1>
+                <h3>{config.pageHeader.sub}</h3>
+            </Box>
     </div>);
 }

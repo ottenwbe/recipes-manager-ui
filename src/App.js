@@ -42,14 +42,15 @@ import { RecipeForm } from './RecipeForm';
 import { RandomRecipe, Recipes } from './Recipes';
 import { Sources } from './Sources';
 import config from "./strings.json";
+import Container from '@mui/material/Container';
 
-class RecipesRouter extends Component {
+class RecipesApp extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
             numRecipes: 0,
-            open: false
+            menuOpen: false
         };
     }
 
@@ -69,18 +70,18 @@ class RecipesRouter extends Component {
     }
 
     handleDrawerOpen = () => {
-        this.setState({ open: true });
+        this.setState({ menuOpen: true });
     };
 
     handleDrawerClose = () => {
-        this.setState({ open: false });
+        this.setState({ menuOpen: false });
     };
 
     render() {
         return (<HashRouter>
-            <RecipesDrawer open={this.state.open} numRecipes={this.state.numRecipes} handleDrawerClose={this.handleDrawerClose} />
-            <RecipesRouterMenu open={this.state.open} numRecipes={this.state.numRecipes} handleDrawerOpen={this.handleDrawerOpen} />
-            <RecipesRouterBody open={this.state.open} onRecipeCountChange={this.handleRecipeCountChange} />
+            <RecipesDrawer open={this.state.menuOpen} numRecipes={this.state.numRecipes} handleDrawerClose={this.handleDrawerClose} />
+            <RecipesAppHeader open={this.state.menuOpen} numRecipes={this.state.numRecipes} handleDrawerOpen={this.handleDrawerOpen} />
+            <RecipesAppBody open={this.state.menuOpen} onRecipeCountChange={this.handleRecipeCountChange} />
             <Footer />
         </HashRouter>);
     }
@@ -97,7 +98,7 @@ const theme = createTheme(
     },
 );
 
-function RecipesRouterMenu(props) {
+function RecipesAppHeader(props) {
 
     //const classes = useStyles();
 
@@ -163,7 +164,7 @@ function RecipesRouterMenu(props) {
     //<NavLink disabled to="/login"><Button disabled>Login</Button></NavLink>
 }
 
-function RecipesRouterBody(props) {
+function RecipesAppBody(props) {
 
     //const classes = useStyles();
 
@@ -172,10 +173,9 @@ function RecipesRouterBody(props) {
     }
 
     //{ flexGrow: 1, align: 'center' }    
-    return (<div /*className="DivRecipesContent" */>        
+    return (<Container maxWidth="xl">        
         <main /*className={classes.recipesContent}*/>
             <div /*className={classes.drawerHeader}*/ />
-            <CssBaseline />
             <Routes>
                 <Route exact path="/" element={<Navigate to="/recipes" />} />
                 <Route path="/news" element={<Home/>} />
@@ -186,11 +186,11 @@ function RecipesRouterBody(props) {
                 <Route path="/src" element={<Sources/>} />
                 <Route path="/login" element={<Home/>} />
                 <Route path="/health"element={<div style={{ textAlign: 'center' }}>I'm Up</div>}></Route>
-                <Route path="*" element={NotFoundPage} />
+                <Route path="*" element={<NotFoundPage />} />
             </Routes>
             <div></div>
         </main>        
-    </div>);
+    </Container>);
 }
 
 function RecipesDrawer(props) {
@@ -265,7 +265,7 @@ function RecipesDrawer(props) {
     );
 }
 
-//const drawerWidth = 240;
+const drawerWidth = 240;
 
 /*const useStyles = makeStyles((theme) => ({
     appBar: {
@@ -330,7 +330,8 @@ function App() {
 
     return (
         <div>           
-            <RecipesRouter />     
+            <CssBaseline />
+            <RecipesApp />     
         </div>
     );
 }

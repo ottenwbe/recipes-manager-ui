@@ -12,9 +12,6 @@ export function NotFoundPage(props) {
                 <p />
                 Go Back to Square One!
                 <p />
-                Further stuff
-                <p />
-                more text
                 <Link to="/recipes">Recipes</Link>
             </Typography>
         </div>
