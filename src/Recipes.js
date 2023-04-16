@@ -351,14 +351,14 @@ class Recipe extends Component {
 
         fetch(url)
             .then(response => response.json())
-            .then(data => this.setState({ recipe: data, name: data.name, recipeRevision: recipeRevision }))
-            .then(() => {
-                if ((this.state.recipe != null
-                    && this.state.recipe.pictureLink != null)
-                    && (this.state.recipe.pictureLink.length > 0)
-                    && (this.state.recipe.pictureLink[0] !== '')) {
-                    fetch('/api/v1/recipes/r/' + this.state.recipe.id
-                        + '/pictures/' + this.state.recipe.pictureLink[0] + '/')
+            .then(data => {this.setState({ recipe: data, name: data.name, recipeRevision: recipeRevision }); return data;})
+            .then((recipe) => {
+                if ((recipe != null
+                    && recipe.pictureLink != null)
+                    && (recipe.pictureLink.length > 0)
+                    && (recipe.pictureLink[0] !== '')) {
+                    fetch('/api/v1/recipes/r/' + recipe.id
+                        + '/pictures/' + recipe.pictureLink[0] + '/')
                         .then(response => response.json())
                         .then(data => this.setState({ picture: data }));
                 }
