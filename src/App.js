@@ -42,6 +42,8 @@ import { NotFoundPage } from './NotFoundPage';
 import { RecipeForm } from './RecipeForm';
 import { RandomRecipe, Recipes } from './Recipes';
 import { Sources } from './Sources';
+import { useToken } from './UseToken';
+import { Login } from './Login'
 import config from "./strings.json";
 import Container from '@mui/material/Container';
 
@@ -324,6 +326,12 @@ function RecipesDrawer(props) {
 */
 
 function App() {
+
+    const { token, setToken } = useToken();
+
+    if(!token) {
+      return <Login setToken={setToken} />
+    }
 
     return (
         <React.Fragment>

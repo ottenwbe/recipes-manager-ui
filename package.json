@@ -1,6 +1,6 @@
 {
   "name": "recipes-manager-ui",
-  "version": "v0.4.1",
+  "version": "v0.4.2",
   "homepage": ".",
   "private": true,
   "dependencies": {
