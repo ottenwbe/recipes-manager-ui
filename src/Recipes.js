@@ -1,118 +1,160 @@
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
-import Backdrop from '@material-ui/core/Backdrop';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import CardHeader from '@material-ui/core/CardHeader';
-import CardMedia from '@material-ui/core/CardMedia';
-import Chip from '@material-ui/core/Chip';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-import Collapse from '@material-ui/core/Collapse';
-import Grow from '@material-ui/core/Grow';
-import IconButton from '@material-ui/core/IconButton';
-import MenuItem from '@material-ui/core/MenuItem';
-import MenuList from '@material-ui/core/MenuList';
-import Paper from '@material-ui/core/Paper';
-import Popper from '@material-ui/core/Popper';
-import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import LaunchIcon from '@material-ui/icons/Launch';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
-import UpdateIcon from '@material-ui/icons/Update';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import Backdrop from '@mui/material/Backdrop';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import CardHeader from '@mui/material/CardHeader';
+import CardMedia from '@mui/material/CardMedia';
+import Chip from '@mui/material/Chip';
+import CircularProgress from '@mui/material/CircularProgress';
+import ClickAwayListener from '@mui/material/ClickAwayListener';
+import Collapse from '@mui/material/Collapse';
+import Grow from '@mui/material/Grow';
+import IconButton from '@mui/material/IconButton';
+import MenuItem from '@mui/material/MenuItem';
+import MenuList from '@mui/material/MenuList';
+import Paper from '@mui/material/Paper';
+import Popper from '@mui/material/Popper';
+//import { makeStyles } from '@mui/material/styles';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import LaunchIcon from '@mui/icons-material/Launch';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import UpdateIcon from '@mui/icons-material/Update';
 import React, { Component } from 'react';
 import { PageHeader } from "./PageHeader";
 import { RecipeAlert } from './RecipeAlerts.js';
 import { RecipeDialog } from './RecipeDialog.js';
+import { useSearchParams, useNavigate, useParams } from 'react-router-dom';
 
-const useStyles = makeStyles((theme) => ({
+/*const useStyles = makeStyles((theme) => ({
     chip: {
         margin: theme.spacing(0.5),
     },
-}));
+}));*/
 
-export class Recipes extends Component {
-    constructor(props) {
-        super(props);
-
-        const queryString = require('query-string');
-        let parsedData = queryString.parse(this.props.location.search);
-
-        this.state = {
-            recipes: null, //e.g., ["1"]
-            loading: false,
-            data: parsedData //all url based filters: ?search=''&similarTo=''
-        };
+class RequestedRecipes {
+    constructor(search, similarTo, recipeID) {
+        this.search = search;
+        this.similarTo = similarTo;
+        this.recipeID = recipeID;
     }
 
-    handleDeleteRecipe = (removedID) => {
-        if (this.props.onRecipesChange !== undefined) {
-            this.props.onRecipesChange();
+    refreshAndisDifferent(search, similarTo, recipeID) {
+        console.log("change stuff")
+        let isDifferent = (search !== this.search) || (similarTo !== this.similarTo) || (recipeID !== this.recipeID);
+        console.log(isDifferent)
+        console.log(this.search)
+        console.log(search)
+        this.search = search;
+        console.log(this.similarTo)
+        console.log(similarTo)
+        this.similarTo = similarTo;
+        console.log(this.recipeID)
+        console.log(recipeID)
+        this.recipeID = recipeID;
+        return isDifferent
+    }
+
+}
+
+export function Recipes(props) {
+
+    const [searchParams] = useSearchParams();
+    let { recipe } = useParams();
+    let navigate = useNavigate();
+
+    const loading = React.useRef(false);
+    const requestedRecipes = React.useRef(new RequestedRecipes('', '', ''));
+
+    const [recipes, setRecipes] = React.useState(null);
+
+    const handleDeleteRecipe = (removedID) => {
+        if (props.onRecipesChange !== undefined) {
+            props.onRecipesChange();
         }
 
-        let filtered = this.state.recipes.filter(function (value, index, arr) {
+        let filtered = recipes.filter(function (value, index, arr) {
             return value !== removedID;
         });
 
-        this.setState({ recipes: filtered });
+        setRecipes(filtered);
     }
 
-    refreshRecipes = () => {
-        if (this.shouldSearch()) {
-            this.getSearchedRecipes();
-        } else if (this.shouldGetSimilarResults()) {
-            this.getSimilarRecipes()
-        } else if (this.shouldGetAllRecipes()) {
-            this.getAllRecipes()
-        } else {
-            this.setState({ recipes: [this.props.match.params.recipe] });
+    const refreshRecipesIfChanged = (newRecipes) => {
+        if (JSON.stringify(newRecipes) !== JSON.stringify(recipes)) {
+            console.log('loading new recipes')
+            console.log(newRecipes)
+            console.log(recipes)
+            setRecipes(newRecipes)
         }
     }
 
-    shouldGetSimilarResults = () => {
-        return this.state.data.similarTo !== undefined
+    const refreshRecipes = () => {
+        if (shouldSearch()) {
+            console.log('fetch search result')
+            getSearchedRecipes();
+        } else if (shouldGetSimilarResults()) {
+            console.log('fetch similar result')
+            getSimilarRecipes()
+        } else if (shouldGetAllRecipes()) {
+            console.log('fetch all')
+            getAllRecipes()
+        } else {
+            console.log('fetch sepecific')
+            refreshRecipesIfChanged([recipe]);
+        }
     }
 
-    shouldSearch = () => {
-        return this.state.data.search !== undefined;
+    const shouldGetSimilarResults = () => {
+        return searchParams.get('similar-to') !== null
     }
 
-    shouldGetAllRecipes = () => {
-        return this.props.match.params.recipe === undefined;
+    const shouldSearch = () => {
+        return searchParams.get('search') !== null
     }
 
-    getAllRecipes = () => {
-        this.setState({ loading: true });
+    const shouldGetAllRecipes = () => {
+        console.log(recipe)
+        return recipe === undefined;
+    }
+
+    const getAllRecipes = () => {
+        loading.current = true;
         fetch('/api/v1/recipes')
             .then(response => response.json())
-            .then(responseJSON => this.setState({ recipes: responseJSON.recipes }))
-            .finally(() => this.setState({ loading: false }));
+            .then(responseJSON => refreshRecipesIfChanged(responseJSON.recipes))
+            .finally(() => loading.current = false);
     }
 
-    getSearchedRecipes = () => {
-        this.setState({ loading: true });
-        let search = this.state.data.search
+    const getSearchedRecipes = () => {
+        loading.current = true;
+        let search = searchParams.get('search');
         fetch('/api/v1/recipes?name=' + search + '&description=' + search)
             .then(response => response.json())
-            .then(responseJSON => this.setState({ recipes: responseJSON.recipes }))
-            .finally(() => this.setState({ loading: false }));
+            .then(responseJSON => refreshRecipesIfChanged(responseJSON.recipes))
+            .finally(() => loading.current = false);
     }
 
-    getSimilarRecipes = () => {
-        this.setState({ loading: true });
-        fetch('/api/v1/recommendation/' + this.state.data.similarTo + '/components')
+    const getSimilarRecipes = () => {
+        loading.current = true;
+        let similarTo = searchParams.get('similar-to');
+        fetch('/api/v1/recommendation/' + similarTo + '/components')
             .then(response => response.json())
-            .then(responseJSON => this.setState({ recipes: responseJSON.recipes }))
-            .finally(() => this.setState({ loading: false }));
+            .then(responseJSON => refreshRecipesIfChanged(responseJSON.recipes))
+            .finally(() => loading.current = false);
     }
 
-    componentDidMount() {
-        this.refreshRecipes()
-    }
+    React.useEffect(() => {
+        console.log('useEffect called');
+        if (requestedRecipes.current.refreshAndisDifferent(searchParams.get('search'), searchParams.get('similar-to'), recipe)) {
+            console.log('useEffect Changed');
+            refreshRecipes();
+        }
+    })
 
     // on url change or navbar clicks update the internal state
-    componentDidUpdate(prevProps, prevState) {
+    /*const componentDidUpdate = (prevProps, prevState) => {
         const queryString = require('query-string');
         let parsedData = queryString.parse(this.props.location.search);
 
@@ -124,36 +166,38 @@ export class Recipes extends Component {
             this.setState({ data: parsedData })
             this.refreshRecipes()
         }
-    }
+    }*/
 
-    handleDataDelete = (delData) => () => {
-        let tmpData = this.state.data;
-        tmpData[delData] = undefined;
+    const handleDataDelete = (delData) => {
+        
+        searchParams.delete(delData)
 
-        console.log(tmpData);
-        let url = this.createPath(tmpData);
+        console.log(searchParams);
+        let url = createPath(searchParams);
 
-        this.props.history.push({
+        console.log.apply(url)
+
+        navigate({
             pathname: '/recipes',
             search: url
         });
 
-        //let history = useHistory()
+        //let history = useNavigate()
         //window.location.href = url;
         //window.location.reload();
         //this.setState({ data: tmpData });
         //this.refreshRecipes();
     }
 
-    renderRecipes = () => {
+    const renderRecipes = () => {
         let result = null;
-        if (this.state.recipes != null) {
+        if (recipes != null) {
             result = (
                 <div>
-                    {this.state.recipes.map((recipeID) => <Recipe onRefresh={this.refreshRecipes} onDeleteRecipe={this.handleDeleteRecipe} key={recipeID} recipe={recipeID} />)}
+                    {recipes.map((recipeID) => <Recipe onRefresh={refreshRecipes} onDeleteRecipe={handleDeleteRecipe} key={recipeID} recipe={recipeID} />)}
                 </div>
             );
-        } else if (this.state.loading) {
+        } else if (loading.current) {
             result = (
                 <div>
                     <Backdrop open={true}>
@@ -168,51 +212,57 @@ export class Recipes extends Component {
         return result;
     }
 
-    createPath(data) {
+    const createPath = (data) => {
         let path = '';
         let pathPart = '?';
 
-        for (const paramName in data) {
-            if (data[paramName] !== undefined) {
-                path = path + pathPart + paramName + '=' + data[paramName];
+        console.log('createPath')
+
+        data.forEach( (value, paramName) => {
+            if (value !== undefined) {
+                path = path + pathPart + paramName + '=' + value;
                 pathPart = '&';
             }
-        }
+        })
+        console.log(path)
         return path;
     }
 
-    render() {
-        return (
-            <div>
-                <PageHeader pageName="Recipes" />
-                <p />
-                <RecipeChips data={this.state.data} loading={this.state.loading} handleChipDelete={this.handleDataDelete} />
-                <p />
-                {this.renderRecipes()}
-            </div>);
-    }
+    return (
+        <div>
+            <PageHeader pageName="Recipes" />
+            <p />
+            <RecipeChips data={searchParams} loading={loading.current} handleChipDelete={handleDataDelete} />
+            <p />
+            {renderRecipes()}
+        </div>);
 }
+
+//
 
 function RecipeChips(props) {
 
-    const classes = useStyles();
-    
+    //const classes = useStyles();
+
     let chips = [];
 
-    for (const paramName in props.data) {
-        if (props.data[paramName] !== undefined) {
+    props.data.forEach( (value, key) => {
+        console.log('chip')
+        console.log(value)
+        console.log(key)
+        if (value !== undefined) {
             chips.push(<Chip
                 color="secondary"
-                key={paramName}
-                label={paramName + '=' + props.data[paramName]}
-                onDelete={props.handleChipDelete !== undefined ? props.handleChipDelete(paramName) : undefined}
-                className={classes.chip}
+                key={key}
+                label={key + '=' + value}
+                onDelete={props.handleChipDelete !== undefined ? () => {props.handleChipDelete(key)} : undefined}
+            /*className={classes.chip}*/
             />);
         }
-    }
+    })
 
     return (
-        <Paper>
+        <Paper>            
             {props.loading ? "" : chips}
         </Paper>
     );
@@ -303,7 +353,8 @@ class Recipe extends Component {
             .then(response => response.json())
             .then(data => this.setState({ recipe: data, name: data.name, recipeRevision: recipeRevision }))
             .then(() => {
-                if ((this.state.recipe.pictureLink != null)
+                if ((this.state.recipe != null
+                    && this.state.recipe.pictureLink != null)
                     && (this.state.recipe.pictureLink.length > 0)
                     && (this.state.recipe.pictureLink[0] !== '')) {
                     fetch('/api/v1/recipes/r/' + this.state.recipe.id
@@ -311,7 +362,7 @@ class Recipe extends Component {
                         .then(response => response.json())
                         .then(data => this.setState({ picture: data }));
                 }
-            }).catch((err) => this.setState({ lastError: 'Failed to load recipe: ' + this.props.recipe }));
+            }).catch((err) => { console.log(err); this.setState({ lastError: 'Failed to load recipe: ' + this.props.recipe }) });
     }
 
     handleExpandClick = () => {

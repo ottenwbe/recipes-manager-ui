@@ -106,17 +106,17 @@ Read the current version:
 node -p -e "require('./package.json').version"
 ```
 
+Fix the version in the repository, i.e., with semver.
+
+```sh
+semver $(node -p -e "require('./package.json').version") -i minor
+```
+
 Then simply tag the git repository with the next version. This triggers the release pipeline.
 
 ```sh
 git tag v1.2.3
 git push origin v1.2.3
-```
-
-Fix the version in the repository, i.e., with semver.
-
-```sh
-semver $(node -p -e "require('./package.json').version") -i minor
 ```
 
 ## Disclaimer

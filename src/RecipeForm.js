@@ -1,15 +1,15 @@
-import { Table, TableBody, TableContainer, TableHead, TableRow } from '@material-ui/core';
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import IconButton from '@material-ui/core/IconButton';
-import TextField from '@material-ui/core/TextField';
-import DeleteIcon from '@material-ui/icons/Delete';
+import { Table, TableBody, TableContainer, TableHead, TableRow } from '@mui/material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import IconButton from '@mui/material/IconButton';
+import TextField from '@mui/material/TextField';
+import DeleteIcon from '@mui/icons-material/Delete';
 import React, { Component } from 'react';
 import { PageHeader } from './PageHeader';
 
@@ -130,6 +130,7 @@ const IngredientsRowEdit = (props) => {
                     fullWidth
                     defaultValue={props.ingredient.amount}
                     onChange={handleChange}
+                    variant="standard"
                 />
             </td>
             <td>
@@ -141,6 +142,7 @@ const IngredientsRowEdit = (props) => {
                     fullWidth
                     defaultValue={props.ingredient.unit}
                     onChange={handleChange}
+                    variant="standard"
                 />
             </td>
             <td>
@@ -152,6 +154,7 @@ const IngredientsRowEdit = (props) => {
                     fullWidth
                     defaultValue={props.ingredient.name}
                     onChange={handleChange}
+                    variant="standard"
                 />
             </td>
             <td>
@@ -195,6 +198,7 @@ export function RecipeEdit(props) {
                     fullWidth
                     defaultValue={editableRecipe.name}
                     onChange={handleChange}
+                    variant="standard"
                 />
             </Box>
             <Box width="50%">
@@ -207,6 +211,7 @@ export function RecipeEdit(props) {
                     fullWidth
                     defaultValue={editableRecipe.servings}
                     onChange={handleChange}
+                    variant="standard"
                 />
             </Box>
             <p />

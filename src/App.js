@@ -1,36 +1,39 @@
-import { createTheme } from '@material-ui/core';
-import AppBar from '@material-ui/core/AppBar';
-import Badge from '@material-ui/core/Badge';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import Divider from '@material-ui/core/Divider';
-import Drawer from '@material-ui/core/Drawer';
-import IconButton from '@material-ui/core/IconButton';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import OutlinedInput from '@material-ui/core/OutlinedInput';
-import { makeStyles } from '@material-ui/core/styles';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import HomeIcon from '@material-ui/icons/Home';
-import LocalDiningIcon from '@material-ui/icons/LocalDining';
-import MenuIcon from '@material-ui/icons/Menu';
-import SearchIcon from '@material-ui/icons/Search';
-import StorageIcon from '@material-ui/icons/Storage';
-import clsx from 'clsx';
-import React, { Component } from 'react';
+//import { makeStyles } from '@mui/styles';
+//import clsx from 'clsx';
+
+import './App.css';
+
+import { createTheme } from '@mui/material';
+import AppBar from '@mui/material/AppBar';
+import Badge from '@mui/material/Badge';
+import CssBaseline from '@mui/material/CssBaseline';
+import Divider from '@mui/material/Divider';
+import Drawer from '@mui/material/Drawer';
+import IconButton from '@mui/material/IconButton';
+import InputAdornment from '@mui/material/InputAdornment';
+import List from '@mui/material/List';
+import ListItemButton  from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import HomeIcon from '@mui/icons-material/Home';
+import LocalDiningIcon from '@mui/icons-material/LocalDining';
+import MenuIcon from '@mui/icons-material/Menu';
+import SearchIcon from '@mui/icons-material/Search';
+import StorageIcon from '@mui/icons-material/Storage';
+import React from 'react';
 import { ThemeProvider } from 'react-bootstrap';
 import {
     HashRouter,
     NavLink,
-    Redirect,
+    Navigate,
     Route,
-    Switch,
-    useHistory
+    Routes,
+    useNavigate
 } from "react-router-dom";
 import './App.css';
 import { Footer } from './Footer';
@@ -40,48 +43,46 @@ import { RecipeForm } from './RecipeForm';
 import { RandomRecipe, Recipes } from './Recipes';
 import { Sources } from './Sources';
 import config from "./strings.json";
+import Container from '@mui/material/Container';
 
-class RecipesRouter extends Component {
+function RecipesApp(props) {
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            numRecipes: 0,
-            open: false
-        };
-    }
+    const [numRecipes, setNumRecipes] = React.useState(0);
+    const [menuOpen, setMenuOpen] = React.useState(false);
 
-    updateRecipes = () => {
+    const updateRecipes = () => {
+        console.log('test')
         fetch('/api/v1/recipes/num')
             .then(response => response.json())
-            .then(responseText => this.setState({ numRecipes: responseText }))
+            .then(responseText => setNumRecipes(responseText))
             .catch(error => console.log(error));
     }
 
-    handleRecipeCountChange = () => {
-        this.updateRecipes()
+    React.useEffect(() => {
+        updateRecipes();
+    });
+
+    const handleRecipeCountChange = () => {
+        updateRecipes();
     }
 
-    componentDidMount() {
-        this.updateRecipes()
-    }
-
-    handleDrawerOpen = () => {
-        this.setState({ open: true });
+    const handleDrawerOpen = () => {
+        setMenuOpen(true);
     };
 
-    handleDrawerClose = () => {
-        this.setState({ open: false });
+    const handleDrawerClose = () => {
+        setMenuOpen(false);
     };
 
-    render() {
-        return (<HashRouter>
-            <RecipesDrawer open={this.state.open} numRecipes={this.state.numRecipes} handleDrawerClose={this.handleDrawerClose} />
-            <RecipesRouterMenu open={this.state.open} numRecipes={this.state.numRecipes} handleDrawerOpen={this.handleDrawerOpen} />
-            <RecipesRouterBody open={this.state.open} onRecipeCountChange={this.handleRecipeCountChange} />
-        </HashRouter>);
-    }
+
+    return (<HashRouter>
+        <RecipesDrawer open={menuOpen} numRecipes={numRecipes} handleDrawerClose={handleDrawerClose} />
+        <RecipesAppHeader open={menuOpen} numRecipes={numRecipes} handleDrawerOpen={handleDrawerOpen} />
+        <RecipesAppBody open={menuOpen} onRecipeCountChange={handleRecipeCountChange} />
+        <Footer />
+    </HashRouter>);
 }
+
 
 const theme = createTheme(
     {
@@ -94,16 +95,16 @@ const theme = createTheme(
     },
 );
 
-function RecipesRouterMenu(props) {
+function RecipesAppHeader(props) {
 
-    const classes = useStyles();
+    //const classes = useStyles();
 
     const [searchTerm, setSearchTerm] = React.useState("");
 
-    let history = useHistory();
+    let navigate = useNavigate();
 
     const handleSearchClick = () => {
-        history.push({
+        navigate({
             pathname: '/recipes',
             search: searchTerm !== '' ? '?search=' + searchTerm : ''
         });
@@ -123,11 +124,11 @@ function RecipesRouterMenu(props) {
         <div className="RecipesRouterMenu">
             <ThemeProvider theme={theme}>
                 <AppBar style={{ backgroundColor: "#2196f3" }} position="fixed"
-                    className={clsx(classes.appBar, {
+                    /*className={clsx(classes.appBar, {
                         [classes.appBarShift]: props.open,
-                    })}>
+                    })}*/>
                     <Toolbar>
-                        <IconButton className={clsx(classes.menuButton, props.open && classes.hide)}
+                        <IconButton /*className={clsx(classes.menuButton, props.open && classes.hide)}*/
                             color="inherit"
                             aria-label="Menu"
                             onClick={props.handleDrawerOpen}>
@@ -160,39 +161,37 @@ function RecipesRouterMenu(props) {
     //<NavLink disabled to="/login"><Button disabled>Login</Button></NavLink>
 }
 
-function RecipesRouterBody(props) {
+function RecipesAppBody(props) {
 
-    const classes = useStyles();
+    //const classes = useStyles();
 
     const handleRecipeChange = () => {
         props.onRecipeCountChange();
     }
 
-    //{ flexGrow: 1, align: 'center' }
-    return (<div className="DivRecipesContent" >
-        <main className={classes.recipesContent}>
-            <div className={classes.drawerHeader} />
-            <CssBaseline />
-            <Switch>
-                <Route exact path="/" ><Redirect to="/recipes" /></Route>
-                <Route path="/news" component={Home} />
-                <Route exact path="/recipes" render={(props) => (<Recipes {...props} onRecipesChange={handleRecipeChange} />)} />
-                <Route path="/recipes/:recipe" render={(props) => (<Recipes {...props} onRecipesChange={handleRecipeChange} />)} />
-                <Route path="/add" render={(props) => (<RecipeForm {...props} onRecipesChange={handleRecipeChange} />)} />
-                <Route path="/rand" component={RandomRecipe} />
-                <Route path="/src" component={Sources} />
-                <Route path="/login" component={Home} />
-                <Route path="/health"><div style={{ textAlign: 'center' }}>I'm Up</div></Route>
-                <Route path="*" component={NotFoundPage} />
-            </Switch>
+    //{ flexGrow: 1, align: 'center' }    
+    return (<Container maxWidth="xl">
+        <main /*className={classes.recipesContent}*/>
+            <React.Fragment /*className={classes.drawerHeader}*/ />
+            <Routes>
+                <Route exact path="/" element={<Navigate to="/recipes" />} />
+                <Route path="/news" element={<Home />} />
+                <Route exact path="/recipes" Component={(props) => (<Recipes {...props} onRecipesChange={handleRecipeChange} />)} />
+                <Route path="/recipes/:recipe" Component={(props) => (<Recipes {...props} onRecipesChange={handleRecipeChange} />)} />
+                <Route path="/add" Component={(props) => (<RecipeForm {...props} onRecipesChange={handleRecipeChange} />)} />
+                <Route path="/rand" element={<RandomRecipe />} />
+                <Route path="/src" element={<Sources />} />
+                <Route path="/login" element={<Home />} />
+                <Route path="/health" element={<div style={{ textAlign: 'center' }}>I'm Up</div>}></Route>
+                <Route path="*" element={<NotFoundPage />} />
+            </Routes>
             <div></div>
-        </main>
-        <Footer />
-    </div>);
+        </main>        
+    </Container>);
 }
 
 function RecipesDrawer(props) {
-    const classes = useStyles();
+    //const classes = useStyles();
 
     const selectedItem = (hashName) => {
         return window.location.hash === hashName ? true : false;
@@ -200,17 +199,17 @@ function RecipesDrawer(props) {
 
     return (
         <Drawer
-            className={classes.drawer}
+           //className={classes.drawer}
             variant="persistent"
             anchor="left"
             open={props.open}
             onClose={props.handleDrawerClose}
-            classes={{
+            /*classes={{
                 paper: classes.drawerPaper,
-            }}
+            }}*/
         >
             <div onClick={props.handleDrawerClose}>
-                <div className={classes.drawerHeader}>
+                <div /*className={classes.drawerHeader}*/>
                     <Typography variant="h6" color="inherit">
                         {config.appName}
                     </Typography>
@@ -221,41 +220,41 @@ function RecipesDrawer(props) {
                 <Divider />
                 <List>
                     <NavLink to="/recipes" style={{ color: '#505050', textDecoration: 'none' }}>
-                        <ListItem button key="My Recipes" selected={selectedItem('#/recipes')}>
+                        <ListItemButton key="My Recipes" selected={selectedItem('#/recipes')}>
                             <ListItemIcon>
                                 <LocalDiningIcon style={{ color: '#505050' }} />
                             </ListItemIcon>
                             <Badge badgeContent={props.numRecipes} color="secondary">
                                 <ListItemText primary="My Recipes      " />
                             </Badge>
-                        </ListItem>
+                        </ListItemButton>
 
                     </NavLink>
                     <NavLink to="/rand" style={{ color: '#505050', textDecoration: 'none' }}>
-                        <ListItem button key="Random Recipes" selected={selectedItem('#/rand')}>
+                        <ListItemButton key="Random Recipes" selected={selectedItem('#/rand')}>
                             <ListItemIcon></ListItemIcon>
                             <ListItemText primary="Random Recipes" />
-                        </ListItem>
+                        </ListItemButton>
                     </NavLink>
                     <NavLink to="/add" style={{ color: '#505050', textDecoration: 'none' }}>
-                        <ListItem button key="Add Recipes" selected={selectedItem('#/add')}>
+                        <ListItemButton key="Add Recipes" selected={selectedItem('#/add')}>
                             <ListItemIcon></ListItemIcon>
                             <ListItemText primary="Add Recipes" />
-                        </ListItem>
+                        </ListItemButton>
                     </NavLink>
                     <Divider />
                     <NavLink to="/src" style={{ color: '#505050', textDecoration: 'none' }}>
-                        <ListItem button key="Sources" selected={selectedItem('#/sources')}>
+                        <ListItemButton key="Sources" selected={selectedItem('#/sources')}>
                             <ListItemIcon><StorageIcon style={{ color: '#505050' }} /></ListItemIcon>
                             <ListItemText primary="Recipe Sources" />
-                        </ListItem>
+                        </ListItemButton>
                     </NavLink>
                     <Divider />
                     <NavLink to="/news" style={{ color: '#505050', textDecoration: 'none' }}>
-                        <ListItem button key="News" selected={selectedItem('#/news')}>
+                        <ListItemButton key="News" selected={selectedItem('#/news')}>
                             <ListItemIcon><HomeIcon style={{ color: '#505050' }} /></ListItemIcon>
                             <ListItemText primary="News" />
-                        </ListItem>
+                        </ListItemButton>
                     </NavLink>
                 </List>
             </div>
@@ -263,9 +262,9 @@ function RecipesDrawer(props) {
     );
 }
 
-const drawerWidth = 240;
+//const drawerWidth = 240;
 
-const useStyles = makeStyles((theme) => ({
+/*const useStyles = makeStyles((theme) => ({
     appBar: {
         transition: theme.transitions.create(['margin', 'width'], {
             easing: theme.transitions.easing.sharp,
@@ -322,13 +321,15 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: 0,
     },
 }));
+*/
 
 function App() {
 
     return (
-        <div>
-            <RecipesRouter />
-        </div>
+        <React.Fragment>
+            <CssBaseline />
+            <RecipesApp />
+        </React.Fragment>
     );
 }
 
