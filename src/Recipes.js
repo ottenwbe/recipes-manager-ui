@@ -25,8 +25,7 @@ import React, { Component } from 'react';
 import { PageHeader } from "./PageHeader";
 import { RecipeAlert } from './RecipeAlerts.js';
 import { RecipeDialog } from './RecipeDialog.js';
-import { useSearchParams } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
+import { useSearchParams, useNavigate, useParams } from 'react-router-dom';
 
 /*const useStyles = makeStyles((theme) => ({
     chip: {
@@ -34,12 +33,41 @@ import { useNavigate } from 'react-router-dom';
     },
 }));*/
 
+class RequestedRecipes {
+    constructor(search, similarTo, recipeID) {
+        this.search = search;
+        this.similarTo = similarTo;
+        this.recipeID = recipeID;
+    }
+
+    refreshAndisDifferent(search, similarTo, recipeID) {
+        console.log("change stuff")
+        let isDifferent = (search !== this.search) || (similarTo !== this.similarTo) || (recipeID !== this.recipeID);
+        console.log(isDifferent)
+        console.log(this.search)
+        console.log(search)
+        this.search = search;
+        console.log(this.similarTo)
+        console.log(similarTo)
+        this.similarTo = similarTo;
+        console.log(this.recipeID)
+        console.log(recipeID)
+        this.recipeID = recipeID;
+        return isDifferent
+    }
+
+}
+
 export function Recipes(props) {
 
     const [searchParams] = useSearchParams();
-    const [recipes, setRecipes] = React.useState(null);
-    const [loading, setLoading] = React.useState(false);
+    let { recipe } = useParams();
     let navigate = useNavigate();
+
+    const loading = React.useRef(false);
+    const requestedRecipes = React.useRef(new RequestedRecipes('', '', ''));
+
+    const [recipes, setRecipes] = React.useState(null);
 
     const handleDeleteRecipe = (removedID) => {
         if (props.onRecipesChange !== undefined) {
@@ -53,61 +81,80 @@ export function Recipes(props) {
         setRecipes(filtered);
     }
 
+    const refreshRecipesIfChanged = (newRecipes) => {
+        if (JSON.stringify(newRecipes) !== JSON.stringify(recipes)) {
+            console.log('loading new recipes')
+            console.log(newRecipes)
+            console.log(recipes)
+            setRecipes(newRecipes)
+        }
+    }
+
     const refreshRecipes = () => {
         if (shouldSearch()) {
+            console.log('fetch search result')
             getSearchedRecipes();
         } else if (shouldGetSimilarResults()) {
+            console.log('fetch similar result')
             getSimilarRecipes()
         } else if (shouldGetAllRecipes()) {
+            console.log('fetch all')
             getAllRecipes()
         } else {
-            setRecipes([props.match.params.recipe]);
+            console.log('fetch sepecific')
+            refreshRecipesIfChanged([recipe]);
         }
     }
 
     const shouldGetSimilarResults = () => {
-        return searchParams.get('similar-to') !== undefined
+        return searchParams.get('similar-to') !== null
     }
 
     const shouldSearch = () => {
-        return searchParams.get('search') !== undefined;
+        return searchParams.get('search') !== null
     }
 
     const shouldGetAllRecipes = () => {
-        return props.match.params.recipe === undefined;
+        console.log(recipe)
+        return recipe === undefined;
     }
 
     const getAllRecipes = () => {
-        setLoading(true);
+        loading.current = true;
         fetch('/api/v1/recipes')
             .then(response => response.json())
-            .then(responseJSON => setRecipes(responseJSON.recipes))
-            .finally(() => setLoading(false));
+            .then(responseJSON => refreshRecipesIfChanged(responseJSON.recipes))
+            .finally(() => loading.current = false);
     }
 
     const getSearchedRecipes = () => {
-        setLoading(true);
-        let search = this.state.data.search
+        loading.current = true;
+        let search = searchParams.get('search');
         fetch('/api/v1/recipes?name=' + search + '&description=' + search)
             .then(response => response.json())
-            .then(responseJSON => this.setState({ recipes: responseJSON.recipes }))
-            .finally(() => setLoading(false));
+            .then(responseJSON => refreshRecipesIfChanged(responseJSON.recipes))
+            .finally(() => loading.current = false);
     }
 
     const getSimilarRecipes = () => {
-        setLoading(true);
-        fetch('/api/v1/recommendation/' + this.state.data.similarTo + '/components')
+        loading.current = true;
+        let similarTo = searchParams.get('similar-to');
+        fetch('/api/v1/recommendation/' + similarTo + '/components')
             .then(response => response.json())
-            .then(responseJSON => this.setState({ recipes: responseJSON.recipes }))
-            .finally(() => setLoading(false));
+            .then(responseJSON => refreshRecipesIfChanged(responseJSON.recipes))
+            .finally(() => loading.current = false);
     }
 
-    const componentDidMount = () => {
-        refreshRecipes();
-    }
+    React.useEffect(() => {
+        console.log('useEffect called');
+        if (requestedRecipes.current.refreshAndisDifferent(searchParams.get('search'), searchParams.get('similar-to'), recipe)) {
+            console.log('useEffect Changed');
+            refreshRecipes();
+        }
+    })
 
     // on url change or navbar clicks update the internal state
-    const componentDidUpdate = (prevProps, prevState) => {
+    /*const componentDidUpdate = (prevProps, prevState) => {
         const queryString = require('query-string');
         let parsedData = queryString.parse(this.props.location.search);
 
@@ -119,14 +166,14 @@ export function Recipes(props) {
             this.setState({ data: parsedData })
             this.refreshRecipes()
         }
-    }
+    }*/
 
     const handleDataDelete = (delData) => {
-        let tmpData = searchParams;
-        tmpData[delData] = undefined;
+        
+        searchParams.delete(delData)
 
-        console.log(tmpData);
-        let url = createPath(tmpData);
+        console.log(searchParams);
+        let url = createPath(searchParams);
 
         console.log.apply(url)
 
@@ -150,7 +197,7 @@ export function Recipes(props) {
                     {recipes.map((recipeID) => <Recipe onRefresh={refreshRecipes} onDeleteRecipe={handleDeleteRecipe} key={recipeID} recipe={recipeID} />)}
                 </div>
             );
-        } else if (loading) {
+        } else if (loading.current) {
             result = (
                 <div>
                     <Backdrop open={true}>
@@ -165,16 +212,19 @@ export function Recipes(props) {
         return result;
     }
 
-    const createPath= (data) => {
+    const createPath = (data) => {
         let path = '';
         let pathPart = '?';
 
-        for (const paramName in data) {
-            if (data[paramName] !== undefined) {
-                path = path + pathPart + paramName + '=' + data[paramName];
+        console.log('createPath')
+
+        data.forEach( (value, paramName) => {
+            if (value !== undefined) {
+                path = path + pathPart + paramName + '=' + value;
                 pathPart = '&';
             }
-        }
+        })
+        console.log(path)
         return path;
     }
 
@@ -182,32 +232,37 @@ export function Recipes(props) {
         <div>
             <PageHeader pageName="Recipes" />
             <p />
-            {/* <RecipeChips data={searchParams} loading={loading} handleChipDelete={handleDataDelete} /> */}
+            <RecipeChips data={searchParams} loading={loading.current} handleChipDelete={handleDataDelete} />
             <p />
             {renderRecipes()}
-        </div>);    
+        </div>);
 }
+
+//
 
 function RecipeChips(props) {
 
     //const classes = useStyles();
-    
+
     let chips = [];
 
-    for (const paramName in props.data) {
-        if (props.data[paramName] !== undefined) {
+    props.data.forEach( (value, key) => {
+        console.log('chip')
+        console.log(value)
+        console.log(key)
+        if (value !== undefined) {
             chips.push(<Chip
                 color="secondary"
-                key={paramName}
-                label={paramName + '=' + props.data[paramName]}
-                onDelete={props.handleChipDelete !== undefined ? props.handleChipDelete(paramName) : undefined}
-                /*className={classes.chip}*/
+                key={key}
+                label={key + '=' + value}
+                onDelete={props.handleChipDelete !== undefined ? () => {props.handleChipDelete(key)} : undefined}
+            /*className={classes.chip}*/
             />);
         }
-    }
+    })
 
     return (
-        <Paper>
+        <Paper>            
             {props.loading ? "" : chips}
         </Paper>
     );
@@ -298,7 +353,8 @@ class Recipe extends Component {
             .then(response => response.json())
             .then(data => this.setState({ recipe: data, name: data.name, recipeRevision: recipeRevision }))
             .then(() => {
-                if ((this.state.recipe.pictureLink != null)
+                if ((this.state.recipe != null
+                    && this.state.recipe.pictureLink != null)
                     && (this.state.recipe.pictureLink.length > 0)
                     && (this.state.recipe.pictureLink[0] !== '')) {
                     fetch('/api/v1/recipes/r/' + this.state.recipe.id
@@ -306,7 +362,7 @@ class Recipe extends Component {
                         .then(response => response.json())
                         .then(data => this.setState({ picture: data }));
                 }
-            }).catch((err) => this.setState({ lastError: 'Failed to load recipe: ' + this.props.recipe }));
+            }).catch((err) => { console.log(err); this.setState({ lastError: 'Failed to load recipe: ' + this.props.recipe }) });
     }
 
     handleExpandClick = () => {

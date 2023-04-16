@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import Paper from '@mui/material/Paper';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
@@ -7,18 +7,9 @@ import { PageHeader } from './PageHeader';
 import { Link } from 'react-router-dom';
 import config from "./strings.json";
 
-export class Home extends Component {
+export function Home(props) {
 
-    constructor(props) {
-        super(props);
-        this.state = { 
-            value: '',
-            portions: 1
-         };
-    }
-
-    render() {
-        return (<div>
+        return (<React.Fragment>
             <PageHeader pageName="Recipe News" />
             <Card style={{ align: 'center' }}>
                 <CardHeader title={config.welcome} subheader={config.welcomeSub} style={{ textAlign: 'center', backgroundColor: "#2196f3" }} />
@@ -38,6 +29,6 @@ export class Home extends Component {
                         </p>
                 </CardContent>
             </Card>
-        </div>);
-    }
+        </React.Fragment>);
+    
 }
