@@ -65,7 +65,7 @@ export function Recipes(props) {
     let navigate = useNavigate();
 
     const loading = React.useRef(false);
-    const requestedRecipes = React.useRef(new RequestedRecipes('', '', ''));
+    const requestedRecipes = React.useRef(new RequestedRecipes(null, null, undefined));
 
     const [recipes, setRecipes] = React.useState(null);
 
