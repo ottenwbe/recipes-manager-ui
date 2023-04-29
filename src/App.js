@@ -1,7 +1,9 @@
 //import { makeStyles } from '@mui/styles';
 //import clsx from 'clsx';
 
-import './App.css';
+//import './App.css';
+
+import { AppProps } from 'next/app';
 
 import { createTheme } from '@mui/material';
 import AppBar from '@mui/material/AppBar';
@@ -12,7 +14,7 @@ import Drawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import List from '@mui/material/List';
-import ListItemButton  from '@mui/material/ListItemButton';
+import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import OutlinedInput from '@mui/material/OutlinedInput';
@@ -35,7 +37,7 @@ import {
     Routes,
     useNavigate
 } from "react-router-dom";
-import './App.css';
+//import './App.css';
 import { Footer } from './Footer';
 import { Home } from './Home';
 import { NotFoundPage } from './NotFoundPage';
@@ -76,13 +78,16 @@ function RecipesApp(props) {
         setMenuOpen(false);
     };
 
-
-    return (<HashRouter>
+    /*return (<div><HashRouter>
+        </HashRouter></div>)*/
+   return (
+        <HashRouter>
         <RecipesDrawer open={menuOpen} numRecipes={numRecipes} handleDrawerClose={handleDrawerClose} />
         <RecipesAppHeader open={menuOpen} numRecipes={numRecipes} handleDrawerOpen={handleDrawerOpen} />
         <RecipesAppBody open={menuOpen} onRecipeCountChange={handleRecipeCountChange} />
         <Footer />
-    </HashRouter>);
+        </HashRouter>
+    );
 }
 
 
@@ -178,17 +183,19 @@ function RecipesAppBody(props) {
             <Routes>
                 <Route exact path="/" element={<Navigate to="/recipes" />} />
                 <Route path="/news" element={<Home />} />
-                <Route exact path="/recipes" Component={(props) => (<Recipes {...props} onRecipesChange={handleRecipeChange} />)} />
+                <Route exact path="/recipes" element={<Recipes onRecipesChange={handleRecipeChange} />} />
+                <Route path="/recipes/:recipe" element={<Recipes onRecipesChange={handleRecipeChange} />} />
+                <Route path="/add" element={<RecipeForm onRecipesChange={handleRecipeChange} />} />                
+                {/* <Route exact path="/recipes" Component={(props) => (<Recipes {...props} onRecipesChange={handleRecipeChange} />)} />
                 <Route path="/recipes/:recipe" Component={(props) => (<Recipes {...props} onRecipesChange={handleRecipeChange} />)} />
-                <Route path="/add" Component={(props) => (<RecipeForm {...props} onRecipesChange={handleRecipeChange} />)} />
+                <Route path="/add" Component={(props) => (<RecipeForm {...props} onRecipesChange={handleRecipeChange} />)} /> */}
                 <Route path="/rand" element={<RandomRecipe />} />
                 <Route path="/src" element={<Sources />} />
                 <Route path="/login" element={<Home />} />
                 <Route path="/health" element={<div style={{ textAlign: 'center' }}>I'm Up</div>}></Route>
                 <Route path="*" element={<NotFoundPage />} />
             </Routes>
-            <div></div>
-        </main>        
+        </main>
     </Container>);
 }
 
@@ -201,16 +208,16 @@ function RecipesDrawer(props) {
 
     return (
         <Drawer
-           //className={classes.drawer}
+            //className={classes.drawer}
             variant="persistent"
             anchor="left"
             open={props.open}
             onClose={props.handleDrawerClose}
-            /*classes={{
-                paper: classes.drawerPaper,
-            }}*/
+        /*classes={{
+            paper: classes.drawerPaper,
+        }}*/
         >
-            <div onClick={props.handleDrawerClose}>
+
                 <div /*className={classes.drawerHeader}*/>
                     <Typography variant="h6" color="inherit">
                         {config.appName}
@@ -259,7 +266,7 @@ function RecipesDrawer(props) {
                         </ListItemButton>
                     </NavLink>
                 </List>
-            </div>
+
         </Drawer>
     );
 }
@@ -326,12 +333,6 @@ function RecipesDrawer(props) {
 */
 
 function App() {
-
-    const { token, setToken } = useToken();
-
-    if(!token) {
-      return <Login setToken={setToken} />
-    }
 
     return (
         <React.Fragment>

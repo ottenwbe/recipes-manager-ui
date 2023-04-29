@@ -229,13 +229,13 @@ export function Recipes(props) {
     }
 
     return (
-        <div>
+        <React.Fragment>
             <PageHeader pageName="Recipes" />
-            <p />
+            {/* <p />
             <RecipeChips data={searchParams} loading={loading.current} handleChipDelete={handleDataDelete} />
             <p />
-            {renderRecipes()}
-        </div>);
+            {renderRecipes()} */}
+        </React.Fragment>);
 }
 
 //
