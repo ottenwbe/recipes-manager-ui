@@ -1,28 +1,23 @@
 import Head from 'next/head'
 import { Inter } from 'next/font/google'
-import App from '@/App'
 import React from 'react'
+import 'react-dom'
+import dynamic from 'next/dynamic'
 
-const inter = Inter({ subsets: ['latin'] })
+// DynamicApp -> no server side rendering here
+const DynamicApp = dynamic(() => import('@/App'), {
+  loading: () => <p>Loading...</p>,
+  ssr: false,
+})
 
 export default function Home() {
 
-  if (typeof window !== 'undefined') {
-    return (
-      <React.Fragment>
-        <Head>
-          <title>BeLa Recipes</title>
-        </Head>        
-        <App />
-      </React.Fragment>
-    )
-  } else {
-    return (
-      <React.Fragment>
-        <Head>
-          <title>BeLa Recipes</title>
-        </Head>        
-      </React.Fragment>      
-    )
-  }
+  return (
+    <React.Fragment>
+      <Head>
+        <title>BeLa Recipes</title>
+      </Head>
+      <DynamicApp />
+    </React.Fragment>
+  )
 } 

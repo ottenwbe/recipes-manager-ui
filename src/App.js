@@ -50,7 +50,7 @@ function RecipesApp(props) {
     const [numRecipes, setNumRecipes] = React.useState(0);
     const [menuOpen, setMenuOpen] = React.useState(false);
 
-    const updateRecipes = () => {
+    const updatNumRecipes = () => {
         console.log('test')
         fetch('/api/v1/recipes/num')
             .then(response => response.json())
@@ -59,11 +59,11 @@ function RecipesApp(props) {
     }
 
     React.useEffect(() => {
-        updateRecipes();
+        updatNumRecipes();
     });
 
     const handleRecipeCountChange = () => {
-        updateRecipes();
+        updatNumRecipes();
     }
 
     const handleDrawerOpen = () => {
@@ -74,16 +74,14 @@ function RecipesApp(props) {
         setMenuOpen(false);
     };
 
-    /*return (<div><HashRouter>
-        </HashRouter></div>)*/
-   return (
+    return (
         <HashRouter>
         <RecipesDrawer open={menuOpen} numRecipes={numRecipes} handleDrawerClose={handleDrawerClose} />
         <RecipesAppHeader open={menuOpen} numRecipes={numRecipes} handleDrawerOpen={handleDrawerOpen} />
         <RecipesAppBody open={menuOpen} onRecipeCountChange={handleRecipeCountChange} />
         <Footer />
         </HashRouter>
-    );
+    ); 
 }
 
 
@@ -330,7 +328,7 @@ function App() {
     return (
         <React.Fragment>
             <CssBaseline />
-            <RecipesApp />
+           <RecipesApp /> 
         </React.Fragment>
     );
 }
