@@ -3,11 +3,18 @@
 
 //import './App.css';
 
-import { AppProps } from 'next/app';
 
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import HomeIcon from '@mui/icons-material/Home';
+import LocalDiningIcon from '@mui/icons-material/LocalDining';
+import MenuIcon from '@mui/icons-material/Menu';
+import SearchIcon from '@mui/icons-material/Search';
+import StorageIcon from '@mui/icons-material/Storage';
 import { createTheme } from '@mui/material';
 import AppBar from '@mui/material/AppBar';
 import Badge from '@mui/material/Badge';
+import Container from '@mui/material/Container';
 import CssBaseline from '@mui/material/CssBaseline';
 import Divider from '@mui/material/Divider';
 import Drawer from '@mui/material/Drawer';
@@ -20,13 +27,6 @@ import ListItemText from '@mui/material/ListItemText';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import HomeIcon from '@mui/icons-material/Home';
-import LocalDiningIcon from '@mui/icons-material/LocalDining';
-import MenuIcon from '@mui/icons-material/Menu';
-import SearchIcon from '@mui/icons-material/Search';
-import StorageIcon from '@mui/icons-material/Storage';
 import React from 'react';
 import { ThemeProvider } from 'react-bootstrap';
 import {
@@ -37,17 +37,13 @@ import {
     Routes,
     useNavigate
 } from "react-router-dom";
-//import './App.css';
 import { Footer } from './Footer';
 import { Home } from './Home';
 import { NotFoundPage } from './NotFoundPage';
 import { RecipeForm } from './RecipeForm';
 import { RandomRecipe, Recipes } from './Recipes';
 import { Sources } from './Sources';
-import { useToken } from './UseToken';
-import { Login } from './Login'
 import config from "./strings.json";
-import Container from '@mui/material/Container';
 
 function RecipesApp(props) {
 
@@ -186,13 +182,10 @@ function RecipesAppBody(props) {
                 <Route exact path="/recipes" element={<Recipes onRecipesChange={handleRecipeChange} />} />
                 <Route path="/recipes/:recipe" element={<Recipes onRecipesChange={handleRecipeChange} />} />
                 <Route path="/add" element={<RecipeForm onRecipesChange={handleRecipeChange} />} />                
-                {/* <Route exact path="/recipes" Component={(props) => (<Recipes {...props} onRecipesChange={handleRecipeChange} />)} />
-                <Route path="/recipes/:recipe" Component={(props) => (<Recipes {...props} onRecipesChange={handleRecipeChange} />)} />
-                <Route path="/add" Component={(props) => (<RecipeForm {...props} onRecipesChange={handleRecipeChange} />)} /> */}
                 <Route path="/rand" element={<RandomRecipe />} />
                 <Route path="/src" element={<Sources />} />
                 <Route path="/login" element={<Home />} />
-                <Route path="/health" element={<div style={{ textAlign: 'center' }}>I'm Up</div>}></Route>
+                <Route path="/health" element={<div style={{ textAlign: 'center' }}>I am Up</div>}></Route>
                 <Route path="*" element={<NotFoundPage />} />
             </Routes>
         </main>

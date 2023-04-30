@@ -1,6 +1,7 @@
 build
 scripts
 node_modules
+.next
 
 .github
 .travis.yml

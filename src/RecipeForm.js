@@ -10,7 +10,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
 import DeleteIcon from '@mui/icons-material/Delete';
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { PageHeader } from './PageHeader';
 
 
@@ -294,7 +294,7 @@ export class RecipeForm extends Component {
 
     render() {
         return (
-            <div>
+            <React.Fragment>
                 <PageHeader pageName="Add Recipe" />
 
                 <RecipeUpdateDialog open={this.state.openDialog} submitSuccess={this.state.submitSuccess} submitting={this.state.submitting} onClose={this.handleDialogClose} />
@@ -309,7 +309,7 @@ export class RecipeForm extends Component {
                     </Button>
                     <p />
                 </form>
-            </div>
+            </React.Fragment>
         );
     }
 }
