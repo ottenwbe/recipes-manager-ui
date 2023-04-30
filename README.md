@@ -17,7 +17,7 @@ Before you start, ensure that npm is installed.
     git clone https://github.com/ottenwbe/recipes-manager-ui.git
     ```
 
-1. _Configure the strings of the App_. A strings.json file is used to configure the texts diplayed in the UI. Configuration happens at _build time_.
+1. _Configure the strings of the App_. A strings.json file is used to configure the texts displayed in the UI. Configuration happens at _build time_.
 
     ```json
     {
@@ -33,27 +33,30 @@ Before you start, ensure that npm is installed.
 
     ```sh
     npm i
+    npm run build
     npm start
     ```
 
     
-1.   _Open_ [http://localhost:3000](http://    localhost:3000) to view it in the browser. Note, the app assumes that recipes-manager runs on the same h
+1.   _Open_ [http://localhost:3000](http://localhost:3000) to view it in the browser. Note, the app assumes that recipes-manager runs already
 
 
 # Development
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app) and migrated to [Next.js](https://nextjs.org/).
 
 ## Start
 
-   `npm start`
+    `npm run dev`
 
 Runs the app in the development mode.<br>
 Open [http://localhost:3000](http://   localhost:3000) to view it in the browser.
 The page will reload if you make edits<br>
-You will also see any lint errors inthe    console.
+You will also see any lint errors in the   console.
 
 ## Test 
+
+NOTE: REQUIRES REWORK
 
     `npm test`
 
@@ -66,7 +69,7 @@ See the section about [running tests](https://facebook.github.io/create-react-ap
 
     `npm run build`
 
-Builds the app for production to the `build` folder.<br>
+Builds the app for production to the `.next` folder.<br>
 It correctly bundles React in production mode and optimizes the build for the best performance.
 
 The build is minified and the filenames include the hashes.<br>

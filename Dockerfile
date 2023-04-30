@@ -1,4 +1,4 @@
-FROM docker.io/node:20-buster-slim
+FROM docker.io/node:20-alpine
 
 # install and update npm
 RUN npm install -g npm
