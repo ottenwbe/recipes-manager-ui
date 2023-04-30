@@ -1,7 +1,7 @@
-FROM docker.io/node:20-alpine
+FROM docker.io/node:20-bullseye-slim
 
-# install and update npm
-RUN npm install -g npm
+# install server and update npm
+RUN npm install -g serve && npm install -g npm
 
 COPY . /app
 
@@ -11,4 +11,4 @@ RUN npm ci
 
 # compile and start app 
 # NOTE: npm run build at start time allows us to change environment variables
-CMD ["sh","-c","npm run build && npm start -- -p 5000"]
+CMD ["sh","-c","npm run build && serve -s -l 5000 build"]
