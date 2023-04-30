@@ -20,7 +20,7 @@ APP_VERSION_ABBR=$(echo ${APP_VERSION} | awk '{ print substr( $0, 2 ) }' )
 node -e "let pkg=require('./package.json'); pkg.version='${APP_VERSION_ABBR}'; require('fs').writeFileSync('package.json', JSON.stringify(pkg, null, 2));"
 
 docker buildx build --output "type=image,push=${SHOULD_PUSH}" \
-    --platform linux/arm/v7,linux/arm64/v8,linux/amd64 \
+    --platform linux/arm64/v8,linux/amd64 \
     --label "version=${APP_VERSION}" \
     --label "build_date=${DATE}"  \
     --label "maintaner=${MAINTAINER}" \
