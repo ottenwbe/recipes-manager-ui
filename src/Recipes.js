@@ -21,7 +21,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import LaunchIcon from '@mui/icons-material/Launch';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import UpdateIcon from '@mui/icons-material/Update';
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { PageHeader } from "./PageHeader";
 import { RecipeAlert } from './RecipeAlerts.js';
 import { RecipeDialog } from './RecipeDialog.js';
@@ -43,7 +43,7 @@ class RequestedRecipes {
     refreshAndisDifferent(search, similarTo, recipeID) {
         console.log("change stuff")
         let isDifferent = (search !== this.search) || (similarTo !== this.similarTo) || (recipeID !== this.recipeID);
-        console.log(isDifferent)
+        console.log('isDifferent: ' + isDifferent)
         console.log(this.search)
         console.log(search)
         this.search = search;
@@ -65,7 +65,7 @@ export function Recipes(props) {
     let navigate = useNavigate();
 
     const loading = React.useRef(false);
-    const requestedRecipes = React.useRef(new RequestedRecipes('', '', ''));
+    const requestedRecipes = React.useRef(new RequestedRecipes([undefined], [undefined], [undefined]));
 
     const [recipes, setRecipes] = React.useState(null);
 
@@ -193,16 +193,16 @@ export function Recipes(props) {
         let result = null;
         if (recipes != null) {
             result = (
-                <div>
+                <Fragment>
                     {recipes.map((recipeID) => <Recipe onRefresh={refreshRecipes} onDeleteRecipe={handleDeleteRecipe} key={recipeID} recipe={recipeID} />)}
-                </div>
+                </Fragment>
             );
         } else if (loading.current) {
             result = (
                 <div>
                     <Backdrop open={true}>
                         <CircularProgress size={50} />
-                        "Loading Recipes"
+                        Loading Recipes
                     </Backdrop>
                 </div>
             );
@@ -229,13 +229,13 @@ export function Recipes(props) {
     }
 
     return (
-        <div>
+        <React.Fragment>
             <PageHeader pageName="Recipes" />
             <p />
             <RecipeChips data={searchParams} loading={loading.current} handleChipDelete={handleDataDelete} />
             <p />
             {renderRecipes()}
-        </div>);
+        </React.Fragment>);
 }
 
 //

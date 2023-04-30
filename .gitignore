@@ -1,6 +1,9 @@
 # node
 node_modules
 build
+.next
+release_notes.sh
+npm-upgrade.sh
 
 # src
 *.tmp
