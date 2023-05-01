@@ -1,9 +1,3 @@
-//import { makeStyles } from '@mui/styles';
-//import clsx from 'clsx';
-
-//import './App.css';
-
-
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import HomeIcon from '@mui/icons-material/Home';
@@ -45,7 +39,6 @@ import { RandomRecipe, Recipes } from './Recipes';
 import { Sources } from './Sources';
 import { useToken } from './UseToken';
 import { Login } from './Login'
-import config from "./strings.json";
 
 function RecipesApp(props) {
 
@@ -78,10 +71,10 @@ function RecipesApp(props) {
 
     return (
         <HashRouter>
-        <RecipesDrawer open={menuOpen} numRecipes={numRecipes} handleDrawerClose={handleDrawerClose} />
+        <RecipesDrawer open={menuOpen} numRecipes={numRecipes} handleDrawerClose={handleDrawerClose} textConfig={props.textConfig} />
         <RecipesAppHeader open={menuOpen} numRecipes={numRecipes} handleDrawerOpen={handleDrawerOpen} />
         <RecipesAppBody open={menuOpen} onRecipeCountChange={handleRecipeCountChange} />
-        <Footer />
+        <Footer textConfig={props.textConfig}/>
         </HashRouter>
     ); 
 }
@@ -213,7 +206,7 @@ function RecipesDrawer(props) {
 
                 <div /*className={classes.drawerHeader}*/>
                     <Typography variant="h6" color="inherit">
-                        {config.appName}
+                        {props.textConfig.hasOwnProperty('appName') ? props.textConfig.appName : ''}
                     </Typography>
                     <IconButton onClick={props.handleDrawerClose}>
                         {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
@@ -325,18 +318,12 @@ function RecipesDrawer(props) {
 }));
 */
 
-function App() {
-
-    const { token, setToken } = useToken();
-
-    if(!token) {
-      return <Login setToken={setToken} />
-    }
-
+function App(props) {
+    
     return (
         <React.Fragment>
             <CssBaseline />
-           <RecipesApp /> 
+           <RecipesApp textConfig={props.textConfig} /> 
         </React.Fragment>
     );
 }

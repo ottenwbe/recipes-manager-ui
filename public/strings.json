@@ -1,0 +1,7 @@
+{ 
+    "appName": "theAppName",
+    "pageHeader" : {"sub" : "theSubHeader"},
+    "footer" : {"text": "theFooter"},
+    "welcome" : "theWelcomeText",
+    "welcomesSub" : "theWelcomeSub"
+ }

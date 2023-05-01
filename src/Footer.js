@@ -1,11 +1,10 @@
 import React from 'react';
-import config from "./strings.json";
 
-export function Footer() {
+export function Footer(props) {
     // draw a black line and the footer text
-    return (<div className="Footer">
+    return (<div className="Footer" style={{ textAlign: 'center' }}>
         <Blackline />
-        <p>{config.footer.text}</p>
+        <p>{props.textConfig.hasOwnProperty('footer') && props.textConfig.footer.hasOwnProperty('text')  ? props.textConfig.footer.text : 'no footer'}</p>
     </div>);
 }
 
