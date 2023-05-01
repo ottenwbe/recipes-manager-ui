@@ -46,7 +46,6 @@ function RecipesApp(props) {
     const [menuOpen, setMenuOpen] = React.useState(false);
 
     const updatNumRecipes = () => {
-        console.log('test')
         fetch('/api/v1/recipes/num')
             .then(response => response.json())
             .then(responseText => setNumRecipes(responseText))

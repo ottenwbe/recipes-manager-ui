@@ -9,10 +9,12 @@ import { textFromContext } from './common/context/TextContextProvider';
 
 export function Home(props) {
 
+        const texts = useContext(TextContext);
+
         return (<React.Fragment>
             <PageHeader pageName="Recipe News" />
             <Card style={{ align: 'center' }}>
-                <CardHeader title={textFromContext('welcome')} subheader={textFromContext('welcomeSub')} style={{ textAlign: 'center', backgroundColor: "#2196f3" }} />
+                <CardHeader title={textFromContext(texts, 'welcome')} subheader={textFromContext(texts, 'welcomeSub')} style={{ textAlign: 'center', backgroundColor: "#2196f3" }} />
                 <CardContent>
                     <Paper />
 

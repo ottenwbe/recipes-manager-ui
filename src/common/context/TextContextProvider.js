@@ -24,13 +24,11 @@ export function TextContextProvider({ children }) {
     )
 }
 
-export function textFromContext(value) {
-
-    const texts = useContext(TextContext);
+export function textFromContext(texts, value) {
 
     if (texts.hasOwnProperty(value)) {
         return texts[value];
-    } 
+    }
     return '';
 }
 
@@ -40,7 +38,7 @@ export function TextContextComponent(props) {
 
     return (
         <React.Fragment>
-            {textFromContext(props.value)}
+            {textFromContext(texts, props.value)}
         </React.Fragment>
     );
 }

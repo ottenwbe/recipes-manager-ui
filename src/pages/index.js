@@ -27,10 +27,12 @@ export default function Home() {
 
 function HomeLayout() {
 
+  const texts = useContext(TextContext);
+  
   return (
     <Fragment>
       <Head>
-        <title>{textFromContext('appName')}</title>
+        <title>{textFromContext(texts, 'appName')}</title>
       </Head>
       <CssBaseline />
       <DynamicApp />
