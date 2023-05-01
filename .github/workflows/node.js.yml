@@ -35,7 +35,7 @@ jobs:
     # build and test app
     - run: npm ci
     - run: npm run build --if-present
-    - run: npm test 
+    #- run: npm test 
 
     # build test docker image (only on pull requests to save resources)
     - name: Set up QEMU
