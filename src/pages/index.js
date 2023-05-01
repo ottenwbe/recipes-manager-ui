@@ -5,12 +5,12 @@ import 'react-dom'
 import dynamic from 'next/dynamic'
 import { TextContextProvider, TextFromContext, textFromContext } from '@/common/context/TextContextProvider'
 import { TextContext } from '@/common/context/TextContext'
-import { Footer } from '@/Footer'
+import { Footer } from '@/common/components/Footer'
 import { CssBaseline } from '@mui/material'
 
 // DynamicApp -> disable server side rendering for now until child pages are refactored
 // currently document and window are used outside of 
-const DynamicApp = dynamic(() => import('@/App'), {
+const DynamicApp = dynamic(() => import('@/common/components/App'), {
   loading: () => <div style={{ textAlign: 'center' }}>Loading...</div>,
   ssr: false,
 })

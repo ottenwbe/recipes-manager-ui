@@ -9,7 +9,6 @@ import { createTheme } from '@mui/material';
 import AppBar from '@mui/material/AppBar';
 import Badge from '@mui/material/Badge';
 import Container from '@mui/material/Container';
-import CssBaseline from '@mui/material/CssBaseline';
 import Divider from '@mui/material/Divider';
 import Drawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
@@ -21,7 +20,7 @@ import ListItemText from '@mui/material/ListItemText';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import React from 'react';
+import React, { useContext } from 'react';
 import { ThemeProvider } from 'react-bootstrap';
 import {
     HashRouter,
@@ -38,7 +37,8 @@ import { RandomRecipe, Recipes } from './Recipes';
 import { Sources } from './Sources';
 import { useToken } from './UseToken';
 import { Login } from './Login'
-import { TextContextComponent } from './common/context/TextContextProvider';
+import { TextContextComponent } from '../context/TextContextProvider';
+import { TextContext } from '../context/TextContext';
 
 function RecipesApp(props) {
 
@@ -149,10 +149,6 @@ function RecipesAppHeader(props) {
             </ThemeProvider>
         </div>
     );
-    //<NavLink to="/recipes"><Badge badgeContent={props.numRecipes} color="secondary"><Button>My Recipes</Button></Badge></NavLink>
-    //<NavLink to="/add"><Button>Add Recipes</Button></NavLink>
-    //<NavLink to="/rand"><Button>Random Recipes</Button></NavLink>
-    //<NavLink disabled to="/login"><Button disabled>Login</Button></NavLink>
 }
 
 function RecipesAppBody(props) {
@@ -185,6 +181,8 @@ function RecipesAppBody(props) {
 
 function RecipesDrawer(props) {
     //const classes = useStyles();
+
+    const texts = useContext(TextContext)
 
     const selectedItem = (hashName) => {
         return window.location.hash === hashName ? true : false;

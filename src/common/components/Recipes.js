@@ -21,11 +21,13 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import LaunchIcon from '@mui/icons-material/Launch';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import UpdateIcon from '@mui/icons-material/Update';
-import React, { Component, Fragment } from 'react';
+import React, { Component, Fragment, useContext } from 'react';
 import { PageHeader } from "./PageHeader";
 import { RecipeAlert } from './RecipeAlerts.js';
 import { RecipeDialog } from './RecipeDialog.js';
 import { useSearchParams, useNavigate, useParams } from 'react-router-dom';
+import { TextContext } from '../context/TextContext';
+import { textFromContext } from '../context/TextContextProvider';
 
 /*const useStyles = makeStyles((theme) => ({
     chip: {
@@ -68,6 +70,8 @@ export function Recipes(props) {
     const requestedRecipes = React.useRef(new RequestedRecipes([undefined], [undefined], [undefined]));
 
     const [recipes, setRecipes] = React.useState(null);
+
+    const texts = useContext(TextContext);
 
     const handleDeleteRecipe = (removedID) => {
         if (props.onRecipesChange !== undefined) {
@@ -230,7 +234,7 @@ export function Recipes(props) {
 
     return (
         <React.Fragment>
-            <PageHeader pageName="Recipes" />
+            <PageHeader pageName={textFromContext(texts, 'recipesPageHeading')} />
             <p />
             <RecipeChips data={searchParams} loading={loading.current} handleChipDelete={handleDataDelete} />
             <p />

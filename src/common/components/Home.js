@@ -5,7 +5,7 @@ import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
 import { PageHeader } from './PageHeader';
 import { Link } from 'react-router-dom';
-import { textFromContext } from './common/context/TextContextProvider';
+import { textFromContext } from '../context/TextContextProvider';
 
 export function Home(props) {
 
