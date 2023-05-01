@@ -1,4 +1,4 @@
-import { TextContext } from './TextContext'
+import { TextContext } from '@context/TextContext'
 import React, { useEffect, Children, useContext } from 'react'
 
 export function TextContextProvider({ children }) {
