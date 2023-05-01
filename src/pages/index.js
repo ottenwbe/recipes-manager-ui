@@ -1,8 +1,12 @@
 import Head from 'next/head'
 import { Inter } from 'next/font/google'
-import React, { useEffect, Fragment } from 'react'
+import React, { Fragment, useContext } from 'react'
 import 'react-dom'
 import dynamic from 'next/dynamic'
+import { TextContextProvider, TextFromContext, textFromContext } from '@/common/context/TextContextProvider'
+import { TextContext } from '@/common/context/TextContext'
+import { Footer } from '@/Footer'
+import { CssBaseline } from '@mui/material'
 
 // DynamicApp -> disable server side rendering for now until child pages are refactored
 // currently document and window are used outside of 
@@ -12,28 +16,25 @@ const DynamicApp = dynamic(() => import('@/App'), {
 })
 
 export default function Home() {
+  return (
+    <Fragment>
+      <TextContextProvider>
+        <HomeLayout />
+      </TextContextProvider>
+    </Fragment>
+  )
+}
 
-  const [textConfig, settextConfig] = React.useState({});
-
-  const updateTexts = (newTexts) => {
-    if (JSON.stringify(newTexts) !== JSON.stringify(textConfig)) {
-      settextConfig(newTexts);
-    }
-  };
-
-  useEffect(() => {
-    fetch('strings.json')
-      .then(response => response.json())
-      .then(json => updateTexts(json))
-      .catch(error => console.log(error));
-  });
+function HomeLayout() {
 
   return (
     <Fragment>
       <Head>
-        <title>{textConfig.hasOwnProperty('appName') ? textConfig.appName : ''}</title>
+        <title>{textFromContext('appName')}</title>
       </Head>
-      <DynamicApp textConfig={textConfig} />
+      <CssBaseline />
+      <DynamicApp />
+      <Footer />
     </Fragment>
   )
 } 

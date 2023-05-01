@@ -1,8 +1,8 @@
 //import { makeStyles } from '@mui/material/styles';
 import React from 'react';
 //import Jumbotron from 'react-bootstrap/Jumbotron';
-import config from "./strings.json";
 import Box from '@mui/material/Box';
+import { TextContextComponent } from './common/context/TextContextProvider';
 
 /*const useStyles = makeStyles(() => ({
     header: {
@@ -19,7 +19,7 @@ export function PageHeader(props) {
     return (<div style={{ textAlign: 'center' }} /*className={classes.header}*/>
             <Box sx={{ pt: 10 }}>
                 <h1>{props.pageName}</h1>
-                <h3>{config.pageHeader.sub}</h3>
+                <h3><TextContextComponent value='pageHeaderSub'/></h3>
             </Box>
     </div>);
 }

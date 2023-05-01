@@ -31,7 +31,6 @@ import {
     Routes,
     useNavigate
 } from "react-router-dom";
-import { Footer } from './Footer';
 import { Home } from './Home';
 import { NotFoundPage } from './NotFoundPage';
 import { RecipeForm } from './RecipeForm';
@@ -39,6 +38,7 @@ import { RandomRecipe, Recipes } from './Recipes';
 import { Sources } from './Sources';
 import { useToken } from './UseToken';
 import { Login } from './Login'
+import { TextContextComponent } from './common/context/TextContextProvider';
 
 function RecipesApp(props) {
 
@@ -71,10 +71,9 @@ function RecipesApp(props) {
 
     return (
         <HashRouter>
-        <RecipesDrawer open={menuOpen} numRecipes={numRecipes} handleDrawerClose={handleDrawerClose} textConfig={props.textConfig} />
+        <RecipesDrawer open={menuOpen} numRecipes={numRecipes} handleDrawerClose={handleDrawerClose} />
         <RecipesAppHeader open={menuOpen} numRecipes={numRecipes} handleDrawerOpen={handleDrawerOpen} />
         <RecipesAppBody open={menuOpen} onRecipeCountChange={handleRecipeCountChange} />
-        <Footer textConfig={props.textConfig}/>
         </HashRouter>
     ); 
 }
@@ -206,7 +205,7 @@ function RecipesDrawer(props) {
 
                 <div /*className={classes.drawerHeader}*/>
                     <Typography variant="h6" color="inherit">
-                        {props.textConfig.hasOwnProperty('appName') ? props.textConfig.appName : ''}
+                        <TextContextComponent value='appName'/>
                     </Typography>
                     <IconButton onClick={props.handleDrawerClose}>
                         {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
@@ -321,10 +320,7 @@ function RecipesDrawer(props) {
 function App(props) {
     
     return (
-        <React.Fragment>
-            <CssBaseline />
-           <RecipesApp textConfig={props.textConfig} /> 
-        </React.Fragment>
+        <RecipesApp /> 
     );
 }
 

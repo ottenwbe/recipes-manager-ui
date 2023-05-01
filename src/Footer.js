@@ -1,10 +1,17 @@
-import React from 'react';
+import React, {useContext} from 'react';
+import { TextContext } from './common/context/TextContext';
+import { TextContextComponent } from './common/context/TextContextProvider';
 
 export function Footer(props) {
+
+    const texts = useContext(TextContext);
+
     // draw a black line and the footer text
     return (<div className="Footer" style={{ textAlign: 'center' }}>
         <Blackline />
-        <p>{props.textConfig.hasOwnProperty('footer') && props.textConfig.footer.hasOwnProperty('text')  ? props.textConfig.footer.text : 'no footer'}</p>
+        <p>
+            <TextContextComponent value='footerText'/>
+        </p>
     </div>);
 }
 
