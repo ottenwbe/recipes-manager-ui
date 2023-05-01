@@ -1,9 +1,3 @@
-//import { makeStyles } from '@mui/styles';
-//import clsx from 'clsx';
-
-//import './App.css';
-
-
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import HomeIcon from '@mui/icons-material/Home';
@@ -15,7 +9,6 @@ import { createTheme } from '@mui/material';
 import AppBar from '@mui/material/AppBar';
 import Badge from '@mui/material/Badge';
 import Container from '@mui/material/Container';
-import CssBaseline from '@mui/material/CssBaseline';
 import Divider from '@mui/material/Divider';
 import Drawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
@@ -27,7 +20,7 @@ import ListItemText from '@mui/material/ListItemText';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import React from 'react';
+import React, { useContext } from 'react';
 import { ThemeProvider } from 'react-bootstrap';
 import {
     HashRouter,
@@ -37,13 +30,15 @@ import {
     Routes,
     useNavigate
 } from "react-router-dom";
-import { Footer } from './Footer';
 import { Home } from './Home';
 import { NotFoundPage } from './NotFoundPage';
 import { RecipeForm } from './RecipeForm';
 import { RandomRecipe, Recipes } from './Recipes';
 import { Sources } from './Sources';
-import config from "./strings.json";
+import { useToken } from './UseToken';
+import { Login } from './Login'
+import { TextContextComponent } from '../context/TextContextProvider';
+import { TextContext } from '../context/TextContext';
 
 function RecipesApp(props) {
 
@@ -51,7 +46,6 @@ function RecipesApp(props) {
     const [menuOpen, setMenuOpen] = React.useState(false);
 
     const updatNumRecipes = () => {
-        console.log('test')
         fetch('/api/v1/recipes/num')
             .then(response => response.json())
             .then(responseText => setNumRecipes(responseText))
@@ -79,7 +73,6 @@ function RecipesApp(props) {
         <RecipesDrawer open={menuOpen} numRecipes={numRecipes} handleDrawerClose={handleDrawerClose} />
         <RecipesAppHeader open={menuOpen} numRecipes={numRecipes} handleDrawerOpen={handleDrawerOpen} />
         <RecipesAppBody open={menuOpen} onRecipeCountChange={handleRecipeCountChange} />
-        <Footer />
         </HashRouter>
     ); 
 }
@@ -156,10 +149,6 @@ function RecipesAppHeader(props) {
             </ThemeProvider>
         </div>
     );
-    //<NavLink to="/recipes"><Badge badgeContent={props.numRecipes} color="secondary"><Button>My Recipes</Button></Badge></NavLink>
-    //<NavLink to="/add"><Button>Add Recipes</Button></NavLink>
-    //<NavLink to="/rand"><Button>Random Recipes</Button></NavLink>
-    //<NavLink disabled to="/login"><Button disabled>Login</Button></NavLink>
 }
 
 function RecipesAppBody(props) {
@@ -193,6 +182,8 @@ function RecipesAppBody(props) {
 function RecipesDrawer(props) {
     //const classes = useStyles();
 
+    const texts = useContext(TextContext)
+
     const selectedItem = (hashName) => {
         return window.location.hash === hashName ? true : false;
     }
@@ -211,7 +202,7 @@ function RecipesDrawer(props) {
 
                 <div /*className={classes.drawerHeader}*/>
                     <Typography variant="h6" color="inherit">
-                        {config.appName}
+                        <TextContextComponent value='appName'/>
                     </Typography>
                     <IconButton onClick={props.handleDrawerClose}>
                         {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
@@ -323,13 +314,10 @@ function RecipesDrawer(props) {
 }));
 */
 
-function App() {
-
+function App(props) {
+    
     return (
-        <React.Fragment>
-            <CssBaseline />
-           <RecipesApp /> 
-        </React.Fragment>
+        <RecipesApp /> 
     );
 }
 

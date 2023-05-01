@@ -10,8 +10,10 @@ import DialogTitle from '@mui/material/DialogTitle';
 import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
 import DeleteIcon from '@mui/icons-material/Delete';
-import React, { Component, Fragment } from 'react';
+import React, { Component, Fragment, useContext } from 'react';
 import { PageHeader } from './PageHeader';
+import { TextContext } from '../context/TextContext';
+import { textFromContext } from '../context/TextContextProvider';
 
 
 function newIngredient() {
@@ -168,7 +170,8 @@ const IngredientsRowEdit = (props) => {
 
 export function RecipeEdit(props) {
 
-    const [editableRecipe] = React.useState(makeEditableRecipe(props.recipe))
+    const [editableRecipe] = React.useState(makeEditableRecipe(props.recipe));
+    const texts = useContext(TextContext);
 
     const handleIngredientsChange = (ingredients) => {
         editableRecipe.components = ingredients
@@ -194,7 +197,7 @@ export function RecipeEdit(props) {
                     disabled={props.disabled}
                     name="name"
                     required id="standard-required"
-                    label="Title"
+                    label={textFromContext(texts, "recipeFormTitle")}
                     fullWidth
                     defaultValue={editableRecipe.name}
                     onChange={handleChange}

@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [20.x] 
+        node-version: [20.x]
     #env:
     #  APP_SHOULD_PUSH: true 
     steps:
@@ -28,7 +28,7 @@ jobs:
 
       # login to dockerhub
       - name: Login to DockerHub
-        if: success() 
+        if: success()
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}

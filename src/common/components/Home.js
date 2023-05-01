@@ -5,14 +5,16 @@ import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
 import { PageHeader } from './PageHeader';
 import { Link } from 'react-router-dom';
-import config from "./strings.json";
+import { textFromContext } from '../context/TextContextProvider';
 
 export function Home(props) {
+
+        const texts = useContext(TextContext);
 
         return (<React.Fragment>
             <PageHeader pageName="Recipe News" />
             <Card style={{ align: 'center' }}>
-                <CardHeader title={config.welcome} subheader={config.welcomeSub} style={{ textAlign: 'center', backgroundColor: "#2196f3" }} />
+                <CardHeader title={textFromContext(texts, 'welcome')} subheader={textFromContext(texts, 'welcomeSub')} style={{ textAlign: 'center', backgroundColor: "#2196f3" }} />
                 <CardContent>
                     <Paper />
 

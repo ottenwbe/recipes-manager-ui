@@ -1,0 +1,9 @@
+{ 
+    "appName": "theAppName",
+    "pageHeaderSub" : "theSubHeader",
+    "footerText" : "theFooter",
+    "welcome" : "theWelcomeText",
+    "welcomesSub" : "theWelcomeSub",
+    "recipesPageHeading" : "Recipes",
+    "recipeFormTitle" : "Title"
+ }
