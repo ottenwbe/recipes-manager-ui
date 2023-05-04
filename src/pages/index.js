@@ -36,7 +36,6 @@ function HomeLayout() {
       </Head>
       <CssBaseline />
       <DynamicApp />
-      <Footer />
     </Fragment>
   )
 } 

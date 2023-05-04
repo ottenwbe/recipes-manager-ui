@@ -40,6 +40,57 @@ import { Login } from './Login'
 import { TextContextComponent } from '../context/TextContextProvider';
 import { TextContext } from '../context/TextContext';
 import pkg from '../../../package.json'
+import { AccountCircle } from '@mui/icons-material';
+import { Box } from '@mui/material';
+import { styled, useTheme } from '@mui/material/styles';
+import { Footer } from './Footer';
+
+const drawerWidth = 240;
+
+const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
+    ({ theme, open }) => ({
+        flexGrow: 1,
+        padding: theme.spacing(3),
+        transition: theme.transitions.create('margin', {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.leavingScreen,
+        }),
+        marginLeft: `${drawerWidth}px`,
+        ...(!open && {
+            transition: theme.transitions.create('margin', {
+                easing: theme.transitions.easing.easeOut,
+                duration: theme.transitions.duration.enteringScreen,
+            }),
+            marginLeft: 0,
+        }),
+    }),
+);
+
+const StyledAppBar = styled(AppBar, {
+    shouldForwardProp: (prop) => prop !== 'open',
+})(({ theme, open }) => ({
+    transition: theme.transitions.create(['margin', 'width'], {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.leavingScreen,
+    }),
+    ...(open && {
+        width: `calc(100% - ${drawerWidth}px)`,
+        marginLeft: `${drawerWidth}px`,
+        transition: theme.transitions.create(['margin', 'width'], {
+            easing: theme.transitions.easing.easeOut,
+            duration: theme.transitions.duration.enteringScreen,
+        }),
+    }),
+}));
+
+const StyledDrawerHeader = styled('div')(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  padding: theme.spacing(0, 1),
+  // necessary for content to be below app bar
+  ...theme.mixins.toolbar,
+  justifyContent: 'flex-end',
+}));
 
 function RecipesApp(props) {
 
@@ -118,17 +169,17 @@ function RecipesAppHeader(props) {
     return (
         <div className="RecipesRouterMenu">
             <ThemeProvider theme={theme}>
-                <AppBar style={{ backgroundColor: "#2196f3" }} position="fixed"
+                <StyledAppBar open={props.open} style={{ backgroundColor: "#2196f3" }} position="fixed"
                     /*className={clsx(classes.appBar, {
                         [classes.appBarShift]: props.open,
                     })}*/>
                     <Toolbar>
-                        <IconButton /*className={clsx(classes.menuButton, props.open && classes.hide)}*/
+                        {props.open ? '' : <IconButton  /*className={clsx(classes.menuButton, props.open && classes.hide)}*/
                             color="inherit"
                             aria-label="Menu"
                             onClick={props.handleDrawerOpen}>
                             <MenuIcon />
-                        </IconButton>
+                        </IconButton>}
                         <div style={{ flexGrow: 1, }} />
                         <OutlinedInput
                             fullWidth
@@ -146,7 +197,7 @@ function RecipesAppHeader(props) {
                             }
                         />
                     </Toolbar>
-                </AppBar>
+                </StyledAppBar>
             </ThemeProvider>
         </div>
     );
@@ -162,7 +213,7 @@ function RecipesAppBody(props) {
 
     //{ flexGrow: 1, align: 'center' }    
     return (<Container maxWidth="xl">
-        <main /*className={classes.recipesContent}*/>
+        <Main open={props.open}>
             <React.Fragment /*className={classes.drawerHeader}*/ />
             <Routes>
                 <Route exact path="/" element={<Navigate to="/recipes" />} />
@@ -176,7 +227,8 @@ function RecipesAppBody(props) {
                 <Route path="/health" element={<div style={{ textAlign: 'center' }}>I am Up</div>}></Route>
                 <Route path="*" element={<NotFoundPage />} />
             </Routes>
-        </main>
+            <Footer />
+        </Main>
     </Container>);
 }
 
@@ -196,19 +248,30 @@ function RecipesDrawer(props) {
             anchor="left"
             open={props.open}
             onClose={props.handleDrawerClose}
+
+            sx={{
+                width: drawerWidth,
+                flexShrink: 0,
+                '& .MuiDrawer-paper': {
+                  width: drawerWidth,
+                  boxSizing: 'border-box',
+                },
+              }}
         /*classes={{
             paper: classes.drawerPaper,
         }}*/
         >
-
-            <div /*className={classes.drawerHeader}*/>
+            <StyledDrawerHeader>
                 <Typography variant="h6" color="inherit">
                     <TextContextComponent value='appName' />
+
+                    <IconButton onClick={props.handleDrawerClose} >
+                        {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+                    </IconButton>
+
                 </Typography>
-                <IconButton onClick={props.handleDrawerClose}>
-                    {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-                </IconButton>
-            </div>
+            </StyledDrawerHeader>
+
             <Divider />
             <List>
                 <NavLink to="/recipes" style={{ color: '#505050', textDecoration: 'none' }}>
@@ -248,6 +311,12 @@ function RecipesDrawer(props) {
                         <ListItemText primary="News" />
                     </ListItemButton>
                 </NavLink>
+                {/* <NavLink to="/account" style={{ color: '#505050', textDecoration: 'none' }}> */}
+                <ListItemButton disabled={true} key="Account" selected={selectedItem('#/account')}>
+                    <ListItemIcon><AccountCircle style={{ color: '#505050' }} /></ListItemIcon>
+                    <ListItemText primary="Account" />
+                </ListItemButton>
+                {/* </NavLink>                 */}
                 <p />
                 <Divider variant='middle' />
                 <div style={{ textAlign: 'center' }} >

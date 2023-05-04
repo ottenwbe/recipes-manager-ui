@@ -17,7 +17,7 @@ export function PageHeader(props) {
    // const classes = useStyles();
  //</Jumbotron>//<Jumbotron>
     return (<div style={{ textAlign: 'center' }} /*className={classes.header}*/>
-            <Box sx={{ pt: 10 }}>
+            <Box sx={{ pt: 4 }}>
                 <h1>{props.pageName}</h1>
                 <h3><TextContextComponent value='pageHeaderSub'/></h3>
             </Box>

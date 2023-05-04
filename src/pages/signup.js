@@ -34,9 +34,9 @@ function HomeLayout() {
 
     const texts = useContext(TextContext);
 
-    const keyCloakSignUp = () => { 
+    const keyCloakSignUp = () => {
         console.log('click keycloak sign up')
-     };
+    };
     const keyCloakLogin = () => { console.log('click keycloak log in') };
 
     return (
@@ -50,7 +50,7 @@ function HomeLayout() {
                     <Stack height="90vh" alignItems="stretch" direction="column" useFlexGap flexWrap="wrap">
                         <Item sx={{ width: '100%' }}>
                             <h1><TextContextComponent value='appName' /></h1>
-                            <h2><TextContextComponent value='signupAd'/></h2>
+                            <h2><TextContextComponent value='signupAd' /></h2>
                             <p />
                             <Button onClick={keyCloakSignUp} variant="contained" endIcon={<KeyIcon />}>
                                 <h3><TextContextComponent value='signupKeyCloak' /></h3>
