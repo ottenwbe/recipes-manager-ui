@@ -59,7 +59,7 @@ function HomeLayout() {
                             <Button
                                 variant="text"
                                 onClick={keyCloakLogin} >
-                                Login with KeyCloak
+                                <TextContextComponent value='loginKeyCloak' />
                             </Button>
                         </Item>
                     </Stack>
