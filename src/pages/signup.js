@@ -22,11 +22,9 @@ const Item = styled(Box)(({ theme }) => ({
 
 export default function Home() {
     return (
-        <Fragment>
-            <TextContextProvider>
-                <HomeLayout />
-            </TextContextProvider>
-        </Fragment>
+        <TextContextProvider>
+            <HomeLayout />
+        </TextContextProvider>
     )
 }
 
@@ -37,9 +35,9 @@ function HomeLayout() {
     const keyCloakSignUp = () => {
         window.location.replace('/api/v1/auth/keycloak/login?signup=true');
     };
-    const keyCloakLogin = () => { 
+    const keyCloakLogin = () => {
         window.location.replace('/api/v1/auth/keycloak/login');
-     };
+    };
 
     return (
         <Fragment>

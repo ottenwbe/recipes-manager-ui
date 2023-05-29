@@ -5,7 +5,7 @@ import LocalDiningIcon from '@mui/icons-material/LocalDining';
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import StorageIcon from '@mui/icons-material/Storage';
-import { createTheme } from '@mui/material';
+import { createTheme, Box } from '@mui/material';
 import AppBar from '@mui/material/AppBar';
 import Badge from '@mui/material/Badge';
 import Container from '@mui/material/Container';
@@ -41,7 +41,6 @@ import { TextContextComponent } from '../context/TextContextProvider';
 import { TextContext } from '../context/TextContext';
 import pkg from '../../../package.json'
 import { AccountCircle } from '@mui/icons-material';
-import { Box } from '@mui/material';
 import { styled, useTheme } from '@mui/material/styles';
 import { Footer } from './Footer';
 
