@@ -35,9 +35,11 @@ function HomeLayout() {
     const texts = useContext(TextContext);
 
     const keyCloakSignUp = () => {
-        console.log('click keycloak sign up')
+        window.location.replace('/api/v1/auth/keycloak/login?signup=true');
     };
-    const keyCloakLogin = () => { console.log('click keycloak log in') };
+    const keyCloakLogin = () => { 
+        window.location.replace('/api/v1/auth/keycloak/login');
+     };
 
     return (
         <Fragment>
