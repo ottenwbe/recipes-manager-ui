@@ -107,15 +107,15 @@ function RecipesApp(props) {
 
     const handleRecipeCountChange = useCallback(() => {
         updatNumRecipes();
-    });
+    }, [updatNumRecipes]);
 
     const handleDrawerOpen = useCallback(() => {
         setMenuOpen(true);
-    });
+    }, [setMenuOpen]);
 
     const handleDrawerClose = useCallback(() => {
         setMenuOpen(false);
-    });
+    }, [setMenuOpen]);
 
     return (
         <HashRouter>
@@ -257,8 +257,8 @@ function RecipesDrawer(props) {
             <DrawerHeader handleDrawerClose={props.handleDrawerClose} />
 
             <Divider />
-            
-            <DrawerList />
+
+            <DrawerList numRecipes={props.numRecipes} />
 
         </Drawer>
     );
@@ -325,66 +325,84 @@ function RecipesDrawer(props) {
 }));
 */
 
+/**
+ * List of all Navlinks of the Drawer
+ * 
+ * @param {*} props 
+ * @returns drawerlist
+ */
 function DrawerList(props) {
 
+    /**
+     * funtion to verify if an item should be highlighted and be selected
+     * 
+     * @param {*} hashName 
+     * @returns true iff the hashname is found
+     */
     const selectedItem = (hashName) => {
-        return window.location.hash === hashName ? true : false;
-    }   
+        return window.location.hash === hashName;
+    }
 
     return (
         <List>
-                <NavLink to="/recipes" style={{ color: '#505050', textDecoration: 'none' }}>
-                    <ListItemButton key="My Recipes" selected={selectedItem('#/recipes')}>
-                        <ListItemIcon>
-                            <LocalDiningIcon style={{ color: '#505050' }} />
-                        </ListItemIcon>
-                        <Badge badgeContent={props.numRecipes} color="secondary">
-                            <ListItemText primary="My Recipes      " />
-                        </Badge>
-                    </ListItemButton>
-
-                </NavLink>
-                <NavLink to="/rand" style={{ color: '#505050', textDecoration: 'none' }}>
-                    <ListItemButton key="Random Recipes" selected={selectedItem('#/rand')}>
-                        <ListItemIcon />
-                        <ListItemText primary="Random Recipes" />
-                    </ListItemButton>
-                </NavLink>
-                <NavLink to="/add" style={{ color: '#505050', textDecoration: 'none' }}>
-                    <ListItemButton key="Add Recipes" selected={selectedItem('#/add')}>
-                        <ListItemIcon />
-                        <ListItemText primary="Add Recipes" />
-                    </ListItemButton>
-                </NavLink>
-                <Divider />
-                <NavLink to="/src" style={{ color: '#505050', textDecoration: 'none' }}>
-                    <ListItemButton key="Sources" selected={selectedItem('#/sources')}>
-                        <ListItemIcon><StorageIcon style={{ color: '#505050' }} /></ListItemIcon>
-                        <ListItemText primary="Recipe Sources" />
-                    </ListItemButton>
-                </NavLink>
-                <Divider />
-                <NavLink to="/news" style={{ color: '#505050', textDecoration: 'none' }}>
-                    <ListItemButton key="News" selected={selectedItem('#/news')}>
-                        <ListItemIcon><HomeIcon style={{ color: '#505050' }} /></ListItemIcon>
-                        <ListItemText primary="News" />
-                    </ListItemButton>
-                </NavLink>
-                {/* <NavLink to="/account" style={{ color: '#505050', textDecoration: 'none' }}> */}
-                <ListItemButton disabled key="Account" selected={selectedItem('#/account')}>
-                    <ListItemIcon><AccountCircle style={{ color: '#505050' }} /></ListItemIcon>
-                    <ListItemText primary="Account" />
+            <NavLink to="/recipes" style={{ color: '#505050', textDecoration: 'none' }}>
+                <ListItemButton key="My Recipes" selected={selectedItem('#/recipes')}>
+                    <ListItemIcon>
+                        <LocalDiningIcon style={{ color: '#505050' }} />
+                    </ListItemIcon>
+                    <Badge badgeContent={props.numRecipes} color="secondary">
+                        <ListItemText primary="My Recipes      " />
+                    </Badge>
                 </ListItemButton>
-                {/* </NavLink>                 */}
-                <p />
-                <Divider variant='middle' />
-                <div style={{ textAlign: 'center' }} >
-                    {pkg.version}
-                </div>
-            </List>
+
+            </NavLink>
+            <NavLink to="/rand" style={{ color: '#505050', textDecoration: 'none' }}>
+                <ListItemButton key="Random Recipes" selected={selectedItem('#/rand')}>
+                    <ListItemIcon />
+                    <ListItemText primary="Random Recipes" />
+                </ListItemButton>
+            </NavLink>
+            <NavLink to="/add" style={{ color: '#505050', textDecoration: 'none' }}>
+                <ListItemButton key="Add Recipes" selected={selectedItem('#/add')}>
+                    <ListItemIcon />
+                    <ListItemText primary="Add Recipes" />
+                </ListItemButton>
+            </NavLink>
+            <Divider />
+            <NavLink to="/src" style={{ color: '#505050', textDecoration: 'none' }}>
+                <ListItemButton key="Sources" selected={selectedItem('#/sources')}>
+                    <ListItemIcon><StorageIcon style={{ color: '#505050' }} /></ListItemIcon>
+                    <ListItemText primary="Recipe Sources" />
+                </ListItemButton>
+            </NavLink>
+            <Divider />
+            <NavLink to="/news" style={{ color: '#505050', textDecoration: 'none' }}>
+                <ListItemButton key="News" selected={selectedItem('#/news')}>
+                    <ListItemIcon><HomeIcon style={{ color: '#505050' }} /></ListItemIcon>
+                    <ListItemText primary="News" />
+                </ListItemButton>
+            </NavLink>
+            {/* <NavLink to="/account" style={{ color: '#505050', textDecoration: 'none' }}> */}
+            <ListItemButton disabled key="Account" selected={selectedItem('#/account')}>
+                <ListItemIcon><AccountCircle style={{ color: '#505050' }} /></ListItemIcon>
+                <ListItemText primary="Account" />
+            </ListItemButton>
+            {/* </NavLink>                 */}
+            <p />
+            <Divider variant='middle' />
+            <div style={{ textAlign: 'center' }} >
+                {pkg.version}
+            </div>
+        </List>
     )
 }
 
+/**
+ * Component representing the header of the side drawer element
+ * 
+ * @param {*} props 
+ * @returns header of the drawer
+ */
 function DrawerHeader(props) {
 
     return (

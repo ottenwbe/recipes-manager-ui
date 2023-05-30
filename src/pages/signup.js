@@ -65,14 +65,14 @@ function SignUpComponents() {
     */
     const keyCloakSignUp = useCallback(() => {
         window.location.replace('/api/v1/auth/keycloak/login?signup=true');
-    });
+    }, []);
 
     /**
     * Function to be called when login is requested
     */
     const keyCloakLogin = useCallback(() => {
         window.location.replace('/api/v1/auth/keycloak/login');
-    });
+    }, []);
 
     return (
         <Stack height="90vh" alignItems="stretch" direction="column" useFlexGap flexWrap="wrap">
