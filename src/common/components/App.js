@@ -105,9 +105,9 @@ function RecipesApp(props) {
         updatNumRecipes();
     });
 
-    const handleRecipeCountChange = useCallback(() => {
+    const handleRecipeCountChange = () => {
         updatNumRecipes();
-    }, [setNumRecipes]);
+    };
 
     const handleDrawerOpen = useCallback(() => {
         setMenuOpen(true);
