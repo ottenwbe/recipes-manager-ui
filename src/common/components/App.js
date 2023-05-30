@@ -107,7 +107,7 @@ function RecipesApp(props) {
 
     const handleRecipeCountChange = useCallback(() => {
         updatNumRecipes();
-    }, [updatNumRecipes]);
+    }, [setNumRecipes]);
 
     const handleDrawerOpen = useCallback(() => {
         setMenuOpen(true);
@@ -418,6 +418,12 @@ function DrawerHeader(props) {
         </StyledDrawerHeader>)
 }
 
+/**
+ * Main Application
+ * 
+ * @param {*} props 
+ * @returns main application
+ */
 function App(props) {
 
     return (
