@@ -1,11 +1,12 @@
-import React from 'react';
+import React,  { useContext } from 'react';
 import Paper from '@mui/material/Paper';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
 import { PageHeader } from './PageHeader';
 import { Link } from 'react-router-dom';
-import { textFromContext } from '../context/TextContextProvider';
+import { textFromContext } from '@context/TextContextProvider';
+import { TextContext } from '@context/TextContext';
 
 export function Home(props) {
 

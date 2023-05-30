@@ -5,5 +5,8 @@
     "welcome" : "theWelcomeText",
     "welcomesSub" : "theWelcomeSub",
     "recipesPageHeading" : "Recipes",
-    "recipeFormTitle" : "Title"
+    "recipeFormTitle" : "Title",
+    "signupAd": "Manage your Recipes and Share them!",
+    "signupKeyCloak": "Sign Up with KeyCloak",
+    "loginKeyCloak": "Login with KeyCloak"
  }
