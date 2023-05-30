@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import { Fragment, useContext } from 'react'
+import { Fragment, useContext, useCallback } from 'react'
 import 'react-dom'
 import { Footer } from '@components/Footer'
 import { CssBaseline } from '@mui/material'
@@ -63,16 +63,16 @@ function SignUpComponents() {
     /**
     * Function to be called when signing up is requested 
     */
-    const keyCloakSignUp = () => {
+    const keyCloakSignUp = useCallback(() => {
         window.location.replace('/api/v1/auth/keycloak/login?signup=true');
-    };
+    });
 
     /**
     * Function to be called when login is requested
     */
-    const keyCloakLogin = () => {
+    const keyCloakLogin = useCallback(() => {
         window.location.replace('/api/v1/auth/keycloak/login');
-    };
+    });
 
     return (
         <Stack height="90vh" alignItems="stretch" direction="column" useFlexGap flexWrap="wrap">
