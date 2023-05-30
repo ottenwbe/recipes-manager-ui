@@ -5,7 +5,7 @@ import LocalDiningIcon from '@mui/icons-material/LocalDining';
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import StorageIcon from '@mui/icons-material/Storage';
-import { createTheme, Box } from '@mui/material';
+import { createTheme } from '@mui/material';
 import AppBar from '@mui/material/AppBar';
 import Badge from '@mui/material/Badge';
 import Container from '@mui/material/Container';
@@ -35,13 +35,11 @@ import { NotFoundPage } from './NotFoundPage';
 import { RecipeForm } from './RecipeForm';
 import { RandomRecipe, Recipes } from './Recipes';
 import { Sources } from './Sources';
-import { useToken } from './UseToken';
-import { Login } from './Login'
 import { TextContextComponent } from '../context/TextContextProvider';
 import { TextContext } from '../context/TextContext';
 import pkg from '../../../package.json'
 import { AccountCircle } from '@mui/icons-material';
-import { styled, useTheme } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 import { Footer } from './Footer';
 
 const drawerWidth = 240;
@@ -83,12 +81,12 @@ const StyledAppBar = styled(AppBar, {
 }));
 
 const StyledDrawerHeader = styled('div')(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  padding: theme.spacing(0, 1),
-  // necessary for content to be below app bar
-  ...theme.mixins.toolbar,
-  justifyContent: 'flex-end',
+    display: 'flex',
+    alignItems: 'center',
+    padding: theme.spacing(0, 1),
+    // necessary for content to be below app bar
+    ...theme.mixins.toolbar,
+    justifyContent: 'flex-end',
 }));
 
 function RecipesApp(props) {
@@ -252,10 +250,10 @@ function RecipesDrawer(props) {
                 width: drawerWidth,
                 flexShrink: 0,
                 '& .MuiDrawer-paper': {
-                  width: drawerWidth,
-                  boxSizing: 'border-box',
+                    width: drawerWidth,
+                    boxSizing: 'border-box',
                 },
-              }}
+            }}
         /*classes={{
             paper: classes.drawerPaper,
         }}*/
@@ -286,13 +284,13 @@ function RecipesDrawer(props) {
                 </NavLink>
                 <NavLink to="/rand" style={{ color: '#505050', textDecoration: 'none' }}>
                     <ListItemButton key="Random Recipes" selected={selectedItem('#/rand')}>
-                        <ListItemIcon></ListItemIcon>
+                        <ListItemIcon />
                         <ListItemText primary="Random Recipes" />
                     </ListItemButton>
                 </NavLink>
                 <NavLink to="/add" style={{ color: '#505050', textDecoration: 'none' }}>
                     <ListItemButton key="Add Recipes" selected={selectedItem('#/add')}>
-                        <ListItemIcon></ListItemIcon>
+                        <ListItemIcon />
                         <ListItemText primary="Add Recipes" />
                     </ListItemButton>
                 </NavLink>
@@ -311,7 +309,7 @@ function RecipesDrawer(props) {
                     </ListItemButton>
                 </NavLink>
                 {/* <NavLink to="/account" style={{ color: '#505050', textDecoration: 'none' }}> */}
-                <ListItemButton disabled={true} key="Account" selected={selectedItem('#/account')}>
+                <ListItemButton disabled key="Account" selected={selectedItem('#/account')}>
                     <ListItemIcon><AccountCircle style={{ color: '#505050' }} /></ListItemIcon>
                     <ListItemText primary="Account" />
                 </ListItemButton>
