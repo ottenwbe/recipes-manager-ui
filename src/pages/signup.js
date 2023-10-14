@@ -23,7 +23,7 @@ const Item = styled(Box)(({ theme }) => ({
 /**
  * Component to represent the Signup Page embedded in a corresponding Context Provider
  */
-export default function Home() {
+export default function SignupHome() {
     return (
         <TextContextProvider>
             <HomeLayout />
