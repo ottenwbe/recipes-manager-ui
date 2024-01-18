@@ -1,4 +1,4 @@
-FROM docker.io/node:20-bullseye-slim
+FROM docker.io/node:21-bullseye-slim
 
 # install and update npm
 RUN npm install -g npm
