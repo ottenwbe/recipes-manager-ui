@@ -1,7 +1,6 @@
 # node
 node_modules
 build
-.next
 dist
 release_notes.sh
 npm-upgrade.sh

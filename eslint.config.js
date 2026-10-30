@@ -4,7 +4,7 @@ import reactHooks from 'eslint-plugin-react-hooks';
 
 export default [
   {
-    ignores: ['dist', 'node_modules', 'build', '.next', 'coverage', 'public'],
+    ignores: ['dist', 'node_modules', 'build', 'coverage', 'public'],
   },
   js.configs.recommended,
   {
