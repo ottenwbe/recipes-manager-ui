@@ -1,17 +1,11 @@
-import Head from 'next/head'
-import React, { Fragment, useContext } from 'react'
-import 'react-dom'
-import dynamic from 'next/dynamic'
-import { TextContextProvider, TextFromContext, textFromContext } from '@context/TextContextProvider'
+import React, { Fragment, useContext, Suspense, lazy } from 'react'
+import { TextContextProvider, TextContextComponent, textFromContext } from '@context/TextContextProvider'
 import { TextContext } from '@context/TextContext'
 import { CssBaseline } from '@mui/material'
 
 // DynamicApp -> disable server side rendering for now until child pages are refactored
 // currently document and window are used outside of 
-const DynamicApp = dynamic(() => import('@components/App'), {
-  loading: () => <div style={{ textAlign: 'center' }}>Loading...</div>,
-  ssr: false,
-})
+const DynamicApp = lazy(() => import('@components/App'))
 
 export default function Home() {
   return (
@@ -24,16 +18,14 @@ export default function Home() {
 }
 
 function HomeLayout() {
-
   const texts = useContext(TextContext);
   
   return (
     <Fragment>
-      <Head>
-        <title>{textFromContext(texts, 'appName')}</title>
-      </Head>
       <CssBaseline />
-      <DynamicApp />
+      <Suspense fallback={<div style={{ textAlign: 'center' }}>Loading...</div>}>
+            <DynamicApp />
+      </Suspense>
     </Fragment>
   )
 } 

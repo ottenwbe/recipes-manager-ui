@@ -1,4 +1,3 @@
-import Head from 'next/head'
 import { Fragment, useContext, useCallback } from 'react'
 import 'react-dom'
 import { Footer } from '@components/Footer'
@@ -40,9 +39,6 @@ function HomeLayout() {
 
     return (
         <Fragment>
-            <Head>
-                <title>{textFromContext(texts, 'appName')}</title>
-            </Head>
             <CssBaseline />
             <Container>
                 <Box height="90vh" >

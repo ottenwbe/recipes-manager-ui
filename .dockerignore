@@ -6,6 +6,7 @@ node_modules
 .github
 .travis.yml
 Dockerfile
+VERSION
 
 .gitignore
 .dockerignore

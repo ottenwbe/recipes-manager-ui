@@ -34,7 +34,7 @@ Before you start, ensure that npm is installed.
     ```sh
     npm i
     npm run build
-    npm start
+    npm run preview
     ```
 
     
@@ -43,7 +43,7 @@ Before you start, ensure that npm is installed.
 
 # Development
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app) and migrated to [Next.js](https://nextjs.org/).
+This project uses [Vite](https://vitejs.dev/) for a fast development experience.
 
 ## Start
 
@@ -60,16 +60,14 @@ NOTE: REQUIRES REWORK
 
     `npm test`
 
-Launches the test runner in the interactive watch mode.<br>
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Launches the Vitest runner.
 
 ## Build
 
 ### Build App 
 
     `npm run build`
-
-Builds the app for production to the `.next` folder.<br>
+Builds the app for production to the `dist` folder.<br>
 It correctly bundles React in production mode and optimizes the build for the best performance.
 
 The build is minified and the filenames include the hashes.<br>
