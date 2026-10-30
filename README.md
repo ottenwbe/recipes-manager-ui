@@ -60,7 +60,7 @@ NOTE: REQUIRES REWORK
 
     `npm test`
 
-Launches the Vitest runner.
+Launches the Jest runner.
 
 ## Build
 
@@ -77,7 +77,7 @@ Your app is ready to be deployed!
 
     docker build -t "recipes-manager-ui:SNAPSHOT" -f Dockerfile .
 
-While building the docker container, all dpendencies are installed. The app, however, is built when starting the container to reflect changes to the environment variables.
+While building the docker container, all dependencies are installed and the app is built via `npm run build` as part of the image build.
 
 ### Build Scripts
 

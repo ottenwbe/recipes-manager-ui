@@ -1,11 +1,6 @@
-import React, { useContext } from 'react';
-import { TextContext } from '@context/TextContext';
 import { TextContextComponent } from '@context/TextContextProvider';
 
 export function Footer(props) {
-
-    const texts = useContext(TextContext);
-
     // draw a black line and the footer text
     return (
         <div className="Footer" style={{ textAlign: 'center' }}>

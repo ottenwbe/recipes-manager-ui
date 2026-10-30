@@ -1,5 +1,4 @@
 //import { makeStyles } from '@mui/material/styles';
-import React from 'react';
 //import Jumbotron from 'react-bootstrap/Jumbotron';
 import Box from '@mui/material/Box';
 import { TextContextComponent } from '../context/TextContextProvider';

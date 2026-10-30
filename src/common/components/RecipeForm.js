@@ -10,7 +10,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
 import DeleteIcon from '@mui/icons-material/Delete';
-import React, { Fragment, useContext, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { PageHeader } from './PageHeader';
 import { TextContext } from '../context/TextContext';
 import { textFromContext } from '../context/TextContextProvider';

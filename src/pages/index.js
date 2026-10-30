@@ -1,7 +1,6 @@
-import React, { Fragment, useContext, Suspense, lazy } from 'react'
-import { TextContextProvider, TextContextComponent, textFromContext } from '@context/TextContextProvider'
-import { TextContext } from '@context/TextContext'
-import { CssBaseline } from '@mui/material'
+import { Fragment, Suspense, lazy } from 'react';
+import { TextContextProvider } from '@context/TextContextProvider';
+import { CssBaseline } from '@mui/material';
 
 // DynamicApp -> disable server side rendering for now until child pages are refactored
 // currently document and window are used outside of 
@@ -18,7 +17,6 @@ export default function Home() {
 }
 
 function HomeLayout() {
-  const texts = useContext(TextContext);
   
   return (
     <Fragment>

@@ -194,7 +194,7 @@ export function Recipes(props) {
     }
 
     const renderRecipes = () => {
-        let result = null;
+        let result;
         if (recipes != null) {
             result = (
                 <Fragment>

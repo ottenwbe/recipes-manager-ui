@@ -1,9 +1,8 @@
-import { Fragment, useContext, useCallback } from 'react'
+import { Fragment, useCallback } from 'react';
 import 'react-dom'
 import { Footer } from '@components/Footer'
 import { CssBaseline } from '@mui/material'
-import { TextContextComponent, TextContextProvider, textFromContext } from '@context/TextContextProvider'
-import { TextContext } from '@context/TextContext'
+import { TextContextComponent, TextContextProvider } from '@context/TextContextProvider';
 import { Container } from 'react-bootstrap'
 import Stack from '@mui/material/Stack';
 import { styled } from '@mui/material/styles';
@@ -34,9 +33,6 @@ export default function Home() {
  * Component to represent the Signup layout and corresponding State
  */
 function HomeLayout() {
-
-    const texts = useContext(TextContext);
-
     return (
         <Fragment>
             <CssBaseline />

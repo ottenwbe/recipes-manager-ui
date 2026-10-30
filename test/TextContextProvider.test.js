@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, screen } from '@testing-library/react';
 import  {TextContextComponent} from '../src/common/context/TextContextProvider';
 import '@testing-library/jest-dom';

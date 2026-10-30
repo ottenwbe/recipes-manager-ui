@@ -1,6 +1,5 @@
 //import './Login.css';
 
-import React from 'react';
 import FormControl from '@mui/material/FormControl';
 
 export function Login() {

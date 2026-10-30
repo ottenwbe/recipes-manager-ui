@@ -20,7 +20,7 @@ import ListItemText from '@mui/material/ListItemText';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import React, { useContext, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { ThemeProvider } from 'react-bootstrap';
 import {
     HashRouter,
@@ -36,7 +36,6 @@ import { RecipeForm } from './RecipeForm';
 import { RandomRecipe, Recipes } from './Recipes';
 import { Sources } from './Sources';
 import { TextContextComponent } from '../context/TextContextProvider';
-import { TextContext } from '../context/TextContext';
 import pkg from '../../../package.json'
 import { AccountCircle } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
@@ -231,8 +230,6 @@ function RecipesAppBody(props) {
 
 function RecipesDrawer(props) {
     //const classes = useStyles();
-
-    const texts = useContext(TextContext)
 
     return (
         <Drawer

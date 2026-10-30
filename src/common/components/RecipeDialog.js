@@ -6,7 +6,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import FormControl from '@mui/material/FormControl';
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { RecipeEdit } from './RecipeForm';
 
 
