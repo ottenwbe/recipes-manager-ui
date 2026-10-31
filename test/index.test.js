@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import App from '../src/common/components/App';
 
-jest.mock('../src/common/components/Recipes', () => {
+jest.mock('../src/features/recipes/Recipes', () => {
   const React = jest.requireActual('react');
   const { useParams } = jest.requireActual('react-router-dom');
 

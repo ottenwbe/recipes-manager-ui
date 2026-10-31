@@ -20,8 +20,9 @@ import ListItemText from '@mui/material/ListItemText';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import logo from '../../assets/logo.svg';
+import { getRecipeCount } from '../../api/recipes';
 import {
     HashRouter,
     NavLink,
@@ -32,8 +33,8 @@ import {
 } from "react-router-dom";
 import { Home } from './Home';
 import { NotFoundPage } from './NotFoundPage';
-import { RecipeForm } from './RecipeForm';
-import { RandomRecipe, Recipes } from './Recipes';
+import { RecipeForm } from '../../features/recipes/RecipeForm';
+import { RandomRecipe, Recipes } from '../../features/recipes/Recipes';
 import { Sources } from './Sources';
 import { TextContextComponent } from '../context/TextContextProvider';
 import pkg from '../../../package.json'
@@ -114,23 +115,27 @@ const StyledDrawerHeader = styled('div')(({ theme }) => ({
 
 function RecipesApp() {
 
-    const [numRecipes, setNumRecipes] = React.useState(0);
-    const [menuOpen, setMenuOpen] = React.useState(false);
+    const [numRecipes, setNumRecipes] = useState(0);
+    const [menuOpen, setMenuOpen] = useState(false);
 
-    const updatNumRecipes = () => {
-        fetch('/api/v1/recipes/num')
-            .then(response => response.json())
-            .then(responseText => setNumRecipes(responseText))
-            .catch(error => console.log(error));
-    };
+    const fetchRecipeCount = useCallback(async () => {
+        try {
+            const count = await getRecipeCount();
+            setNumRecipes(count);
+        } catch (error) {
+            console.error('Failed to fetch recipe count:', error);
+            setNumRecipes(0);
+        }
+    }, []);
 
-    React.useEffect(() => {
-        updatNumRecipes();
-    });
+    // Fetch recipe count only once on mount
+    useEffect(() => {
+        fetchRecipeCount();
+    }, [fetchRecipeCount]); // Runs only on mount (fetchRecipeCount is stable)
 
-    const handleRecipeCountChange = () => {
-        updatNumRecipes();
-    };
+    const handleRecipeCountChange = useCallback(() => {
+        fetchRecipeCount();
+    }, [fetchRecipeCount]);
 
     const handleDrawerOpen = useCallback(() => {
         setMenuOpen(true);
