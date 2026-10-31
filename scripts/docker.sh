@@ -63,8 +63,7 @@ Commands:
   push        Push Docker image
 
 Build options:
-    --multi            Use docker buildx for multi-platform build (arm64, amd64)
-                                         Without --push, keep the result in BuildKit cache only.
+    --multi            Use docker buildx for arm64/amd64 builds (cache-only unless --push)
   --push             Push image after build
   --tag TAG          Image tag (default: version from package.json)
   --registry REG     Docker registry (default: docker.io)
