@@ -16,8 +16,9 @@
 .footer-divider {
   background-color: black;
   height: 1px;
-  width: 100%;
+  width: 200px;
   border: none;
+  margin: 0 auto;
 }
 
 /* TODO: potential better solution
