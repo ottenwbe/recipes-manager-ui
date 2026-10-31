@@ -34,7 +34,7 @@ Before you start, ensure that npm is installed.
     ```sh
     npm i
     npm run build
-    npm start
+    npm run preview
     ```
 
     
@@ -43,7 +43,7 @@ Before you start, ensure that npm is installed.
 
 # Development
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app) and migrated to [Next.js](https://nextjs.org/).
+This project uses [Vite](https://vitejs.dev/) for a fast development experience.
 
 ## Start
 
@@ -60,16 +60,14 @@ NOTE: REQUIRES REWORK
 
     `npm test`
 
-Launches the test runner in the interactive watch mode.<br>
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Launches the Jest runner.
 
 ## Build
 
 ### Build App 
 
     `npm run build`
-
-Builds the app for production to the `.next` folder.<br>
+Builds the app for production to the `dist` folder.<br>
 It correctly bundles React in production mode and optimizes the build for the best performance.
 
 The build is minified and the filenames include the hashes.<br>
@@ -79,7 +77,7 @@ Your app is ready to be deployed!
 
     docker build -t "recipes-manager-ui:SNAPSHOT" -f Dockerfile .
 
-While building the docker container, all dpendencies are installed. The app, however, is built when starting the container to reflect changes to the environment variables.
+While building the docker container, all dependencies are installed and the app is built via `npm run build` as part of the image build.
 
 ### Build Scripts
 
@@ -87,19 +85,47 @@ All build scripts are found in scripts directory.
 
 ```
 .
-├── docker_buildx.sh 
-├── make_docker_for_minikube.sh
-├── make_snapshot.sh
-└── push_docker.sh
+└── docker.sh
 ```
 
-* docker_buildx.sh <should_push>
+Unified Docker script with the following commands:
 
-    Opinionated way to build the docker image for arm and amd64. This multi-arch build it relies on buildx. The version is determined by a git tag and written to ```package.json``` (e.g., 0.1.0) as well as tagged to the docker image (e.g., v0.1.0). It is tailored for the CI/CD pipelines.
+* `docker.sh build` - Build Docker image
+  
+  Options:
+  - `--multi` - Use docker buildx for arm64/amd64 builds (cache-only unless `--push`)
+  - `--push` - Push image after build
+  - `--tag TAG` - Image tag (default: version from package.json)
+  - `--registry REG` - Docker registry (default: docker.io)
+  - `--type TYPE` - Build type: dev, production (default: production)
 
-* make_docker_for_minikube.sh
+  Examples:
+  ```sh
+  bash scripts/docker.sh build --type dev
+  bash scripts/docker.sh build --multi --push --type production
+  bash scripts/docker.sh build --type dev --push
+  ```
 
-    Builds a container with a development tag and pushes it to a local minikube registry.
+* `docker.sh push` - Push Docker image
+  
+  Options:
+  - `--tag TAG` - Image tag to push
+  - `--registry REG` - Docker registry (default: docker.io)
+  - `-u USER` - Docker username
+
+  Environment Variables:
+  - `DOCKER_USERNAME` - Docker registry username
+  - `DOCKER_PASSWORD` - Docker registry password (recommended over command-line)
+
+  Examples:
+  ```sh
+  bash scripts/docker.sh push --tag 1.0.0 -u user
+  # Or use environment variables:
+  export DOCKER_USERNAME=user DOCKER_PASSWORD=pass
+  bash scripts/docker.sh push --tag 1.0.0
+  ```
+
+Note: The build script uses version from package.json and standardized OpenContainers labels.
 
 ### Release Process
 
@@ -125,3 +151,5 @@ git push origin v1.2.3
 ## Disclaimer
 
 I created this project for the purpose of educating myself and personal use. If you are interested in the outcome, feel free to contribute; this work is published under the MIT license.
+
+Some cleanup and maintenance has been done with the help of AI agents.

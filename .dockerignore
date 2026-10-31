@@ -1,11 +1,11 @@
 build
 scripts
 node_modules
-.next
 
 .github
 .travis.yml
 Dockerfile
+VERSION
 
 .gitignore
 .dockerignore

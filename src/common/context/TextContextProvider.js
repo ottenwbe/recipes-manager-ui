@@ -1,5 +1,5 @@
 import { TextContext } from '@context/TextContext'
-import React, { useEffect, Children, useContext } from 'react'
+import React, { useEffect, useContext } from 'react'
 
 export function TextContextProvider({ children }) {
     const [textConfig, setTextConfig] = React.useState({});
@@ -26,7 +26,7 @@ export function TextContextProvider({ children }) {
 
 export function textFromContext(texts, value) {
 
-    if (texts.hasOwnProperty(value)) {
+    if (Object.prototype.hasOwnProperty.call(texts, value)) {
         return texts[value];
     }
     return '';

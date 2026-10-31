@@ -10,10 +10,11 @@ import DialogTitle from '@mui/material/DialogTitle';
 import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
 import DeleteIcon from '@mui/icons-material/Delete';
-import React, { Component, Fragment, useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { PageHeader } from './PageHeader';
 import { TextContext } from '../context/TextContext';
 import { textFromContext } from '../context/TextContextProvider';
+import { useNavigate } from 'react-router-dom';
 
 
 function newIngredient() {
@@ -241,80 +242,65 @@ export function RecipeEdit(props) {
         </Box>);
 }
 
-export class RecipeForm extends Component {
+export function RecipeForm(props) {
+    const [recipe, setRecipe] = useState(newRecipe());
+    const [openDialog, setOpenDialog] = useState(false);
+    const [submitting, setSubmitting] = useState(false);
+    const [submitSuccess, setSubmitSuccess] = useState(false);
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            recipe: newRecipe(),
-            openDialog: false,
-            submitting: false
-        };
+    const navigate = useNavigate();
 
-        this.handleChange = this.handleChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
-    }
-
-    handleSubmitStart = () => {
-        this.setState({
-            openDialog: true,
-            submitting: true,
-            submitSuccess: true
-        });
+    const handleSubmitStart = () => {
+        setOpenDialog(true);
+        setSubmitting(true);
+        setSubmitSuccess(true);
     };
 
-    handleDialogClose = () => {
-        if (this.props.submitSuccess) {
-            this.props.history.push({
+    const handleDialogClose = () => {
+        if (submitSuccess) {
+            navigate({
                 pathname: '/recipes',
                 search: ''
             });
         }
-        this.setState({
-            openDialog: false,
-            submitSuccess: true
-        });
+        setOpenDialog(false);
+        setSubmitSuccess(true);
     };
 
-
-    handleChange = (recipe) => {
-        this.setState({
-            recipe: recipe
-        });
+    const handleChange = (recipe) => {
+        setRecipe(recipe);
     }
 
-    handleSubmit = (event) => {
-        this.handleSubmitStart();
+    const handleSubmit = (event) => {
+        handleSubmitStart();
         fetch('/api/v1/recipes', {
             method: 'post',
-            body: JSON.stringify(this.state.recipe)
+            body: JSON.stringify(recipe)
         })
-        .then(response => response.ok ? this.setState({submitSuccess: true}) : this.setState({submitSuccess: false}))
-        .then(() => this.props.onRecipesChange())
-        .finally(() => this.setState({submitting: false}));        
+        .then(response => response.ok ? setSubmitSuccess(true) : setSubmitSuccess(false))
+        .then(() => props.onRecipesChange())
+        .finally(() => setSubmitting(false));        
         event.preventDefault();
     }
 
-    render() {
-        return (
-            <React.Fragment>
-                <PageHeader pageName="Add Recipe" />
+    return (
+        <React.Fragment>
+            <PageHeader pageName="Add Recipe" />
 
-                <RecipeUpdateDialog open={this.state.openDialog} submitSuccess={this.state.submitSuccess} submitting={this.state.submitting} onClose={this.handleDialogClose} />
+            <RecipeUpdateDialog open={openDialog} submitSuccess={submitSuccess} submitting={submitting} onClose={handleDialogClose} />
 
-                <form onSubmit={this.handleSubmit}>
-                    <h1>Compose your Recipe</h1>
-                    <br />
-                    <RecipeEdit recipe={this.state.recipe} onChange={this.handleChange} />
-                    <p />
-                    <Button fullWidth variant="outlined" type="submit" value="Submit" color="primary">
-                        Submit
-                    </Button>
-                    <p />
-                </form>
-            </React.Fragment>
-        );
-    }
+            <form onSubmit={handleSubmit}>
+                <h1>Compose your Recipe</h1>
+                <br />
+                <RecipeEdit recipe={recipe} onChange={handleChange} />
+                <p />
+                <Button fullWidth variant="outlined" type="submit" value="Submit" color="primary">
+                    Submit
+                </Button>
+                <p />
+            </form>
+        </React.Fragment>
+    );
 }
 
 export function RecipeUpdateDialog(props) {

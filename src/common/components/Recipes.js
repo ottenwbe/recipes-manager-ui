@@ -21,7 +21,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import LaunchIcon from '@mui/icons-material/Launch';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import UpdateIcon from '@mui/icons-material/Update';
-import React, { Component, Fragment, useContext } from 'react';
+import React, { Fragment, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { PageHeader } from "./PageHeader";
 import { RecipeAlert } from './RecipeAlerts.js';
 import { RecipeDialog } from './RecipeDialog.js';
@@ -194,7 +194,7 @@ export function Recipes(props) {
     }
 
     const renderRecipes = () => {
-        let result = null;
+        let result;
         if (recipes != null) {
             result = (
                 <Fragment>
@@ -296,66 +296,52 @@ function RecipeMenu(props) {
     );
 }
 
-class Recipe extends Component {
+function Recipe(props) {
+    const [expanded, setExpanded] = useState(true);
+    const [picture, setPicture] = useState(null);
+    const [recipe, setRecipe] = useState(null);
+    const [open, setOpen] = useState(false);
+    const [lastError, setLastError] = useState('');
+    const [openEditDialog, setOpenEditDialog] = useState(false);
+    const [recipeRevision, setRecipeRevision] = useState(0);
+    const [name, setName] = useState(Math.random());
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            expanded: true,
-            picture: null,
-            recipe: null,
-            open: false,
-            modal: false,
-            lastError: '',
-            openEditDialog: false,
-            recipeRevision: 0,
-            name: Math.random()
-        };
+    const anchorRef = useRef(null);
+    const navigate = useNavigate();
 
-        this.anchorRef = React.createRef()
-
-        this.handleChange = this.handleChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
-        this.handleMoreClick = this.handleMoreClick.bind(this);
+    const handleOpen = () => {
+        navigate('/recipes/' + recipe.id);
     }
 
-    handleOpen = () => {
-        window.location.href = '/#/recipes/' + this.state.recipe.id;
-        window.location.reload();
-    }
-
-    handleDelete = () => {
-        fetch('/api/v1/recipes/r/' + this.state.recipe.id, {
+    const handleDelete = () => {
+        fetch('/api/v1/recipes/r/' + recipe.id, {
             method: 'delete'
         })
             .then(response => {
                 if (!response.ok) {
-                    this.setState({ lastError: "Could not delete recipe. Try again later..." });
+                    setLastError("Could not delete recipe. Try again later...");
                 }
-                this.props.onDeleteRecipe(this.state.recipe.id)
+                props.onDeleteRecipe(recipe.id)
             })
             .catch(
-                err => { console.error(err); this.setState({ lastError: "Could not delete recipe!" }); }
+                err => { console.error(err); setLastError("Could not delete recipe!"); }
             );
     }
 
-    componentDidMount() {
-        this.refreshRecipe()
-    }
-
-    refreshRecipe = (amount, updateVersion) => {
-        let url = '/api/v1/recipes/r/' + this.props.recipe;
+    const refreshRecipe = useCallback((amount, updateVersion) => {
+        let url = '/api/v1/recipes/r/' + props.recipe;
         if (amount !== undefined) {
             url += '?servings=' + amount
         }
-        let recipeRevision = this.state.recipeRevision
+        let currentRevision = recipeRevision;
         if (updateVersion) {
-            recipeRevision += 1
+            currentRevision += 1
+            setRecipeRevision(currentRevision)
         }
 
         fetch(url)
             .then(response => response.json())
-            .then(data => {this.setState({ recipe: data, name: data.name, recipeRevision: recipeRevision }); return data;})
+            .then(data => { setRecipe(data); setName(data.name); return data; })
             .then((recipe) => {
                 if ((recipe != null
                     && recipe.pictureLink != null)
@@ -364,155 +350,141 @@ class Recipe extends Component {
                     fetch('/api/v1/recipes/r/' + recipe.id
                         + '/pictures/' + recipe.pictureLink[0] + '/')
                         .then(response => response.json())
-                        .then(data => this.setState({ picture: data }));
+                        .then(data => setPicture(data));
                 }
-            }).catch((err) => { console.log(err); this.setState({ lastError: 'Failed to load recipe: ' + this.props.recipe }) });
-    }
+            }).catch((err) => { console.log(err); setLastError('Failed to load recipe: ' + props.recipe) });
+    }, [props.recipe, recipeRevision]);
 
-    handleExpandClick = () => {
-        this.setState({ expanded: !this.state.expanded });
+    useEffect(() => {
+        refreshRecipe();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []); // Only run on mount similar to componentDidMount
+
+    const handleExpandClick = () => {
+        setExpanded(!expanded);
     };
 
-    handleChange(event) {
-        this.setState({ portions: event.target.value });
+    const handleSubmit = (event) => {
+        refreshRecipe(event.target.value);
         event.preventDefault();
     }
 
-    handleSubmit(event) {
-        this.refreshRecipe(event.target.value);
+    const handleMoreClick = (event) => {
+        handleToggle()
         event.preventDefault();
     }
 
-    handleMoreClick(event) {
-        this.handleToggle()
-        event.preventDefault();
+    const handleEdit = () => {
+        setOpenEditDialog(true);
     }
 
-    handleEdit = () => {
-        this.setState({ openEditDialog: true, modal: false })
+    const onCloseDialog = () => {
+        setOpenEditDialog(false);
+        refreshRecipe();
     }
 
-    onCloseDialog = () => {
-        this.setState({ openEditDialog: false })
-        this.refreshRecipe()
+    const handleToggle = () => {
+        setOpen(!open);
     }
 
-    onChangeRecipe = () => {
-        this.refreshRecipe()
-    }
-
-    handleToggle = () => {
-        this.setState({ open: !this.state.open });
-    }
-
-    handleClose = (event) => {
-        if (this.anchorRef.current && this.anchorRef.current.contains(event.target)) {
+    const handleClose = (event) => {
+        if (anchorRef.current && anchorRef.current.contains(event.target)) {
             return;
         }
 
-        this.setState({ open: false, modal: false });
+        setOpen(false);
     }
 
-    handleListKeyDown = (event) => {
+    const handleListKeyDown = (event) => {
         if (event.key === 'Tab') {
             event.preventDefault();
-            this.setState({ open: false });
+            setOpen(false);
         }
     }
 
-    handleOnCloseError = () => {
-        this.setState({
-            lastError: ''
-        })
+    const handleOnCloseError = () => {
+        setLastError('');
     }
 
-    handleReset = () => {
-        this.refreshRecipe(undefined, true)
+    const handleReset = () => {
+        refreshRecipe(undefined, true)
     }
 
-    handleSimilar = () => {
-        window.location.href = '/#/recipes?similarTo=' + this.state.recipe.id;
-        this.setState({ open: false });
-        window.location.reload();
+    const handleSimilar = () => {
+        navigate('/recipes?similarTo=' + recipe.id);
+        setOpen(false);
     }
 
-    keyName = (prefix) => {
-        return prefix + this.state.name + this.state.recipeRevision
+    const keyName = (prefix) => {
+        return prefix + name + recipeRevision
     }
 
-    render() {
-        return (
-            <div key={this.keyName("recipe")}>
-                <RecipeDialog key={this.keyName("recipeDialog")} recipe={this.state.recipe} open={this.state.openEditDialog} onClose={this.onCloseDialog} />
-                <Card key={this.keyName("card")}>
-                    <CardHeader key={this.keyName("cardheader")} title={this.state.recipe != null ? this.state.recipe.name : ""} subheader="Recipe" style={{ backgroundColor: "#2196f3" }}
-                        action={<div>
-                            <IconButton onClick={this.handleOpen} aria-expanded={this.state.expanded} aria-label="Show more">
-                                <LaunchIcon />
-                            </IconButton>
-                            <IconButton onClick={this.handleExpandClick} aria-expanded={this.state.expanded} aria-label="Show more">
-                                <ExpandMoreIcon />
-                            </IconButton>
-                            <IconButton ref={this.anchorRef} onClick={this.handleMoreClick} aria-label="Menu">
-                                <MoreVertIcon />
-                            </IconButton>
-                        </div>} />
-                    <RecipeAlert
-                        key={this.keyName("recipeAlert")}
-                        enabled={this.state.lastError !== ""}
-                        message={this.state.lastError}
-                        onClose={this.handleOnCloseError}
-                    />
-                    <Collapse key={this.keyName("collapse")} in={this.state.expanded} timeout="auto" unmountOnExit>
-                        {this.renderCardMedia()}
-                        <CardContent key={this.keyName("cardcontent")}>
-                            <Typography component="div" align='right'>
-                                <IconButton onClick={this.handleReset} color="primary">
-                                    <UpdateIcon label="Update" />
-                                </IconButton>
-                                <TextField
-                                    name="servings"
-                                    type="number"
-                                    label="Servings"
-                                    defaultValue={this.state.recipe !== null ? this.state.recipe.servings : 0}
-                                    onChange={this.handleSubmit}
-                                />
-                                <p />
-                            </Typography>
-                            {this.renderIngredients()}
-                            <RecipeDescription recipe={this.state.recipe} />
-                        </CardContent>
-                    </Collapse>
-                    <RecipeMenu open={this.state.open} onListKeyDown={this.handleListKeyDown} menuRef={this.anchorRef} onEdit={this.handleEdit} onDelete={this.handleDelete} onClose={this.handleClose} onFindSimilar={this.handleSimilar} onOpen={this.handleOpen} />
-                </Card></div>);
-    }
-    renderIngredients() {
-        if (this.state.recipe != null) {
-            return (<Ingredients key={this.keyName("ingredients")} ingredients={this.state.recipe.components} />);
+    const renderIngredients = () => {
+        if (recipe != null) {
+            return (<Ingredients key={keyName("ingredients")} ingredients={recipe.components} />);
         }
         else {
             return '';
         }
     }
-    renderCardMedia() {
-        if ((this.state.picture != null) && (this.state.picture !== '')) {
-            return (<CardMedia key={this.keyName("pictures")} className="media" image={this.state.picture.picture} style={{ height: 0, paddingTop: '56.25%' }} title="dish" />);
+    const renderCardMedia = () => {
+        if ((picture != null) && (picture !== '')) {
+            return (<CardMedia key={keyName("pictures")} className="media" image={picture.picture} style={{ height: 0, paddingTop: '56.25%' }} title="dish" />);
         }
         else
             return '';
     }
+
+    return (
+        <div key={keyName("recipe")}>
+            <RecipeDialog key={keyName("recipeDialog")} recipe={recipe} open={openEditDialog} onClose={onCloseDialog} />
+            <Card key={keyName("card")}>
+                <CardHeader key={keyName("cardheader")} title={recipe != null ? recipe.name : ""} subheader="Recipe" style={{ backgroundColor: "#2196f3" }}
+                    action={<div>
+                        <IconButton onClick={handleOpen} aria-expanded={expanded} aria-label="Show more">
+                            <LaunchIcon />
+                        </IconButton>
+                        <IconButton onClick={handleExpandClick} aria-expanded={expanded} aria-label="Show more">
+                            <ExpandMoreIcon />
+                        </IconButton>
+                        <IconButton ref={anchorRef} onClick={handleMoreClick} aria-label="Menu">
+                            <MoreVertIcon />
+                        </IconButton>
+                    </div>} />
+                <RecipeAlert
+                    key={keyName("recipeAlert")}
+                    enabled={lastError !== ""}
+                    message={lastError}
+                    onClose={handleOnCloseError}
+                />
+                <Collapse key={keyName("collapse")} in={expanded} timeout="auto" unmountOnExit>
+                    {renderCardMedia()}
+                    <CardContent key={keyName("cardcontent")}>
+                        <Typography component="div" align='right'>
+                            <IconButton onClick={handleReset} color="primary">
+                                <UpdateIcon label="Update" />
+                            </IconButton>
+                            <TextField
+                                name="servings"
+                                type="number"
+                                label="Servings"
+                                defaultValue={recipe !== null ? recipe.servings : 0}
+                                onChange={handleSubmit}
+                            />
+                            <p />
+                        </Typography>
+                        {renderIngredients()}
+                        <RecipeDescription recipe={recipe} />
+                    </CardContent>
+                </Collapse>
+                <RecipeMenu open={open} onListKeyDown={handleListKeyDown} menuRef={anchorRef} onEdit={handleEdit} onDelete={handleDelete} onClose={handleClose} onFindSimilar={handleSimilar} onOpen={handleOpen} />
+            </Card></div>);
 }
 
-export class RandomRecipe extends Component {
+export function RandomRecipe(props) {
+    const [recipe, setRecipe] = useState(null);
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            recipe: null,
-        };
-    }
-
-    componentDidMount() {
+    useEffect(() => {
         fetch('/api/v1/recipes/rand')
             .then(
                 function (response) {
@@ -523,18 +495,16 @@ export class RandomRecipe extends Component {
                     }
                 }
             )
-            .then(response => this.setState({ recipe: response }))
-            .catch(err => this.setState({ recipe: null }));
-    }
+            .then(response => setRecipe(response))
+            .catch(err => setRecipe(null));
+    }, []);
 
-    render() {
-        return (
-            <div>
-                <PageHeader pageName="Random Recipe" />
-                {this.state.recipe != null ? <Recipe key={1} recipe={this.state.recipe.id} /> : "No Recipe Found"}
-            </div>
-        );
-    }
+    return (
+        <div>
+            <PageHeader pageName="Random Recipe" />
+            {recipe != null ? <Recipe key={1} recipe={recipe.id} /> : "No Recipe Found"}
+        </div>
+    );
 }
 
 const IngredientsRow = (props) => {
@@ -553,31 +523,28 @@ const IngredientsRow = (props) => {
     );
 };
 
-export class Ingredients extends Component {
-
-    render() {
-        if (this.props.ingredients != null) {
-            let rows = this.props.ingredients.map((ingredient, index) => {
-                return <IngredientsRow key={index} ingredient={ingredient} />
-            });
-            return (
-                <TableContainer >
-                    <Table className="recipes-table">
-                        <TableHead>
-                            <TableRow>
-                                <TableCell>Amount</TableCell>
-                                <TableCell>Unit</TableCell>
-                                <TableCell>Ingredients</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {rows}
-                        </TableBody>
-                    </Table>
-                </TableContainer>);
-        } else {
-            return ""
-        }
+export function Ingredients({ ingredients }) {
+    if (ingredients != null) {
+        let rows = ingredients.map((ingredient, index) => {
+            return <IngredientsRow key={index} ingredient={ingredient} />
+        });
+        return (
+            <TableContainer >
+                <Table className="recipes-table">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>Amount</TableCell>
+                            <TableCell>Unit</TableCell>
+                            <TableCell>Ingredients</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {rows}
+                    </TableBody>
+                </Table>
+            </TableContainer>);
+    } else {
+        return ""
     }
 }
 
