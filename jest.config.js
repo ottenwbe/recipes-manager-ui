@@ -12,6 +12,7 @@ const customJestConfig = {
     '^@components/(.*)$': path.resolve(__dirname, 'src/common/components/$1'),
     '^@context/(.*)$': path.resolve(__dirname, 'src/common/context/$1'),
     '^@public/(.*)$': path.resolve(__dirname, 'public/$1'),
+    '.(svg|ico|jpg|jpeg|png|gif)$': path.resolve(__dirname, 'test/mocks/fileMock.js'),
   },
 };
 

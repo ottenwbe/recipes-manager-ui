@@ -21,6 +21,7 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import React, { useCallback } from 'react';
+import logo from '../../assets/logo.svg';
 import {
     HashRouter,
     NavLink,
@@ -199,6 +200,7 @@ function RecipesAppHeader(props: RecipesAppHeaderProps) {
                             onClick={props.handleDrawerOpen}>
                             <MenuIcon />
                         </IconButton>}
+                        <img src={logo} alt="Recipes Manager Logo" style={{ height: '32px', marginRight: '16px' }} />
                         <div style={{ flexGrow: 1, }} />
                         <OutlinedInput
                             fullWidth
@@ -426,14 +428,15 @@ function DrawerHeader(props: DrawerHeaderProps) {
 
     return (
         <StyledDrawerHeader>
-            <Typography variant="h6" color="inherit">
-                <TextContextComponent value='appName' />
-
-                <IconButton onClick={props.handleDrawerClose} >
-                    {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-                </IconButton>
-
-            </Typography>
+            <div style={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
+                <img src={logo} alt="Recipes Manager Logo" style={{ height: '32px', marginRight: '16px' }} />
+                <Typography variant="h6" color="inherit">
+                    <TextContextComponent value='appName' />
+                </Typography>
+            </div>
+            <IconButton onClick={props.handleDrawerClose} >
+                {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+            </IconButton>
         </StyledDrawerHeader>)
 }
 
