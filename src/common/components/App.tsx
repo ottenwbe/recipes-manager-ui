@@ -118,31 +118,24 @@ function RecipesApp() {
     const [numRecipes, setNumRecipes] = useState(0);
     const [menuOpen, setMenuOpen] = useState(false);
 
+    const fetchRecipeCount = useCallback(async () => {
+        try {
+            const count = await getRecipeCount();
+            setNumRecipes(count);
+        } catch (error) {
+            console.error('Failed to fetch recipe count:', error);
+            setNumRecipes(0);
+        }
+    }, []);
+
     // Fetch recipe count only once on mount
     useEffect(() => {
-        const fetchRecipeCount = async () => {
-            try {
-                const count = await getRecipeCount();
-                setNumRecipes(count);
-            } catch (error) {
-                console.error('Failed to fetch recipe count:', error);
-                setNumRecipes(0);
-            }
-        };
         fetchRecipeCount();
-    }, []); // Empty dependency array = runs only on mount
+    }, [fetchRecipeCount]); // Runs only on mount (fetchRecipeCount is stable)
 
     const handleRecipeCountChange = useCallback(() => {
-        const fetchRecipeCount = async () => {
-            try {
-                const count = await getRecipeCount();
-                setNumRecipes(count);
-            } catch (error) {
-                console.error('Failed to fetch recipe count:', error);
-            }
-        };
         fetchRecipeCount();
-    }, []);
+    }, [fetchRecipeCount]);
 
     const handleDrawerOpen = useCallback(() => {
         setMenuOpen(true);
