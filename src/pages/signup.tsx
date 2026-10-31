@@ -1,4 +1,4 @@
-import { Fragment, useCallback } from 'react';
+import React, { Fragment, useCallback } from 'react';
 import 'react-dom'
 import { Footer } from '@components/Footer'
 import { CssBaseline } from '@mui/material'
@@ -18,10 +18,7 @@ const Item = styled(Box)(({ theme }) => ({
     flexGrow: 1,
 }));
 
-/**
- * Component to represent the Signup Page embedded in a corresponding Context Provider
- */
-export default function Home() {
+export default function Home(): React.JSX.Element {
     return (
         <TextContextProvider>
             <HomeLayout />
@@ -29,10 +26,7 @@ export default function Home() {
     )
 }
 
-/**
- * Component to represent the Signup layout and corresponding State
- */
-function HomeLayout() {
+function HomeLayout(): React.JSX.Element {
     return (
         <Fragment>
             <CssBaseline />
@@ -46,23 +40,12 @@ function HomeLayout() {
     )
 }
 
-/**
- * Component to represent all Signup elements
- */
-function SignUpComponents() {
-
-
-    /**
-    * Function to be called when signing up is requested 
-    */
-    const keyCloakSignUp = useCallback(() => {
+function SignUpComponents(): React.JSX.Element {
+    const keyCloakSignUp = useCallback((): void => {
         window.location.replace('/api/v1/auth/keycloak/login?signup=true');
     }, []);
 
-    /**
-    * Function to be called when login is requested
-    */
-    const keyCloakLogin = useCallback(() => {
+    const keyCloakLogin = useCallback((): void => {
         window.location.replace('/api/v1/auth/keycloak/login');
     }, []);
 
@@ -83,5 +66,5 @@ function SignUpComponents() {
                 </Button>
             </Item>
         </Stack>
-    )
+    );
 }
