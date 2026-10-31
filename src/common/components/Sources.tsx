@@ -5,19 +5,17 @@ import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
 import { PageHeader } from './PageHeader';
 import CircularProgress from '@mui/material/CircularProgress';
+import type { RecipeSource } from '../types';
 
 interface SourceProps {
-    source: any;
-}
-
-interface SourcesProps {
+    source: RecipeSource;
 }
 
 interface SourcesState {
-    sources: Record<string, SourceProps> | null;
+    sources: Record<string, RecipeSource> | null;
 }
 
-export class Sources extends Component<SourcesProps, SourcesState> {
+export class Sources extends Component<Record<string, never>, SourcesState> {
 
     state: SourcesState = {
         sources: null,
@@ -25,7 +23,7 @@ export class Sources extends Component<SourcesProps, SourcesState> {
 
     componentDidMount(): void {
         fetch('/api/v1/sources')
-            .then(response => response.json())
+            .then(response => response.json() as Promise<Record<string, RecipeSource>>)
             .then(responseJSON => this.setState({ sources: responseJSON }))
             .catch(error => console.log(error));
     }
@@ -59,7 +57,7 @@ function Source(props: SourceProps): React.JSX.Element {
     };
 
     return (<div>
-        <Card style={{ align: 'center' }}>
+            <Card sx={{ textAlign: 'center' }}>
             <CardHeader title={props.source.name} style={{ textAlign: 'center', backgroundColor: "#2196f3" }} />
             <CardContent>
                 <Button variant="contained" disabled={loading} color="primary" onClick={onConnectClick}>Connect</Button>

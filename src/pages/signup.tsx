@@ -31,7 +31,7 @@ function HomeLayout(): React.JSX.Element {
         <Fragment>
             <CssBaseline />
             <Container>
-                <Box height="90vh" >
+                <Box sx={{ height: '90vh' }}>
                     <SignUpComponents />
                 </Box>
                 <Footer />
@@ -50,7 +50,7 @@ function SignUpComponents(): React.JSX.Element {
     }, []);
 
     return (
-        <Stack height="90vh" alignItems="stretch" direction="column" useFlexGap flexWrap="wrap">
+        <Stack sx={{ height: '90vh', alignItems: 'stretch', flexDirection: 'column', flexWrap: 'wrap' }} useFlexGap>
             <Item sx={{ width: '100%' }}>
                 <h1><TextContextComponent value='appName' /></h1>
                 <h2><TextContextComponent value='signupAd' /></h2>

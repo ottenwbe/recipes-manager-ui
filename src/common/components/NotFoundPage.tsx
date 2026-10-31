@@ -2,7 +2,7 @@ import Typography from '@mui/material/Typography';
 import { Link } from "react-router-dom";
 import { PageHeader } from './PageHeader';
 
-export function NotFoundPage(props) {
+export function NotFoundPage() {
     return (
         <div style={{ textAlign: 'center' }}>
             <PageHeader pageName="404" />

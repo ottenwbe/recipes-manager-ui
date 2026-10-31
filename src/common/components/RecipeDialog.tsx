@@ -8,17 +8,18 @@ import DialogTitle from '@mui/material/DialogTitle';
 import FormControl from '@mui/material/FormControl';
 import React, { Component } from 'react';
 import { RecipeEdit } from './RecipeForm';
+import type { Recipe } from '../types';
 
 
 interface RecipeDialogProps {
-    recipe: any;
+    recipe: Recipe;
     open: boolean;
     onClose: () => void;
 }
 
 interface RecipeDialogState {
     loading: boolean;
-    recipe: any;
+    recipe: Recipe;
 }
 
 export class RecipeDialog extends Component<RecipeDialogProps, RecipeDialogState> {
@@ -33,11 +34,11 @@ export class RecipeDialog extends Component<RecipeDialogProps, RecipeDialogState
         };
     }
 
-    setRecipe = (recipe: any) => {
+    setRecipe = (recipe: Recipe): void => {
         this.setState({ recipe: recipe });
     }
 
-    handleChangedRecipe = (changedRecipe: any) => {
+    handleChangedRecipe = (changedRecipe: Recipe): void => {
         this.setRecipe(changedRecipe);
     }
 

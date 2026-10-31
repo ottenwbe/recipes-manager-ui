@@ -1,10 +1,11 @@
+import type { ReactElement } from 'react';
 import { TextContextComponent } from '@context/TextContextProvider';
 
 interface FooterProps {
     className?: string;
 }
 
-export function Footer(props: FooterProps): JSX.Element {
+export function Footer(props: FooterProps): ReactElement {
     // Draw a black line and the footer text
     return (
         <div className={props.className ?? "Footer"} style={{ textAlign: 'center' }}>
@@ -16,7 +17,7 @@ export function Footer(props: FooterProps): JSX.Element {
     );
 }
 
-function Blackline(): JSX.Element {
+function Blackline(): ReactElement {
     return (
         <hr
             style={{

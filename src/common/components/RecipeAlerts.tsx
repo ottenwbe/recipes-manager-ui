@@ -2,6 +2,12 @@ import Collapse from '@mui/material/Collapse';
 //import { makeStyles } from '@mui/material/styles';
 import Alert from '@mui/material/Alert';
 
+interface RecipeAlertProps {
+    enabled: boolean;
+    message: string;
+    onClose: () => void;
+}
+
 /*const useStyles = makeStyles((theme) => ({
     root: {
         width: '100%',
@@ -11,7 +17,7 @@ import Alert from '@mui/material/Alert';
     },
 }));*/
 
-export function RecipeAlert(props) {
+export function RecipeAlert(props: RecipeAlertProps) {
     //const classes = useStyles();
 
     const handleClose = () => { props.onClose() }
