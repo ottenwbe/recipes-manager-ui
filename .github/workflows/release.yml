@@ -44,7 +44,7 @@ jobs:
       - name: Docker Buildx (including push)
         if: success()
         run: |
-          sh scripts/docker.sh build --multi --push --type production
+          bash scripts/docker.sh build --multi --push --type production
 
       # build changelog and release
       - name: Build Changelog

@@ -97,7 +97,7 @@ docker_login() {
 
     if [ -n "$username" ] && [ -n "$password" ]; then
         echo "$password" | docker login -u "$username" "$registry" --password-stdin
-    elif [ -n "$DOCKER_USERNAME" ] && [ -n "$DOCKER_PASSWORD" ]; then
+    elif [ -n "${DOCKER_USERNAME:-}" ] && [ -n "${DOCKER_PASSWORD:-}" ]; then
         echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" "$registry" --password-stdin
     else
         echo "Warning: No Docker credentials provided for ${registry}. Trying without login."
@@ -166,6 +166,12 @@ cmd_build() {
     if [ "$multi" = true ]; then
         build_args=("docker" "buildx" "${build_args[@]}")
         build_args+=("--platform" "linux/arm64/v8,linux/amd64")
+        # With docker-container driver, need explicit output destination
+        if [ "$push_flag" = true ]; then
+            build_args+=("--output" "type=registry,push=true")
+        else
+            build_args+=("--output" "type=docker,dest=docker-daemon:")
+        fi
     else
         build_args=("docker" "${build_args[@]}")
     fi
@@ -179,8 +185,8 @@ cmd_build() {
 
     "${build_args[@]}"
 
-    # Push if requested
-    if [ "$push_flag" = true ]; then
+    # For non-multi builds, push separately (multi builds handle push via buildx)
+    if [ "$push_flag" = true ] && [ "$multi" = false ]; then
         echo ""
         cmd_push --tag "$tag" --registry "$registry"
     fi

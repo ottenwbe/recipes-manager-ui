@@ -18,7 +18,7 @@ jobs:
     - name: Docker Buildx (build)
       if: success()
       run: |
-        sh scripts/docker.sh build --multi
+        bash scripts/docker.sh build --multi
   
     # push to dockerhub
     - name: Login to DockerHub
@@ -30,4 +30,4 @@ jobs:
     - name: Docker Buildx (push)
       if: success() 
       run: |
-        sh scripts/docker.sh build --multi --push  
+        bash scripts/docker.sh build --multi --push  
