@@ -152,4 +152,4 @@ git push origin v1.2.3
 
 I created this project for the purpose of educating myself and personal use. If you are interested in the outcome, feel free to contribute; this work is published under the MIT license.
 
-Some cleanup and maintenance has been done with the help of AI agents.
+Some cleanup and maintenance has been done with the help of AI agents. For example, opencode helped to migrate to typescript, while allowing the author to learn more about this tool.
