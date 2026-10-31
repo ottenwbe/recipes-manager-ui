@@ -5,7 +5,7 @@ import LocalDiningIcon from '@mui/icons-material/LocalDining';
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import StorageIcon from '@mui/icons-material/Storage';
-import { createTheme } from '@mui/material';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import Badge from '@mui/material/Badge';
 import Container from '@mui/material/Container';
@@ -21,7 +21,6 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import React, { useCallback } from 'react';
-import { ThemeProvider } from 'react-bootstrap';
 import {
     HashRouter,
     NavLink,
@@ -43,7 +42,31 @@ import { Footer } from './Footer';
 
 const drawerWidth = 240;
 
-const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
+interface RecipesAppHeaderProps {
+    open: boolean;
+    handleDrawerOpen: () => void;
+}
+
+interface RecipesAppBodyProps {
+    open: boolean;
+    onRecipeCountChange: () => void;
+}
+
+interface RecipesDrawerProps {
+    open: boolean;
+    numRecipes: number;
+    handleDrawerClose: () => void;
+}
+
+interface DrawerListProps {
+    numRecipes: number;
+}
+
+interface DrawerHeaderProps {
+    handleDrawerClose: () => void;
+}
+
+const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{ open: boolean }>(
     ({ theme, open }) => ({
         flexGrow: 1,
         padding: theme.spacing(3),
@@ -64,7 +87,7 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
 
 const StyledAppBar = styled(AppBar, {
     shouldForwardProp: (prop) => prop !== 'open',
-})(({ theme, open }) => ({
+})<{ open: boolean }>(({ theme, open }) => ({
     transition: theme.transitions.create(['margin', 'width'], {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.leavingScreen,
@@ -88,7 +111,7 @@ const StyledDrawerHeader = styled('div')(({ theme }) => ({
     justifyContent: 'flex-end',
 }));
 
-function RecipesApp(props) {
+function RecipesApp() {
 
     const [numRecipes, setNumRecipes] = React.useState(0);
     const [menuOpen, setMenuOpen] = React.useState(false);
@@ -119,15 +142,15 @@ function RecipesApp(props) {
     return (
         <HashRouter>
             <RecipesDrawer open={menuOpen} numRecipes={numRecipes} handleDrawerClose={handleDrawerClose} />
-            <RecipesAppHeader open={menuOpen} numRecipes={numRecipes} handleDrawerOpen={handleDrawerOpen} />
+            <RecipesAppHeader open={menuOpen} handleDrawerOpen={handleDrawerOpen} />
             <RecipesAppBody open={menuOpen} onRecipeCountChange={handleRecipeCountChange} />
         </HashRouter>
     );
 }
 
 
-const theme = createTheme(
-    {
+const theme = createTheme({
+    palette: {
         primary: {
             main: '#90caf9',
         },
@@ -135,9 +158,9 @@ const theme = createTheme(
             main: '#f50057',
         },
     },
-);
+});
 
-function RecipesAppHeader(props) {
+function RecipesAppHeader(props: RecipesAppHeaderProps) {
 
     //const classes = useStyles();
 
@@ -152,11 +175,11 @@ function RecipesAppHeader(props) {
         });
     }
 
-    const handleSearchTermChange = (event) => {
+    const handleSearchTermChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchTerm(event.target.value);
     }
 
-    const handleKeyPress = (event) => {
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter') {
             handleSearchClick()
         }
@@ -180,10 +203,9 @@ function RecipesAppHeader(props) {
                         <OutlinedInput
                             fullWidth
                             id="search-input"
-                            variant="outlined"
                             placeholder="Search for recipes"
                             onChange={handleSearchTermChange}
-                            onKeyPress={handleKeyPress}
+                            onKeyDown={handleKeyDown}
                             endAdornment={
                                 <InputAdornment position="end">
                                     <IconButton onClick={handleSearchClick}>
@@ -199,7 +221,7 @@ function RecipesAppHeader(props) {
     );
 }
 
-function RecipesAppBody(props) {
+function RecipesAppBody(props: RecipesAppBodyProps) {
 
     //const classes = useStyles();
 
@@ -212,9 +234,9 @@ function RecipesAppBody(props) {
         <Main open={props.open}>
             <React.Fragment /*className={classes.drawerHeader}*/ />
             <Routes>
-                <Route exact path="/" element={<Navigate to="/recipes" />} />
+                <Route path="/" element={<Navigate to="/recipes" />} />
                 <Route path="/news" element={<Home />} />
-                <Route exact path="/recipes" element={<Recipes onRecipesChange={handleRecipeChange} />} />
+                <Route path="/recipes" element={<Recipes onRecipesChange={handleRecipeChange} />} />
                 <Route path="/recipes/:recipe" element={<Recipes onRecipesChange={handleRecipeChange} />} />
                 <Route path="/add" element={<RecipeForm onRecipesChange={handleRecipeChange} />} />
                 <Route path="/rand" element={<RandomRecipe />} />
@@ -228,7 +250,7 @@ function RecipesAppBody(props) {
     </Container>);
 }
 
-function RecipesDrawer(props) {
+function RecipesDrawer(props: RecipesDrawerProps) {
     //const classes = useStyles();
 
     return (
@@ -328,7 +350,7 @@ function RecipesDrawer(props) {
  * @param {*} props 
  * @returns drawerlist
  */
-function DrawerList(props) {
+function DrawerList(props: DrawerListProps) {
 
     /**
      * funtion to verify if an item should be highlighted and be selected
@@ -336,7 +358,7 @@ function DrawerList(props) {
      * @param {*} hashName 
      * @returns true iff the hashname is found
      */
-    const selectedItem = (hashName) => {
+    const selectedItem = (hashName: string) => {
         return window.location.hash === hashName;
     }
 
@@ -400,7 +422,7 @@ function DrawerList(props) {
  * @param {*} props 
  * @returns header of the drawer
  */
-function DrawerHeader(props) {
+function DrawerHeader(props: DrawerHeaderProps) {
 
     return (
         <StyledDrawerHeader>
@@ -421,7 +443,7 @@ function DrawerHeader(props) {
  * @param {*} props 
  * @returns main application
  */
-function App(props) {
+function App() {
 
     return (
         <RecipesApp />

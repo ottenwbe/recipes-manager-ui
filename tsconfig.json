@@ -28,6 +28,7 @@
 
     /* Paths */
     "paths": {
+      "@public/*": ["./public/*"],
       "@components/*": ["./src/common/components/*"],
       "@context/*": ["./src/common/context/*"]
     }
