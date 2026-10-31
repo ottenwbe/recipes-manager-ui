@@ -22,13 +22,13 @@ import LaunchIcon from '@mui/icons-material/Launch';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import UpdateIcon from '@mui/icons-material/Update';
 import React, { Fragment, useContext, useState, useEffect, useCallback, useRef } from 'react';
-import { PageHeader } from "./PageHeader";
+import { PageHeader } from "../../common/components/PageHeader";
 import { RecipeAlert } from './RecipeAlerts';
 import { RecipeDialog } from './RecipeDialog';
 import { useSearchParams, useNavigate, useParams } from 'react-router-dom';
-import { TextContext } from '../context/TextContext';
-import { textFromContext } from '../context/TextContextProvider';
-import type { Ingredient, Recipe, RecipeId, RecipePicture } from '../types';
+import { TextContext } from '../../common/context/TextContext';
+import { textFromContext } from '../../common/context/TextContextProvider';
+import type { Ingredient, Recipe, RecipeId, RecipePicture } from '../../common/types';
 
 /*const useStyles = makeStyles((theme) => ({
     chip: {

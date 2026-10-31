@@ -8,7 +8,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import FormControl from '@mui/material/FormControl';
 import React, { Component } from 'react';
 import { RecipeEdit } from './RecipeForm';
-import type { Recipe } from '../types';
+import type { Recipe } from '../../common/types';
 
 
 interface RecipeDialogProps {

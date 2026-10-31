@@ -11,11 +11,11 @@ import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
 import DeleteIcon from '@mui/icons-material/Delete';
 import React, { useContext, useState } from 'react';
-import { PageHeader } from './PageHeader';
-import { TextContext } from '../context/TextContext';
-import { textFromContext } from '../context/TextContextProvider';
+import { PageHeader } from '../../common/components/PageHeader';
+import { TextContext } from '../../common/context/TextContext';
+import { textFromContext } from '../../common/context/TextContextProvider';
 import { useNavigate } from 'react-router-dom';
-import type { Ingredient, Recipe } from '../types';
+import type { Ingredient, Recipe } from '../../common/types';
 
 interface IngredientsEditProps {
     disabled?: boolean;

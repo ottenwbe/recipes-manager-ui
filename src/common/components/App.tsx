@@ -33,8 +33,8 @@ import {
 } from "react-router-dom";
 import { Home } from './Home';
 import { NotFoundPage } from './NotFoundPage';
-import { RecipeForm } from './RecipeForm';
-import { RandomRecipe, Recipes } from './Recipes';
+import { RecipeForm } from '../../features/recipes/RecipeForm';
+import { RandomRecipe, Recipes } from '../../features/recipes/Recipes';
 import { Sources } from './Sources';
 import { TextContextComponent } from '../context/TextContextProvider';
 import pkg from '../../../package.json'
