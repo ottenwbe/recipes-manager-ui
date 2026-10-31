@@ -6,13 +6,26 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import FormControl from '@mui/material/FormControl';
-import { Component } from 'react';
+import React, { Component } from 'react';
 import { RecipeEdit } from './RecipeForm';
 
 
-export class RecipeDialog extends Component {
+interface RecipeDialogProps {
+    recipe: any;
+    open: boolean;
+    onClose: () => void;
+}
 
-    constructor(props) {
+interface RecipeDialogState {
+    loading: boolean;
+    recipe: any;
+}
+
+export class RecipeDialog extends Component<RecipeDialogProps, RecipeDialogState> {
+
+    state: RecipeDialogState;
+
+    constructor(props: RecipeDialogProps) {
         super(props);
         this.state = {
             loading: false,
@@ -20,15 +33,15 @@ export class RecipeDialog extends Component {
         };
     }
 
-    setRecipe = (recipe) => {
+    setRecipe = (recipe: any) => {
         this.setState({ recipe: recipe });
     }
 
-    handleChangedRecipe = (changedRecipe) => {
+    handleChangedRecipe = (changedRecipe: any) => {
         this.setRecipe(changedRecipe);
     }
 
-    submitRecipe = () => {
+    submitRecipe = (): void => {
         this.setState({ loading: true })
         fetch('/api/v1/recipes/r/' + this.state.recipe.id, {
             method: 'put',
@@ -38,7 +51,7 @@ export class RecipeDialog extends Component {
             .finally(() => this.setState({ loading: false }));
     }
 
-    render() {
+    render(): React.JSX.Element {
         return (
             <FormControl>
                 <Dialog open={this.props.open} onClose={this.props.onClose} aria-labelledby="form-dialog-title">
