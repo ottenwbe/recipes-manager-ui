@@ -15,11 +15,6 @@ export default defineConfig({
       '@public': path.resolve(__dirname, 'public'),
     },
   },
-  esbuild: {
-    loader: 'jsx',
-    include: /src\/.*\.(js|ts)x?$/,
-    exclude: [],
-  },
   server: {
     port: 3000,
     open: true,
