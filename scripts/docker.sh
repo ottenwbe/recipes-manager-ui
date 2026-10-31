@@ -2,12 +2,41 @@
 # Unified Docker build and push script for recipes-manager-ui
 
 set -euo pipefail
+umask 027
 
 # Configuration
 MAINTAINER="Beate Ottenwaelder <ottenwbe.public@gmail.com>"
 IMAGE_NAME="ottenwbe/recipes-manager-ui"
 DOCKER_FILE="Dockerfile"
 GIT_REPO="https://github.com/ottenwbe/recipes-manager-ui"
+
+# --- Validation Functions ---
+
+validate_tag() {
+    local tag="$1"
+    if [[ ! "$tag" =~ ^[a-zA-Z0-9][a-zA-Z0-9._-]*$ ]]; then
+        echo "Error: Invalid tag format: '$tag'. Use alphanumeric, ., -, _ only." >&2
+        exit 1
+    fi
+}
+
+validate_registry() {
+    local registry="$1"
+    if [[ ! "$registry" =~ ^[a-zA-Z0-9][a-zA-Z0-9.-]*(:[0-9]+)?$ ]]; then
+        echo "Error: Invalid registry format: '$registry'." >&2
+        exit 1
+    fi
+}
+
+validate_type() {
+    local type="$1"
+    case "$type" in
+        dev|production) ;;
+        *) echo "Error: Invalid type '$type'. Use 'dev' or 'production'." >&2; exit 1 ;;
+    esac
+}
+
+# --- Metadata Functions ---
 
 # Get version from package.json
 get_version() {
@@ -23,7 +52,8 @@ get_git_branch() {
     git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown"
 }
 
-# Usage
+# --- Usage ---
+
 usage() {
     cat <<EOF
 Usage: $0 <command> [options]
@@ -43,18 +73,23 @@ Push options:
   --tag TAG          Image tag to push
   --registry REG     Docker registry (default: docker.io)
   -u USER            Docker username
-  -p PASS            Docker password
+  -p PASS            Docker password (DEPRECATED - use DOCKER_PASSWORD env var instead)
+
+Environment:
+  DOCKER_USERNAME    Docker registry username
+  DOCKER_PASSWORD    Docker registry password
 
 Examples:
   $0 build --type dev
   $0 build --multi --push --type production
   $0 build --type dev --push
-  $0 push --tag 1.0.0 -u user -p pass
+  $0 push --tag 1.0.0 -u user
 EOF
     exit 1
 }
 
-# Docker login
+# --- Docker Login ---
+
 docker_login() {
     local username="$1"
     local password="$2"
@@ -69,7 +104,8 @@ docker_login() {
     fi
 }
 
-# Build command
+# --- Build Command ---
+
 cmd_build() {
     local multi=false
     local push_flag=false
@@ -88,6 +124,10 @@ cmd_build() {
         esac
     done
 
+    # Validate inputs
+    validate_type "$build_type"
+    [ "$registry" != "docker.io" ] && validate_registry "$registry"
+
     # Get metadata
     local date=$(date +"%F %T")
     local git_hash=$(get_git_hash)
@@ -101,15 +141,33 @@ cmd_build() {
             production) tag="$app_version" ;;
         esac
     fi
+    
+    # Validate final tag (user-provided or default)
+    validate_tag "$tag"
 
     local full_image="${registry:+${registry}/}${IMAGE_NAME}:${tag}"
 
     # Build command
-    local build_cmd="docker"
-    local platforms=""
+    local build_args=(
+        build
+        --build-arg "APP_VERSION=${app_version}"
+        --label "org.opencontainers.image.title=recipes-manager-ui"
+        --label "org.opencontainers.image.description=Recipes Manager UI - React/Vite frontend"
+        --label "org.opencontainers.image.version=${app_version}"
+        --label "org.opencontainers.image.created=${date}"
+        --label "org.opencontainers.image.revision=${git_hash}"
+        --label "org.opencontainers.image.source=${GIT_REPO}"
+        --label "maintainer=${MAINTAINER}"
+        -t "${full_image}"
+        -f "${DOCKER_FILE}"
+        "."
+    )
+
     if [ "$multi" = true ]; then
-        build_cmd="docker buildx"
-        platforms="--platform linux/arm64/v8,linux/amd64"
+        build_args=("docker" "buildx" "${build_args[@]}")
+        build_args+=("--platform" "linux/arm64/v8,linux/amd64")
+    else
+        build_args=("docker" "${build_args[@]}")
     fi
 
     echo "Building ${full_image}..."
@@ -119,19 +177,7 @@ cmd_build() {
     echo "  Git: ${git_branch}@${git_hash}"
     echo ""
 
-    $build_cmd build \
-        --build-arg APP_VERSION="${app_version}" \
-        --label "org.opencontainers.image.title=recipes-manager-ui" \
-        --label "org.opencontainers.image.description=Recipes Manager - UI - React/Vite frontend" \
-        --label "org.opencontainers.image.version=${app_version}" \
-        --label "org.opencontainers.image.created=${date}" \
-        --label "org.opencontainers.image.revision=${git_hash}" \
-        --label "org.opencontainers.image.source=${GIT_REPO}" \
-        --label "maintainer=${MAINTAINER}" \
-        $platforms \
-        -t "${full_image}" \
-        -f "${DOCKER_FILE}" \
-        .
+    "${build_args[@]}"
 
     # Push if requested
     if [ "$push_flag" = true ]; then
@@ -143,7 +189,8 @@ cmd_build() {
     echo "Success: built ${full_image}"
 }
 
-# Push command
+# --- Push Command ---
+
 cmd_push() {
     local tag=""
     local registry="docker.io"
@@ -155,14 +202,23 @@ cmd_push() {
             --tag) tag="$2"; shift 2 ;;
             --registry) registry="$2"; shift 2 ;;
             -u) username="$2"; shift 2 ;;
-            -p) password="$2"; shift 2 ;;
+            -p) 
+                echo "Warning: -p/--password option is deprecated. Use DOCKER_PASSWORD environment variable instead." >&2
+                shift 2
+                ;;
             *) usage ;;
         esac
     done
 
+    # Validate inputs
+    [ "$registry" != "docker.io" ] && validate_registry "$registry"
+
     if [ -z "$tag" ]; then
         tag=$(get_version)
     fi
+    
+    # Validate final tag (user-provided or default)
+    validate_tag "$tag"
 
     local full_image="${registry:+${registry}/}${IMAGE_NAME}:${tag}"
 
@@ -174,7 +230,8 @@ cmd_push() {
     echo "Success: pushed ${full_image}"
 }
 
-# Main
+# --- Main ---
+
 case "${1:-}" in
     build)
         shift

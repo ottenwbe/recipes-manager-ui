@@ -112,11 +112,17 @@ Unified Docker script with the following commands:
   - `--tag TAG` - Image tag to push
   - `--registry REG` - Docker registry (default: docker.io)
   - `-u USER` - Docker username
-  - `-p PASS` - Docker password
+
+  Environment Variables:
+  - `DOCKER_USERNAME` - Docker registry username
+  - `DOCKER_PASSWORD` - Docker registry password (recommended over command-line)
 
   Examples:
   ```sh
-  sh scripts/docker.sh push --tag 1.0.0 -u user -p pass
+  sh scripts/docker.sh push --tag 1.0.0 -u user
+  # Or use environment variables:
+  export DOCKER_USERNAME=user DOCKER_PASSWORD=pass
+  sh scripts/docker.sh push --tag 1.0.0
   ```
 
 Note: The build script uses version from package.json and standardized OpenContainers labels.
