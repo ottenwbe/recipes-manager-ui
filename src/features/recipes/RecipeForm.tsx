@@ -38,7 +38,7 @@ interface RecipeEditProps {
 }
 
 interface RecipeFormProps {
-    onRecipesChange: () => void;
+    onRecipesChange?: () => void;
 }
 
 interface RecipeUpdateDialogProps {
@@ -318,7 +318,7 @@ export function RecipeForm(props: RecipeFormProps) {
             body: JSON.stringify(recipe)
         })
         .then(response => response.ok ? setSubmitSuccess(true) : setSubmitSuccess(false))
-        .then(() => props.onRecipesChange())
+        .then(() => props.onRecipesChange?.())
         .finally(() => setSubmitting(false));        
         event.preventDefault();
     }

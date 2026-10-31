@@ -29,6 +29,7 @@ import { useSearchParams, useNavigate, useParams } from 'react-router-dom';
 import { TextContext } from '../../common/context/TextContext';
 import { textFromContext } from '../../common/context/TextContextProvider';
 import type { Ingredient, Recipe, RecipeId, RecipePicture } from '../../common/types';
+import { getAllRecipes, searchRecipes, getSimilarRecipes, getRecipeById, deleteRecipe, getRandomRecipe, getRecipePicture } from '../../api/recipes';
 
 /*const useStyles = makeStyles((theme) => ({
     chip: {
@@ -154,10 +155,10 @@ export function Recipes(props: RecipesProps) {
             getSearchedRecipes();
         } else if (shouldGetSimilarResults()) {
             console.log('fetch similar result')
-            getSimilarRecipes()
+            getSimilarRecipesList()
         } else if (shouldGetAllRecipes()) {
             console.log('fetch all')
-            getAllRecipes()
+            getAllRecipesList()
         } else {
             console.log('fetch sepecific')
             if (recipe !== undefined) {
@@ -179,29 +180,29 @@ export function Recipes(props: RecipesProps) {
         return recipe === undefined;
     }
 
-    const getAllRecipes = () => {
+    const getAllRecipesList = () => {
         loading.current = true;
-        fetch('/api/v1/recipes')
-            .then(response => response.json() as Promise<{ recipes: RecipeId[] }>)
-            .then(responseJSON => refreshRecipesIfChanged(responseJSON.recipes))
+        getAllRecipes()
+            .then(recipeIds => refreshRecipesIfChanged(recipeIds as RecipeId[]))
+            .catch(err => console.error('Failed to fetch recipes:', err))
             .finally(() => loading.current = false);
     }
 
     const getSearchedRecipes = () => {
         loading.current = true;
         const search = searchParams.get('search') ?? '';
-        fetch('/api/v1/recipes?name=' + search + '&description=' + search)
-            .then(response => response.json() as Promise<{ recipes: RecipeId[] }>)
-            .then(responseJSON => refreshRecipesIfChanged(responseJSON.recipes))
+        searchRecipes({ name: search, description: search })
+            .then(recipeIds => refreshRecipesIfChanged(recipeIds as RecipeId[]))
+            .catch(err => console.error('Failed to search recipes:', err))
             .finally(() => loading.current = false);
     }
 
-    const getSimilarRecipes = () => {
+    const getSimilarRecipesList = () => {
         loading.current = true;
         const similarTo = searchParams.get('similar-to') ?? '';
-        fetch('/api/v1/recommendation/' + similarTo + '/components')
-            .then(response => response.json() as Promise<{ recipes: RecipeId[] }>)
-            .then(responseJSON => refreshRecipesIfChanged(responseJSON.recipes))
+        getSimilarRecipes(similarTo)
+            .then(recipeIds => refreshRecipesIfChanged(recipeIds as RecipeId[]))
+            .catch(err => console.error('Failed to fetch similar recipes:', err))
             .finally(() => loading.current = false);
     }
 
@@ -365,44 +366,33 @@ function Recipe(props: RecipeCardProps) {
             return;
         }
 
-        const recipeId = recipe.id;
-        fetch('/api/v1/recipes/r/' + recipeId, {
-            method: 'delete'
-        })
-            .then(response => {
-                if (!response.ok) {
-                    setLastError("Could not delete recipe. Try again later...");
-                }
-                props.onDeleteRecipe?.(recipeId)
-            })
-            .catch(
-                err => { console.error(err); setLastError("Could not delete recipe!"); }
-            );
+        const recipeId = String(recipe.id);
+        deleteRecipe(recipeId)
+            .then(() => props.onDeleteRecipe?.(recipeId))
+            .catch(err => {
+                console.error(err);
+                setLastError("Could not delete recipe. Try again later...");
+            });
     }
 
     const refreshRecipe = useCallback((amount?: string, updateVersion = false) => {
-        let url = '/api/v1/recipes/r/' + props.recipe;
-        if (amount !== undefined) {
-            url += '?servings=' + amount
-        }
+        const servings = amount !== undefined ? parseInt(amount, 10) : undefined;
         let currentRevision = recipeRevision;
         if (updateVersion) {
             currentRevision += 1
             setRecipeRevision(currentRevision)
         }
 
-        fetch(url)
-            .then(response => response.json() as Promise<Recipe>)
+        getRecipeById(String(props.recipe), servings)
             .then(data => { setRecipe(data); setName(data.name); return data; })
             .then((recipe) => {
                 if ((recipe != null
                     && recipe.pictureLink != null)
                     && (recipe.pictureLink.length > 0)
                     && (recipe.pictureLink[0] !== '')) {
-                    fetch('/api/v1/recipes/r/' + recipe.id
-                        + '/pictures/' + recipe.pictureLink[0] + '/')
-                        .then(response => response.json() as Promise<RecipePicture>)
-                        .then(data => setPicture(data));
+                    getRecipePicture(String(recipe.id), recipe.pictureLink[0])
+                        .then(data => setPicture({ picture: data.picture } as RecipePicture))
+                        .catch(err => console.error('Failed to load picture:', err));
                 }
             }).catch((err) => { console.log(err); setLastError('Failed to load recipe: ' + props.recipe) });
     }, [props.recipe, recipeRevision]);
@@ -539,17 +529,8 @@ export function RandomRecipe() {
     const [recipe, setRecipe] = useState<Recipe | null>(null);
 
     useEffect(() => {
-        fetch('/api/v1/recipes/rand')
-            .then(
-                function (response) {
-                    if (!response.ok) {
-                        throw new Error("Not 2xx response")
-                    } else {
-                        return response.json()
-                    }
-                }
-            )
-            .then(response => setRecipe(response))
+        getRandomRecipe()
+            .then(setRecipe)
             .catch(() => setRecipe(null));
     }, []);
 
