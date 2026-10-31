@@ -63,7 +63,8 @@ Commands:
   push        Push Docker image
 
 Build options:
-  --multi            Use docker buildx for multi-platform build (arm64, amd64)
+    --multi            Use docker buildx for multi-platform build (arm64, amd64)
+                                         Without --push, keep the result in BuildKit cache only.
   --push             Push image after build
   --tag TAG          Image tag (default: version from package.json)
   --registry REG     Docker registry (default: docker.io)
@@ -165,11 +166,11 @@ cmd_build() {
     if [ "$multi" = true ]; then
         build_args=("docker" "buildx" "${build_args[@]}")
         build_args+=("--platform" "linux/arm64/v8,linux/amd64")
-        # With docker-container driver, need explicit output destination
+        # Multi-platform results cannot be loaded by the Docker image exporter.
         if [ "$push_flag" = true ]; then
             build_args+=("--output" "type=registry,push=true")
         else
-            build_args+=("--output" "type=docker")
+            build_args+=("--output" "type=cacheonly")
         fi
     else
         build_args=("docker" "${build_args[@]}")
@@ -191,7 +192,11 @@ cmd_build() {
     fi
 
     echo ""
-    echo "Success: built ${full_image}"
+    if [ "$multi" = true ] && [ "$push_flag" = false ]; then
+        echo "Success: built ${full_image} (BuildKit cache only; not loaded locally)"
+    else
+        echo "Success: built ${full_image}"
+    fi
 }
 
 # --- Push Command ---
