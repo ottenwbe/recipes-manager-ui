@@ -255,17 +255,42 @@ describe('deleteRecipe', () => {
 // ============================================================================
 
 describe('getRecipePicture', () => {
-  it('returns a Blob for the picture', async () => {
-    mockFetch({
-      ok: true,
-      status: 200,
-      blob: () => Promise.resolve(new Blob(['image-data'], { type: 'image/png' })),
-      text: () => Promise.resolve(''),
-    });
+  it('returns picture metadata JSON { id, name, picture }', async () => {
+    mockFetch(jsonResponse({ id: 'abc123', name: 'pic1', picture: 'data:image/png;base64,...' }));
 
     const result = await getRecipePicture('abc123', 'pic1');
 
-    expect(result).toBeInstanceOf(Blob);
+    expect(result).toEqual({ id: 'abc123', name: 'pic1', picture: 'data:image/png;base64,...' });
     expect(global.fetch).toHaveBeenCalledWith('/api/v1/recipes/r/abc123/pictures/pic1/');
+  });
+});
+
+// ============================================================================
+// Runtime validation tests — malformed payloads should throw
+// ============================================================================
+
+describe('runtime validation', () => {
+  it('getRecipeById throws on malformed recipe (missing id)', async () => {
+    mockFetch(jsonResponse({ name: 'No ID' }));
+
+    await expect(getRecipeById('abc123')).rejects.toThrow('Recipe.id must be a string');
+  });
+
+  it('getRecipeById throws on non-object response', async () => {
+    mockFetch(jsonResponse('just a string'));
+
+    await expect(getRecipeById('abc123')).rejects.toThrow('Expected Recipe object');
+  });
+
+  it('getAllRecipes throws when recipes is not an array', async () => {
+    mockFetch(jsonResponse({ recipes: 'not-an-array' }));
+
+    await expect(getAllRecipes()).rejects.toThrow('Expected { recipes: string[] }');
+  });
+
+  it('getAllRecipes throws when recipe IDs are not strings', async () => {
+    mockFetch(jsonResponse({ recipes: [123, 456] }));
+
+    await expect(getAllRecipes()).rejects.toThrow('All recipe IDs must be strings');
   });
 });

@@ -1,12 +1,13 @@
 /**
- * API Types for Recipes Manager
+ * API Types for Recipes Manager — single source of truth for API contracts.
  *
- * These types mirror the actual backend API contracts:
+ * These types mirror the actual backend API:
  * - Go backend (recipes-manager): /api/v1/recipes/*
  * - Python recommender: /api/v1/recommendation/*
  *
  * Verified against:
  * - recipes-manager/recipes/recipes_api.go
+ * - recipes-manager/recipes/recipes_model.go
  * - recipes-manager-recommender/analyzer/controller.py
  */
 
@@ -49,9 +50,9 @@ export interface SimilarRecipesResponse {
   recipes: string[];
 }
 
-// NOTE: GET /api/v1/recipes/r/:id returns the Recipe object directly (no envelope)
-// NOTE: GET /api/v1/recipes/rand returns the Recipe object directly (no envelope)
-// NOTE: GET /api/v1/recipes/num returns a bare number as a string (c.String)
+// NOTE: GET /api/v1/recipes/r/:id returns Recipe directly (c.JSON(200, recipe))
+// NOTE: GET /api/v1/recipes/rand returns Recipe directly (c.JSON(200, recipe))
+// NOTE: GET /api/v1/recipes/num returns bare number as string (c.String)
 
 // ============================================================================
 // Request Parameters

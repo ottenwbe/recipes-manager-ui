@@ -33,14 +33,52 @@ function handleApiError(error: unknown): never {
 }
 
 /**
- * Check if response is OK and parse JSON
+ * Lightweight runtime validators for API responses.
+ * These provide basic shape checking beyond TypeScript's compile-time casts.
  */
-async function checkResponse<T>(response: Response): Promise<T> {
+
+function isObject(val: unknown): val is Record<string, unknown> {
+  return typeof val === 'object' && val !== null && !Array.isArray(val);
+}
+
+function validateRecipe(data: unknown): void {
+  if (!isObject(data)) {
+    throw new Error('Expected Recipe object, got: ' + typeof data);
+  }
+  if (typeof data.id !== 'string') {
+    throw new Error('Recipe.id must be a string');
+  }
+  if (typeof data.name !== 'string') {
+    throw new Error('Recipe.name must be a string');
+  }
+  if (!Array.isArray(data.components)) {
+    throw new Error('Recipe.components must be an array');
+  }
+}
+
+function validateRecipesResponse(data: unknown): void {
+  if (!isObject(data) || !Array.isArray(data.recipes)) {
+    throw new Error('Expected { recipes: string[] } response');
+  }
+  if (!data.recipes.every((r: unknown) => typeof r === 'string')) {
+    throw new Error('All recipe IDs must be strings');
+  }
+}
+
+/**
+ * Check if response is OK, parse JSON, and optionally validate the shape.
+ * The generic T provides compile-time typing; the validator provides runtime checking.
+ */
+async function checkResponse<T>(response: Response, validator?: (data: unknown) => void): Promise<T> {
   if (!response.ok) {
     const errorText = await response.text().catch(() => 'Unknown error');
     throw new Error(`HTTP ${response.status}: ${errorText}`);
   }
-  return response.json() as Promise<T>;
+  const data: unknown = await response.json();
+  if (validator) {
+    validator(data);
+  }
+  return data as T;
 }
 
 // ============================================================================
@@ -54,7 +92,7 @@ async function checkResponse<T>(response: Response): Promise<T> {
 export async function getAllRecipes(): Promise<string[]> {
   try {
     const response = await fetch(`${API_BASE_URL}/recipes`);
-    const data = await checkResponse<RecipesResponse>(response);
+    const data = await checkResponse<RecipesResponse>(response, validateRecipesResponse);
     return data.recipes;
   } catch (error) {
     return handleApiError(error);
@@ -80,7 +118,7 @@ export async function searchRecipes(params: RecipeSearchParams): Promise<string[
 
   try {
     const response = await fetch(url);
-    const data = await checkResponse<RecipesResponse>(response);
+    const data = await checkResponse<RecipesResponse>(response, validateRecipesResponse);
     return data.recipes;
   } catch (error) {
     return handleApiError(error);
@@ -100,7 +138,7 @@ export async function getRecipeById(recipeId: string, servings?: number): Promis
 
   try {
     const response = await fetch(url);
-    return await checkResponse<Recipe>(response);
+    return await checkResponse<Recipe>(response, validateRecipe);
   } catch (error) {
     return handleApiError(error);
   }
@@ -136,7 +174,7 @@ export async function getRecipeCount(): Promise<number> {
 export async function getSimilarRecipes(recipeId: string): Promise<string[]> {
   try {
     const response = await fetch(`${API_BASE_URL}/recommendation/${recipeId}/components`);
-    const data = await checkResponse<SimilarRecipesResponse>(response);
+    const data = await checkResponse<SimilarRecipesResponse>(response, validateRecipesResponse);
     return data.recipes;
   } catch (error) {
     return handleApiError(error);
@@ -150,7 +188,7 @@ export async function getSimilarRecipes(recipeId: string): Promise<string[]> {
 export async function getRandomRecipe(): Promise<Recipe> {
   try {
     const response = await fetch(`${API_BASE_URL}/recipes/rand`);
-    return await checkResponse<Recipe>(response);
+    return await checkResponse<Recipe>(response, validateRecipe);
   } catch (error) {
     return handleApiError(error);
   }
@@ -176,19 +214,23 @@ export async function deleteRecipe(recipeId: string): Promise<void> {
 }
 
 /**
- * Get a recipe picture.
- * GET /api/v1/recipes/r/:id/pictures/:name → image blob
+ * Recipe picture response: { id, name, picture }
+ * (Go: RecipePicture struct with json tags)
  */
-export async function getRecipePicture(recipeId: string, pictureId: string): Promise<Blob> {
+export interface RecipePictureResponse {
+  id: string;
+  name: string;
+  picture: string;
+}
+
+/**
+ * Get a recipe picture metadata.
+ * GET /api/v1/recipes/r/:id/pictures/:name → { id, name, picture } JSON
+ */
+export async function getRecipePicture(recipeId: string, pictureId: string): Promise<RecipePictureResponse> {
   try {
     const response = await fetch(`${API_BASE_URL}/recipes/r/${recipeId}/pictures/${pictureId}/`);
-
-    if (!response.ok) {
-      const errorText = await response.text().catch(() => 'Unknown error');
-      throw new Error(`Failed to get picture: HTTP ${response.status}: ${errorText}`);
-    }
-
-    return response.blob();
+    return await checkResponse<RecipePictureResponse>(response);
   } catch (error) {
     return handleApiError(error);
   }
