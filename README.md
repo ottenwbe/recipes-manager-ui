@@ -101,9 +101,9 @@ Unified Docker script with the following commands:
 
   Examples:
   ```sh
-  sh scripts/docker.sh build --type dev
-  sh scripts/docker.sh build --multi --push --type production
-  sh scripts/docker.sh build --type dev --push
+  bash scripts/docker.sh build --type dev
+  bash scripts/docker.sh build --multi --push --type production
+  bash scripts/docker.sh build --type dev --push
   ```
 
 * `docker.sh push` - Push Docker image
@@ -119,10 +119,10 @@ Unified Docker script with the following commands:
 
   Examples:
   ```sh
-  sh scripts/docker.sh push --tag 1.0.0 -u user
+  bash scripts/docker.sh push --tag 1.0.0 -u user
   # Or use environment variables:
   export DOCKER_USERNAME=user DOCKER_PASSWORD=pass
-  sh scripts/docker.sh push --tag 1.0.0
+  bash scripts/docker.sh push --tag 1.0.0
   ```
 
 Note: The build script uses version from package.json and standardized OpenContainers labels.

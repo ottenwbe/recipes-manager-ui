@@ -73,7 +73,6 @@ Push options:
   --tag TAG          Image tag to push
   --registry REG     Docker registry (default: docker.io)
   -u USER            Docker username
-  -p PASS            Docker password (DEPRECATED - use DOCKER_PASSWORD env var instead)
 
 Environment:
   DOCKER_USERNAME    Docker registry username
@@ -170,7 +169,7 @@ cmd_build() {
         if [ "$push_flag" = true ]; then
             build_args+=("--output" "type=registry,push=true")
         else
-            build_args+=("--output" "type=docker,dest=docker-daemon:")
+            build_args+=("--output" "type=docker")
         fi
     else
         build_args=("docker" "${build_args[@]}")
@@ -208,10 +207,6 @@ cmd_push() {
             --tag) tag="$2"; shift 2 ;;
             --registry) registry="$2"; shift 2 ;;
             -u) username="$2"; shift 2 ;;
-            -p) 
-                echo "Warning: -p/--password option is deprecated. Use DOCKER_PASSWORD environment variable instead." >&2
-                shift 2
-                ;;
             *) usage ;;
         esac
     done
