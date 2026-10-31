@@ -93,7 +93,7 @@ Unified Docker script with the following commands:
 * `docker.sh build` - Build Docker image
   
   Options:
-    - `--multi` - Use docker buildx for arm64/amd64 builds (cache-only unless `--push`)
+  - `--multi` - Use docker buildx for arm64/amd64 builds (cache-only unless `--push`)
   - `--push` - Push image after build
   - `--tag TAG` - Image tag (default: version from package.json)
   - `--registry REG` - Docker registry (default: docker.io)
