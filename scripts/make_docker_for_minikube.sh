@@ -11,11 +11,7 @@ IMAGE_TAG="development"
 DOCKER_FILE="Dockerfile"
 
 # Source of truth for version: package.json
-# Extract version using grep (simpler and more reliable than Docker-based approach)
-APP_VERSION=$(grep '"version"' package.json | cut -d'"' -f4 2>/dev/null || echo "unknown")
-
-# Also create/update VERSION file for other scripts to use
-echo "${APP_VERSION}" > VERSION
+APP_VERSION=$(awk -F'"' '/"version"/ {print $4; exit}' package.json 2>/dev/null || echo "unknown")
 
 # Build metadata
 DATE=$(date +"%F %T")
@@ -36,7 +32,7 @@ echo ""
 docker build \
   --build-arg APP_VERSION="${APP_VERSION}" \
   --label "org.opencontainers.image.title=recipes-manager-ui" \
-  --label "org.opencontainers.image.description=Recipes Manager UI - React/Vite frontend" \
+  --label "org.opencontainers.image.description=Recipes Manager - UI - React/Vite frontend" \
   --label "org.opencontainers.image.version=${APP_VERSION}" \
   --label "org.opencontainers.image.created=${DATE}" \
   --label "org.opencontainers.image.revision=${GIT_HASH}" \

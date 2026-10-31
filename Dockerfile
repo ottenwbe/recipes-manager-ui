@@ -4,12 +4,6 @@ ARG APP_VERSION="unknown"
 # Stage 1: Build the Vite application
 FROM docker.io/node:26-alpine AS builder
 
-# Metadata
-LABEL maintainer="Beate Ottenwaelder <ottenwbe.public@gmail.com>" \
-      description="Recipes Manager UI - React/Vite frontend" \
-      version="${APP_VERSION}" \
-      stage="builder"
-
 # Create non-root user for security
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S -u 1001 -G nodejs nodejs
@@ -31,12 +25,6 @@ FROM docker.io/nginx:1.31-alpine
 
 # Re-declare ARG for this stage
 ARG APP_VERSION="unknown"
-
-# Metadata
-LABEL maintainer="Beate Ottenwaelder <ottenwbe.public@gmail.com>" \
-      description="Recipes Manager UI - Production Nginx server" \
-      version="${APP_VERSION}" \
-      stage="production"
 
 # Use the nginx user that already exists in the Alpine image
 # Ensure directories exist with proper permissions
