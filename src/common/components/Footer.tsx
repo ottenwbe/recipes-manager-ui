@@ -8,24 +8,11 @@ interface FooterProps {
 export function Footer(props: FooterProps): ReactElement {
     // Draw a black line and the footer text
     return (
-        <div className={props.className ?? "Footer"} style={{ textAlign: 'center' }}>
-            <Blackline />
+        <div className={props.className ?? "Footer"}>
+            <hr className="footer-divider" />
             <p>
                 <TextContextComponent value='footerText' />
             </p>
         </div>
-    );
-}
-
-function Blackline(): ReactElement {
-    return (
-        <hr
-            style={{
-                color: 'black',
-                backgroundColor: 'black',
-                height: 1,
-                width: 100
-            }}
-        />
     );
 }

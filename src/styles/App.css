@@ -13,6 +13,13 @@
   text-align: center;
 }
 
+.footer-divider {
+  background-color: black;
+  height: 1px;
+  width: 100%;
+  border: none;
+}
+
 /* TODO: potential better solution
      div {
        white-space: pre-wrap;
