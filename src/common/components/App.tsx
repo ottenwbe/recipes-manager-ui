@@ -20,8 +20,9 @@ import ListItemText from '@mui/material/ListItemText';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import logo from '../../assets/logo.svg';
+import { getRecipeCount } from '../../api/recipes';
 import {
     HashRouter,
     NavLink,
@@ -114,23 +115,34 @@ const StyledDrawerHeader = styled('div')(({ theme }) => ({
 
 function RecipesApp() {
 
-    const [numRecipes, setNumRecipes] = React.useState(0);
-    const [menuOpen, setMenuOpen] = React.useState(false);
+    const [numRecipes, setNumRecipes] = useState(0);
+    const [menuOpen, setMenuOpen] = useState(false);
 
-    const updatNumRecipes = () => {
-        fetch('/api/v1/recipes/num')
-            .then(response => response.json())
-            .then(responseText => setNumRecipes(responseText))
-            .catch(error => console.log(error));
-    };
+    // Fetch recipe count only once on mount
+    useEffect(() => {
+        const fetchRecipeCount = async () => {
+            try {
+                const count = await getRecipeCount();
+                setNumRecipes(count);
+            } catch (error) {
+                console.error('Failed to fetch recipe count:', error);
+                setNumRecipes(0);
+            }
+        };
+        fetchRecipeCount();
+    }, []); // Empty dependency array = runs only on mount
 
-    React.useEffect(() => {
-        updatNumRecipes();
-    });
-
-    const handleRecipeCountChange = () => {
-        updatNumRecipes();
-    };
+    const handleRecipeCountChange = useCallback(() => {
+        const fetchRecipeCount = async () => {
+            try {
+                const count = await getRecipeCount();
+                setNumRecipes(count);
+            } catch (error) {
+                console.error('Failed to fetch recipe count:', error);
+            }
+        };
+        fetchRecipeCount();
+    }, []);
 
     const handleDrawerOpen = useCallback(() => {
         setMenuOpen(true);
