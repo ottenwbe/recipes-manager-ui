@@ -7,7 +7,7 @@ const customJestConfig = {
   moduleDirectories: ['node_modules', '<rootDir>/'],
   testEnvironment: 'jest-environment-jsdom',
   globals: { fetch, Response, Request },
-  // Map module aliases used in vite.config.js
+  // Map module aliases used in vite.config.ts
   moduleNameMapper: {
     '^@components/(.*)$': path.resolve(__dirname, 'src/common/components/$1'),
     '^@context/(.*)$': path.resolve(__dirname, 'src/common/context/$1'),
