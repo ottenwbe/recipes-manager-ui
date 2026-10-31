@@ -15,9 +15,40 @@ import { PageHeader } from './PageHeader';
 import { TextContext } from '../context/TextContext';
 import { textFromContext } from '../context/TextContextProvider';
 import { useNavigate } from 'react-router-dom';
+import type { Ingredient, Recipe } from '../types';
 
+interface IngredientsEditProps {
+    disabled?: boolean;
+    ingredients: Ingredient[];
+    onIngredientsChange: (ingredients: Ingredient[]) => void;
+}
 
-function newIngredient() {
+interface IngredientsRowEditProps {
+    disabled?: boolean;
+    index: number;
+    ingredient: Ingredient;
+    onRemoveRow: (index: number) => void;
+    onRowChange: (index: number, ingredient: Ingredient) => void;
+}
+
+interface RecipeEditProps {
+    disabled?: boolean;
+    recipe: Recipe;
+    onChange: (recipe: Recipe) => void;
+}
+
+interface RecipeFormProps {
+    onRecipesChange: () => void;
+}
+
+interface RecipeUpdateDialogProps {
+    open: boolean;
+    submitSuccess: boolean;
+    submitting: boolean;
+    onClose: () => void;
+}
+
+function newIngredient(): Ingredient {
     return {
         name: "",
         amount: 1,
@@ -26,7 +57,7 @@ function newIngredient() {
     }
 }
 
-function newRecipe() {
+function newRecipe(): Recipe {
     return {
         name: 'My Recipe',
         servings: 1,
@@ -35,7 +66,7 @@ function newRecipe() {
     }
 }
 
-function makeEditableRecipe(recipe) {
+function makeEditableRecipe(recipe: Recipe): Recipe {
     let editableRecipe = JSON.parse(JSON.stringify(recipe))
     editableRecipe.components = recipe.components.map((ingredient, index) => {
         return {
@@ -48,19 +79,19 @@ function makeEditableRecipe(recipe) {
     return editableRecipe;
 }
 
-const IngredientsEdit = (props) => {
+const IngredientsEdit = (props: IngredientsEditProps) => {
 
     const handleAddIngredient = () => {
         props.ingredients.push(newIngredient())
         props.onIngredientsChange(props.ingredients)
     }
 
-    const handleRemoveIngredient = (index) => {
+    const handleRemoveIngredient = (index: number) => {
         props.ingredients.splice(index, 1)
         props.onIngredientsChange(props.ingredients)
     }
 
-    const handleChangeIngredient = (index, ingredient) => {
+    const handleChangeIngredient = (index: number, ingredient: Ingredient) => {
         props.ingredients[index] = ingredient
         props.onIngredientsChange(props.ingredients)
     }
@@ -105,13 +136,18 @@ const IngredientsEdit = (props) => {
     );
 }
 
-const IngredientsRowEdit = (props) => {
+const IngredientsRowEdit = (props: IngredientsRowEditProps) => {
 
-    const handleChange = (event) => {
-        const name = event.target.name;
-        const value = event.target.type === 'number' ? parseFloat(event.target.value) : event.target.value
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { name, value } = event.currentTarget;
 
-        props.ingredient[name] = value
+        if (name === 'amount') {
+            props.ingredient.amount = parseFloat(value);
+        } else if (name === 'unit') {
+            props.ingredient.unit = value;
+        } else if (name === 'name') {
+            props.ingredient.name = value;
+        }
 
         props.onRowChange(props.index, props.ingredient)
     }
@@ -129,7 +165,7 @@ const IngredientsRowEdit = (props) => {
                     id={"standard-amount" + props.index}
                     label="Amount"
                     type="number" 
-                    step="0.01"
+                    slotProps={{ htmlInput: { step: 0.01 } }}
                     fullWidth
                     defaultValue={props.ingredient.amount}
                     onChange={handleChange}
@@ -169,31 +205,35 @@ const IngredientsRowEdit = (props) => {
     );
 }
 
-export function RecipeEdit(props) {
+export function RecipeEdit(props: RecipeEditProps) {
 
     const [editableRecipe] = React.useState(makeEditableRecipe(props.recipe));
     const texts = useContext(TextContext);
 
-    const handleIngredientsChange = (ingredients) => {
+    const handleIngredientsChange = (ingredients: Ingredient[]) => {
         editableRecipe.components = ingredients
         props.onChange(editableRecipe)
     }
 
-    const handleChange = (event) => {
-        const target = event.target;
-        const value = target.type === 'number' ? parseInt(target.value, 10) : target.value;
-        const name = target.name;
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { name, value } = event.currentTarget;
 
-        editableRecipe[name] = value
+        if (name === 'name') {
+            editableRecipe.name = value;
+        } else if (name === 'servings') {
+            editableRecipe.servings = parseInt(value, 10);
+        } else if (name === 'description') {
+            editableRecipe.description = value;
+        }
 
-        props.onChange(editableRecipe)
+        props.onChange({ ...editableRecipe });
 
         event.preventDefault()
     }
 
     return (
         <Box>
-            <Box width="50%">
+            <Box sx={{ width: '50%' }}>
                 <TextField
                     disabled={props.disabled}
                     name="name"
@@ -205,7 +245,7 @@ export function RecipeEdit(props) {
                     variant="standard"
                 />
             </Box>
-            <Box width="50%">
+            <Box sx={{ width: '50%' }}>
                 <TextField
                     disabled={props.disabled}
                     name="servings"
@@ -242,7 +282,7 @@ export function RecipeEdit(props) {
         </Box>);
 }
 
-export function RecipeForm(props) {
+export function RecipeForm(props: RecipeFormProps) {
     const [recipe, setRecipe] = useState(newRecipe());
     const [openDialog, setOpenDialog] = useState(false);
     const [submitting, setSubmitting] = useState(false);
@@ -267,11 +307,11 @@ export function RecipeForm(props) {
         setSubmitSuccess(true);
     };
 
-    const handleChange = (recipe) => {
+    const handleChange = (recipe: Recipe) => {
         setRecipe(recipe);
     }
 
-    const handleSubmit = (event) => {
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         handleSubmitStart();
         fetch('/api/v1/recipes', {
             method: 'post',
@@ -303,9 +343,9 @@ export function RecipeForm(props) {
     );
 }
 
-export function RecipeUpdateDialog(props) {
+export function RecipeUpdateDialog(props: RecipeUpdateDialogProps) {
 
-    let renderDialogText = () => {
+    const renderDialogText = (): string => {
         if (props.submitting) {
             return("Wait until the new Recipe has been submitted!");
         } else if (!props.submitting && props.submitSuccess) {
@@ -317,8 +357,6 @@ export function RecipeUpdateDialog(props) {
     return (
         <div>
             <Dialog
-                disableBackdropClick
-                disableEscapeKeyDown
                 open={props.open}
                 aria-labelledby="upload-dialog-title"
                 aria-describedby="alert-dialog-description"

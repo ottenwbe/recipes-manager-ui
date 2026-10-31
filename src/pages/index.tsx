@@ -2,11 +2,9 @@ import { Fragment, Suspense, lazy } from 'react';
 import { TextContextProvider } from '@context/TextContextProvider';
 import { CssBaseline } from '@mui/material';
 
-// DynamicApp -> disable server side rendering for now until child pages are refactored
-// currently document and window are used outside of 
-const DynamicApp = lazy(() => import('@components/App'))
+const DynamicApp = lazy(() => import('@components/App'));
 
-export default function Home() {
+export default function Home(): React.JSX.Element {
   return (
     <Fragment>
       <TextContextProvider>
@@ -16,7 +14,7 @@ export default function Home() {
   )
 }
 
-function HomeLayout() {
+function HomeLayout(): React.JSX.Element {
   
   return (
     <Fragment>
@@ -26,4 +24,4 @@ function HomeLayout() {
       </Suspense>
     </Fragment>
   )
-} 
+}

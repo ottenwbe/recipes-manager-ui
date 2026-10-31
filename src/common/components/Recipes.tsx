@@ -23,11 +23,12 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import UpdateIcon from '@mui/icons-material/Update';
 import React, { Fragment, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { PageHeader } from "./PageHeader";
-import { RecipeAlert } from './RecipeAlerts.js';
-import { RecipeDialog } from './RecipeDialog.js';
+import { RecipeAlert } from './RecipeAlerts';
+import { RecipeDialog } from './RecipeDialog';
 import { useSearchParams, useNavigate, useParams } from 'react-router-dom';
 import { TextContext } from '../context/TextContext';
 import { textFromContext } from '../context/TextContextProvider';
+import type { Ingredient, Recipe, RecipeId, RecipePicture } from '../types';
 
 /*const useStyles = makeStyles((theme) => ({
     chip: {
@@ -36,13 +37,17 @@ import { textFromContext } from '../context/TextContextProvider';
 }));*/
 
 class RequestedRecipes {
-    constructor(search, similarTo, recipeID) {
+    search: string | null;
+    similarTo: string | null;
+    recipeID: string | null | undefined;
+
+    constructor(search: string | null, similarTo: string | null, recipeID: string | null | undefined) {
         this.search = search;
         this.similarTo = similarTo;
         this.recipeID = recipeID;
     }
 
-    refreshAndisDifferent(search, similarTo, recipeID) {
+    refreshAndisDifferent(search: string | null, similarTo: string | null, recipeID: string | undefined): boolean {
         console.log("change stuff")
         let isDifferent = (search !== this.search) || (similarTo !== this.similarTo) || (recipeID !== this.recipeID);
         console.log('isDifferent: ' + isDifferent)
@@ -60,32 +65,81 @@ class RequestedRecipes {
 
 }
 
-export function Recipes(props) {
+interface RecipesProps {
+    onRecipesChange?: () => void;
+}
+
+interface RecipeChipsProps {
+    data: URLSearchParams;
+    loading: boolean;
+    handleChipDelete?: (key: string) => void;
+}
+
+interface RecipeMenuProps {
+    open: boolean;
+    menuRef: React.RefObject<HTMLButtonElement | null>;
+    onClose: (event: MouseEvent | TouchEvent) => void;
+    onDelete: () => void;
+    onEdit: () => void;
+    onFindSimilar: () => void;
+    onListKeyDown: React.KeyboardEventHandler;
+    onOpen: () => void;
+}
+
+interface RecipeCardProps {
+    recipe: RecipeId;
+    onRefresh?: () => void;
+    onDeleteRecipe?: (recipeId: RecipeId) => void;
+}
+
+interface IngredientsRowProps {
+    ingredient: Ingredient;
+}
+
+interface IngredientsProps {
+    ingredients: Ingredient[];
+}
+
+interface RecipeDescriptionProps {
+    recipe: Recipe | null;
+}
+
+interface RecipeDescriptionPartProps {
+    text: string;
+}
+
+export function Recipes(props: RecipesProps) {
 
     const [searchParams] = useSearchParams();
     let { recipe } = useParams();
     let navigate = useNavigate();
 
     const loading = React.useRef(false);
-    const requestedRecipes = React.useRef(new RequestedRecipes([undefined], [undefined], [undefined]));
+    const requestedRecipes = React.useRef(new RequestedRecipes(null, null, null));
 
-    const [recipes, setRecipes] = React.useState(null);
+    const [recipes, setRecipes] = React.useState<RecipeId[] | null>(null);
 
     const texts = useContext(TextContext);
 
-    const handleDeleteRecipe = (removedID) => {
+    const handleDeleteRecipe = (removedID: RecipeId) => {
         if (props.onRecipesChange !== undefined) {
             props.onRecipesChange();
         }
 
-        let filtered = recipes.filter(function (value, index, arr) {
-            return value !== removedID;
-        });
+        if (recipes === null) {
+            return;
+        }
+
+        if (recipes === null) {
+            return;
+        }
+
+        const filtered = recipes.filter(value => value !== removedID);
 
         setRecipes(filtered);
     }
 
-    const refreshRecipesIfChanged = (newRecipes) => {
+    const refreshRecipesIfChanged = (newRecipes: RecipeId[]) => {
         if (JSON.stringify(newRecipes) !== JSON.stringify(recipes)) {
             console.log('loading new recipes')
             console.log(newRecipes)
@@ -94,7 +148,7 @@ export function Recipes(props) {
         }
     }
 
-    const refreshRecipes = () => {
+    const refreshRecipes = (): void => {
         if (shouldSearch()) {
             console.log('fetch search result')
             getSearchedRecipes();
@@ -106,19 +160,21 @@ export function Recipes(props) {
             getAllRecipes()
         } else {
             console.log('fetch sepecific')
-            refreshRecipesIfChanged([recipe]);
+            if (recipe !== undefined) {
+                refreshRecipesIfChanged([recipe]);
+            }
         }
     }
 
-    const shouldGetSimilarResults = () => {
+    const shouldGetSimilarResults = (): boolean => {
         return searchParams.get('similar-to') !== null
     }
 
-    const shouldSearch = () => {
+    const shouldSearch = (): boolean => {
         return searchParams.get('search') !== null
     }
 
-    const shouldGetAllRecipes = () => {
+    const shouldGetAllRecipes = (): boolean => {
         console.log(recipe)
         return recipe === undefined;
     }
@@ -126,25 +182,25 @@ export function Recipes(props) {
     const getAllRecipes = () => {
         loading.current = true;
         fetch('/api/v1/recipes')
-            .then(response => response.json())
+            .then(response => response.json() as Promise<{ recipes: RecipeId[] }>)
             .then(responseJSON => refreshRecipesIfChanged(responseJSON.recipes))
             .finally(() => loading.current = false);
     }
 
     const getSearchedRecipes = () => {
         loading.current = true;
-        let search = searchParams.get('search');
+        const search = searchParams.get('search') ?? '';
         fetch('/api/v1/recipes?name=' + search + '&description=' + search)
-            .then(response => response.json())
+            .then(response => response.json() as Promise<{ recipes: RecipeId[] }>)
             .then(responseJSON => refreshRecipesIfChanged(responseJSON.recipes))
             .finally(() => loading.current = false);
     }
 
     const getSimilarRecipes = () => {
         loading.current = true;
-        let similarTo = searchParams.get('similar-to');
+        const similarTo = searchParams.get('similar-to') ?? '';
         fetch('/api/v1/recommendation/' + similarTo + '/components')
-            .then(response => response.json())
+            .then(response => response.json() as Promise<{ recipes: RecipeId[] }>)
             .then(responseJSON => refreshRecipesIfChanged(responseJSON.recipes))
             .finally(() => loading.current = false);
     }
@@ -172,7 +228,7 @@ export function Recipes(props) {
         }
     }*/
 
-    const handleDataDelete = (delData) => {
+    const handleDataDelete = (delData: string) => {
         
         searchParams.delete(delData)
 
@@ -193,8 +249,8 @@ export function Recipes(props) {
         //this.refreshRecipes();
     }
 
-    const renderRecipes = () => {
-        let result;
+    const renderRecipes = (): React.ReactNode => {
+        let result: React.ReactNode;
         if (recipes != null) {
             result = (
                 <Fragment>
@@ -216,20 +272,9 @@ export function Recipes(props) {
         return result;
     }
 
-    const createPath = (data) => {
-        let path = '';
-        let pathPart = '?';
-
-        console.log('createPath')
-
-        data.forEach( (value, paramName) => {
-            if (value !== undefined) {
-                path = path + pathPart + paramName + '=' + value;
-                pathPart = '&';
-            }
-        })
-        console.log(path)
-        return path;
+    const createPath = (data: URLSearchParams): string => {
+        const query = data.toString();
+        return query === '' ? '' : `?${query}`;
     }
 
     return (
@@ -244,11 +289,11 @@ export function Recipes(props) {
 
 //
 
-function RecipeChips(props) {
+function RecipeChips(props: RecipeChipsProps) {
 
     //const classes = useStyles();
 
-    let chips = [];
+    const chips: React.ReactElement[] = [];
 
     props.data.forEach( (value, key) => {
         console.log('chip')
@@ -259,7 +304,7 @@ function RecipeChips(props) {
                 color="secondary"
                 key={key}
                 label={key + '=' + value}
-                onDelete={props.handleChipDelete !== undefined ? () => {props.handleChipDelete(key)} : undefined}
+                onDelete={props.handleChipDelete !== undefined ? () => props.handleChipDelete?.(key) : undefined}
             /*className={classes.chip}*/
             />);
         }
@@ -272,7 +317,7 @@ function RecipeChips(props) {
     );
 }
 
-function RecipeMenu(props) {
+function RecipeMenu(props: RecipeMenuProps) {
     return (
         <Popper open={props.open} anchorEl={props.menuRef.current} role={undefined} transition disablePortal>
             {({ TransitionProps, placement }) => (
@@ -296,39 +341,46 @@ function RecipeMenu(props) {
     );
 }
 
-function Recipe(props) {
+function Recipe(props: RecipeCardProps) {
     const [expanded, setExpanded] = useState(true);
-    const [picture, setPicture] = useState(null);
-    const [recipe, setRecipe] = useState(null);
+    const [picture, setPicture] = useState<RecipePicture | string | null>(null);
+    const [recipe, setRecipe] = useState<Recipe | null>(null);
     const [open, setOpen] = useState(false);
     const [lastError, setLastError] = useState('');
     const [openEditDialog, setOpenEditDialog] = useState(false);
     const [recipeRevision, setRecipeRevision] = useState(0);
-    const [name, setName] = useState(Math.random());
+    const [name, setName] = useState<string | number>(Math.random());
 
-    const anchorRef = useRef(null);
+    const anchorRef = useRef<HTMLButtonElement | null>(null);
     const navigate = useNavigate();
 
     const handleOpen = () => {
-        navigate('/recipes/' + recipe.id);
+        if (recipe?.id !== undefined) {
+            navigate('/recipes/' + recipe.id);
+        }
     }
 
     const handleDelete = () => {
-        fetch('/api/v1/recipes/r/' + recipe.id, {
+        if (recipe?.id === undefined) {
+            return;
+        }
+
+        const recipeId = recipe.id;
+        fetch('/api/v1/recipes/r/' + recipeId, {
             method: 'delete'
         })
             .then(response => {
                 if (!response.ok) {
                     setLastError("Could not delete recipe. Try again later...");
                 }
-                props.onDeleteRecipe(recipe.id)
+                props.onDeleteRecipe?.(recipeId)
             })
             .catch(
                 err => { console.error(err); setLastError("Could not delete recipe!"); }
             );
     }
 
-    const refreshRecipe = useCallback((amount, updateVersion) => {
+    const refreshRecipe = useCallback((amount?: string, updateVersion = false) => {
         let url = '/api/v1/recipes/r/' + props.recipe;
         if (amount !== undefined) {
             url += '?servings=' + amount
@@ -340,7 +392,7 @@ function Recipe(props) {
         }
 
         fetch(url)
-            .then(response => response.json())
+            .then(response => response.json() as Promise<Recipe>)
             .then(data => { setRecipe(data); setName(data.name); return data; })
             .then((recipe) => {
                 if ((recipe != null
@@ -349,7 +401,7 @@ function Recipe(props) {
                     && (recipe.pictureLink[0] !== '')) {
                     fetch('/api/v1/recipes/r/' + recipe.id
                         + '/pictures/' + recipe.pictureLink[0] + '/')
-                        .then(response => response.json())
+                        .then(response => response.json() as Promise<RecipePicture>)
                         .then(data => setPicture(data));
                 }
             }).catch((err) => { console.log(err); setLastError('Failed to load recipe: ' + props.recipe) });
@@ -364,12 +416,12 @@ function Recipe(props) {
         setExpanded(!expanded);
     };
 
-    const handleSubmit = (event) => {
+    const handleSubmit = (event: React.ChangeEvent<HTMLInputElement>) => {
         refreshRecipe(event.target.value);
         event.preventDefault();
     }
 
-    const handleMoreClick = (event) => {
+    const handleMoreClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         handleToggle()
         event.preventDefault();
     }
@@ -387,15 +439,15 @@ function Recipe(props) {
         setOpen(!open);
     }
 
-    const handleClose = (event) => {
-        if (anchorRef.current && anchorRef.current.contains(event.target)) {
+    const handleClose = (event: MouseEvent | TouchEvent) => {
+        if (anchorRef.current && event.target instanceof Node && anchorRef.current.contains(event.target)) {
             return;
         }
 
         setOpen(false);
     }
 
-    const handleListKeyDown = (event) => {
+    const handleListKeyDown: React.KeyboardEventHandler = (event) => {
         if (event.key === 'Tab') {
             event.preventDefault();
             setOpen(false);
@@ -411,15 +463,17 @@ function Recipe(props) {
     }
 
     const handleSimilar = () => {
-        navigate('/recipes?similarTo=' + recipe.id);
-        setOpen(false);
+        if (recipe?.id !== undefined) {
+            navigate('/recipes?similarTo=' + recipe.id);
+            setOpen(false);
+        }
     }
 
-    const keyName = (prefix) => {
+    const keyName = (prefix: string): string => {
         return prefix + name + recipeRevision
     }
 
-    const renderIngredients = () => {
+    const renderIngredients = (): React.ReactNode => {
         if (recipe != null) {
             return (<Ingredients key={keyName("ingredients")} ingredients={recipe.components} />);
         }
@@ -427,8 +481,8 @@ function Recipe(props) {
             return '';
         }
     }
-    const renderCardMedia = () => {
-        if ((picture != null) && (picture !== '')) {
+    const renderCardMedia = (): React.ReactNode => {
+        if (typeof picture === 'object' && picture !== null) {
             return (<CardMedia key={keyName("pictures")} className="media" image={picture.picture} style={{ height: 0, paddingTop: '56.25%' }} title="dish" />);
         }
         else
@@ -437,7 +491,7 @@ function Recipe(props) {
 
     return (
         <div key={keyName("recipe")}>
-            <RecipeDialog key={keyName("recipeDialog")} recipe={recipe} open={openEditDialog} onClose={onCloseDialog} />
+            {recipe !== null && <RecipeDialog key={keyName("recipeDialog")} recipe={recipe} open={openEditDialog} onClose={onCloseDialog} />}
             <Card key={keyName("card")}>
                 <CardHeader key={keyName("cardheader")} title={recipe != null ? recipe.name : ""} subheader="Recipe" style={{ backgroundColor: "#2196f3" }}
                     action={<div>
@@ -462,7 +516,7 @@ function Recipe(props) {
                     <CardContent key={keyName("cardcontent")}>
                         <Typography component="div" align='right'>
                             <IconButton onClick={handleReset} color="primary">
-                                <UpdateIcon label="Update" />
+                                <UpdateIcon />
                             </IconButton>
                             <TextField
                                 name="servings"
@@ -481,8 +535,8 @@ function Recipe(props) {
             </Card></div>);
 }
 
-export function RandomRecipe(props) {
-    const [recipe, setRecipe] = useState(null);
+export function RandomRecipe() {
+    const [recipe, setRecipe] = useState<Recipe | null>(null);
 
     useEffect(() => {
         fetch('/api/v1/recipes/rand')
@@ -496,18 +550,18 @@ export function RandomRecipe(props) {
                 }
             )
             .then(response => setRecipe(response))
-            .catch(err => setRecipe(null));
+            .catch(() => setRecipe(null));
     }, []);
 
     return (
         <div>
             <PageHeader pageName="Random Recipe" />
-            {recipe != null ? <Recipe key={1} recipe={recipe.id} /> : "No Recipe Found"}
+            {recipe?.id !== undefined ? <Recipe key={recipe.id} recipe={recipe.id} /> : "No Recipe Found"}
         </div>
     );
 }
 
-const IngredientsRow = (props) => {
+const IngredientsRow = (props: IngredientsRowProps) => {
     return (
         <TableRow>
             <TableCell>
@@ -523,7 +577,7 @@ const IngredientsRow = (props) => {
     );
 };
 
-export function Ingredients({ ingredients }) {
+export function Ingredients({ ingredients }: IngredientsProps) {
     if (ingredients != null) {
         let rows = ingredients.map((ingredient, index) => {
             return <IngredientsRow key={index} ingredient={ingredient} />
@@ -548,14 +602,13 @@ export function Ingredients({ ingredients }) {
     }
 }
 
-function RecipeDescription(props) {
-    let recipeParts = '';
-    if (props.recipe != null) {
-        recipeParts = props.recipe.description.split('\n').map((textPart, index) => <RecipeDescriptionPart key={index} text={textPart} />);
+function RecipeDescription(props: RecipeDescriptionProps): React.ReactNode {
+    if (props.recipe === null) {
+        return null;
     }
-    return recipeParts;
+    return props.recipe.description.split('\n').map((textPart, index) => <RecipeDescriptionPart key={index} text={textPart} />);
 }
 
-function RecipeDescriptionPart(props) {
+function RecipeDescriptionPart(props: RecipeDescriptionPartProps) {
     return (<div><p> {props.text} </p><p /></div>);
 }

@@ -8,14 +8,14 @@ import { Link } from 'react-router-dom';
 import { textFromContext } from '@context/TextContextProvider';
 import { TextContext } from '@context/TextContext';
 
-export function Home(props) {
+export function Home() {
 
         const texts = useContext(TextContext);
 
         return (<React.Fragment>
             <PageHeader pageName="Recipe News" />
-            <Card style={{ align: 'center' }}>
-                <CardHeader title={textFromContext(texts, 'welcome')} subheader={textFromContext(texts, 'welcomeSub')} style={{ textAlign: 'center', backgroundColor: "#2196f3" }} />
+            <Card sx={{ textAlign: 'center' }}>
+                <CardHeader title={textFromContext(texts, 'welcome')} subheader={textFromContext(texts, 'welcomesSub')} style={{ textAlign: 'center', backgroundColor: "#2196f3" }} />
                 <CardContent>
                     <Paper />
 
