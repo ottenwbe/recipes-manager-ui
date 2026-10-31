@@ -8,17 +8,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # build test docker image (only on pull requests to save resources)
+    # build docker image
     - name: Set up QEMU
       if: success()
       uses: docker/setup-qemu-action@v2
     - name: Set up Docker Buildx
       if: success() 
-      uses: docker/setup-buildx-action@v2     
+      uses: docker/setup-buildx-action@v2
     - name: Docker Buildx (build)
       if: success()
       run: |
-        sh scripts/docker_buildx.sh false
+        sh scripts/docker.sh build --multi
   
     # push to dockerhub
     - name: Login to DockerHub
@@ -30,4 +30,4 @@ jobs:
     - name: Docker Buildx (push)
       if: success() 
       run: |
-        sh scripts/docker_buildx.sh true  
+        sh scripts/docker.sh build --multi --push  

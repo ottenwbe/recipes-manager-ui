@@ -85,19 +85,41 @@ All build scripts are found in scripts directory.
 
 ```
 .
-├── docker_buildx.sh 
-├── make_docker_for_minikube.sh
-├── make_snapshot.sh
-└── push_docker.sh
+└── docker.sh
 ```
 
-* docker_buildx.sh <should_push>
+Unified Docker script with the following commands:
 
-    Opinionated way to build the docker image for arm and amd64. This multi-arch build it relies on buildx. The version is determined by a git tag and written to ```package.json``` (e.g., 0.1.0) as well as tagged to the docker image (e.g., v0.1.0). It is tailored for the CI/CD pipelines.
+* `docker.sh build` - Build Docker image
+  
+  Options:
+  - `--multi` - Use docker buildx for multi-platform build (arm64, amd64)
+  - `--push` - Push image after build
+  - `--tag TAG` - Image tag (default: version from package.json)
+  - `--registry REG` - Docker registry (default: docker.io)
+  - `--type TYPE` - Build type: dev, production (default: production)
 
-* make_docker_for_minikube.sh
+  Examples:
+  ```sh
+  sh scripts/docker.sh build --type dev
+  sh scripts/docker.sh build --multi --push --type production
+  sh scripts/docker.sh build --type dev --push
+  ```
 
-    Builds a container with a development tag and pushes it to a local minikube registry.
+* `docker.sh push` - Push Docker image
+  
+  Options:
+  - `--tag TAG` - Image tag to push
+  - `--registry REG` - Docker registry (default: docker.io)
+  - `-u USER` - Docker username
+  - `-p PASS` - Docker password
+
+  Examples:
+  ```sh
+  sh scripts/docker.sh push --tag 1.0.0 -u user -p pass
+  ```
+
+Note: The build script uses version from package.json and standardized OpenContainers labels.
 
 ### Release Process
 

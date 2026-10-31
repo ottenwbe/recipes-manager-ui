@@ -37,15 +37,14 @@ jobs:
       # build docker image and push to dockerhub
       - name: Get tagged version
         id: get_version
-        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
-        #run: echo "{VERSION}={${GITHUB_REF/refs\/tags\//}}" >> $GITHUB_STATE
+        run: echo "VERSION=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_OUTPUT
       - name: Fix version in package.json
         run: |
-          node -e "let pkg=require('./package.json'); pkg.version='{{ steps.get_version.outputs.VERSION }}'; require('fs').writeFileSync('package.json', JSON.stringify(pkg, null, 2));"
+          node -e "let pkg=require('./package.json'); pkg.version='${{ steps.get_version.outputs.VERSION }}'; require('fs').writeFileSync('package.json', JSON.stringify(pkg, null, 2));"
       - name: Docker Buildx (including push)
         if: success()
         run: |
-          sh scripts/docker_buildx.sh true
+          sh scripts/docker.sh build --multi --push --type production
 
       # build changelog and release
       - name: Build Changelog

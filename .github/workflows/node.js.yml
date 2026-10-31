@@ -47,4 +47,4 @@ jobs:
     - name: Docker Buildx (build)
       if: success() && github.event_name == 'pull_request'
       run: |
-        sh scripts/docker_buildx.sh false
+        sh scripts/docker.sh build --multi
