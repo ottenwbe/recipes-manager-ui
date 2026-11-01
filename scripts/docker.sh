@@ -87,6 +87,28 @@ EOF
     exit 1
 }
 
+# --- NPM Validation ---
+
+run_npm_validation() {
+    local build_type="$1"
+    
+    echo "Running npm validation..."
+    
+    # Install dependencies (use ci for reproducible builds)
+    echo "  Installing dependencies..."
+    npm ci
+    
+    # Run tests
+    echo "  Running tests..."
+    npm test
+    
+    # Build the application
+    echo "  Building application..."
+    npm run build
+    
+    echo "  NPM validation complete!"
+}
+
 # --- Docker Login ---
 
 docker_login() {
@@ -143,6 +165,9 @@ cmd_build() {
     
     # Validate final tag (user-provided or default)
     validate_tag "$tag"
+
+    # Run npm validation (tests and build) before Docker build
+    run_npm_validation "$build_type"
 
     local full_image="${registry:+${registry}/}${IMAGE_NAME}:${tag}"
 
