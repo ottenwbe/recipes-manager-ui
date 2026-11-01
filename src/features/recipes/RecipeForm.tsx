@@ -16,6 +16,7 @@ import { TextContext } from '../../common/context/TextContext';
 import { textFromContext } from '../../common/context/TextContextProvider';
 import { useNavigate } from 'react-router-dom';
 import type { Ingredient, Recipe } from '../../common/types';
+import { useRecipeCount } from '../../context/RecipeCountContext';
 
 interface IngredientsEditProps {
     disabled?: boolean;
@@ -289,6 +290,7 @@ export function RecipeForm(props: RecipeFormProps) {
     const [submitSuccess, setSubmitSuccess] = useState(false);
 
     const navigate = useNavigate();
+    const { refresh: refreshRecipeCount } = useRecipeCount();
 
     const handleSubmitStart = () => {
         setOpenDialog(true);
@@ -318,7 +320,10 @@ export function RecipeForm(props: RecipeFormProps) {
             body: JSON.stringify(recipe)
         })
         .then(response => response.ok ? setSubmitSuccess(true) : setSubmitSuccess(false))
-        .then(() => props.onRecipesChange?.())
+        .then(() => {
+            props.onRecipesChange?.();
+            refreshRecipeCount();
+        })
         .finally(() => setSubmitting(false));        
         event.preventDefault();
     }
