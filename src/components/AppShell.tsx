@@ -32,6 +32,7 @@ import { AccountCircle } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
 import { Footer } from '../common/components/Footer';
 import { getRecipeCount } from '../api/recipes';
+import { RecipeCountContext } from '../context/RecipeCountContext';
 
 const drawerWidth = 240;
 
@@ -249,19 +250,20 @@ export function AppShell({ children }: AppShellProps) {
     const [menuOpen, setMenuOpen] = useState(false);
     const [numRecipes, setNumRecipes] = useState(0);
 
+    const fetchRecipeCount = useCallback(async () => {
+        try {
+            const count = await getRecipeCount();
+            setNumRecipes(count);
+        } catch (error) {
+            console.error('Failed to fetch recipe count:', error);
+            setNumRecipes(0);
+        }
+    }, []);
+
     // Fetch recipe count only once on mount
     useEffect(() => {
-        const fetchRecipeCount = async () => {
-            try {
-                const count = await getRecipeCount();
-                setNumRecipes(count);
-            } catch (error) {
-                console.error('Failed to fetch recipe count:', error);
-                setNumRecipes(0);
-            }
-        };
         fetchRecipeCount();
-    }, []);
+    }, [fetchRecipeCount]);
 
     const handleDrawerOpen = useCallback(() => {
         setMenuOpen(true);
@@ -273,14 +275,16 @@ export function AppShell({ children }: AppShellProps) {
 
     return (
         <ThemeProvider theme={theme}>
-            <AppDrawer open={menuOpen} numRecipes={numRecipes} onClose={handleDrawerClose} />
-            <AppHeader open={menuOpen} onDrawerOpen={handleDrawerOpen} />
-            <Container maxWidth="xl">
-                <Main open={menuOpen}>
-                    {children}
-                </Main>
-                <Footer />
-            </Container>
+            <RecipeCountContext.Provider value={{ count: numRecipes, refresh: fetchRecipeCount }}>
+                <AppDrawer open={menuOpen} numRecipes={numRecipes} onClose={handleDrawerClose} />
+                <AppHeader open={menuOpen} onDrawerOpen={handleDrawerOpen} />
+                <Container maxWidth="xl">
+                    <Main open={menuOpen}>
+                        {children}
+                    </Main>
+                    <Footer />
+                </Container>
+            </RecipeCountContext.Provider>
         </ThemeProvider>
     );
 }
