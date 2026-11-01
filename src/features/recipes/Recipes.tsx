@@ -30,6 +30,7 @@ import { TextContext } from '../../common/context/TextContext';
 import { textFromContext } from '../../common/context/TextContextProvider';
 import type { Ingredient, Recipe, RecipeId, RecipePicture } from '../../common/types';
 import { getAllRecipes, searchRecipes, getSimilarRecipes, getRecipeById, deleteRecipe, getRandomRecipe, getRecipePicture } from '../../api/recipes';
+import { useRecipeCount } from '../../context/RecipeCountContext';
 
 /*const useStyles = makeStyles((theme) => ({
     chip: {
@@ -67,7 +68,7 @@ class RequestedRecipes {
 }
 
 interface RecipesProps {
-    onRecipesChange?: () => void;
+    onRecipesChange?: () => void; // deprecated — use useRecipeCount().refresh instead
 }
 
 interface RecipeChipsProps {
@@ -121,15 +122,12 @@ export function Recipes(props: RecipesProps) {
     const [recipes, setRecipes] = React.useState<RecipeId[] | null>(null);
 
     const texts = useContext(TextContext);
+    const { refresh: refreshRecipeCount } = useRecipeCount();
 
     const handleDeleteRecipe = (removedID: RecipeId) => {
-        if (props.onRecipesChange !== undefined) {
-            props.onRecipesChange();
-        }
-
-        if (recipes === null) {
-            return;
-        }
+        // Notify both the legacy prop and the context
+        props.onRecipesChange?.();
+        refreshRecipeCount();
 
         if (recipes === null) {
             return;
