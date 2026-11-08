@@ -50,9 +50,9 @@ export interface SimilarRecipesResponse {
   recipes: string[];
 }
 
-// NOTE: GET /api/v1/recipes/r/:id returns Recipe directly (c.JSON(200, recipe))
-// NOTE: GET /api/v1/recipes/rand returns Recipe directly (c.JSON(200, recipe))
-// NOTE: GET /api/v1/recipes/num returns bare number as string (c.String)
+// NOTE: GET /api/v1/recipes/:id returns Recipe directly (c.JSON(200, recipe))
+// NOTE: GET /api/v1/recipes-random returns Recipe directly (c.JSON(200, recipe))
+// NOTE: GET /api/v1/recipes-count returns bare number as string (c.String)
 
 // ============================================================================
 // Request Parameters

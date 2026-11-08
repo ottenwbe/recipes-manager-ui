@@ -126,7 +126,7 @@ describe('getRecipeById', () => {
     await getRecipeById('abc123', 8);
 
     const calledUrl = (global.fetch as jest.Mock).mock.calls[0][0];
-    expect(calledUrl).toBe('/api/v1/recipes/r/abc123?servings=8');
+    expect(calledUrl).toBe('/api/v1/recipes/abc123?servings=8');
   });
 
   it('does not append servings when 0 or undefined', async () => {
@@ -135,7 +135,7 @@ describe('getRecipeById', () => {
     await getRecipeById('abc123');
 
     const calledUrl = (global.fetch as jest.Mock).mock.calls[0][0];
-    expect(calledUrl).toBe('/api/v1/recipes/r/abc123');
+    expect(calledUrl).toBe('/api/v1/recipes/abc123');
   });
 });
 
@@ -240,7 +240,7 @@ describe('deleteRecipe', () => {
 
     await deleteRecipe('abc123');
 
-    expect(global.fetch).toHaveBeenCalledWith('/api/v1/recipes/r/abc123', { method: 'DELETE' });
+    expect(global.fetch).toHaveBeenCalledWith('/api/v1/recipes/abc123', { method: 'DELETE' });
   });
 
   it('throws on HTTP error', async () => {
@@ -261,7 +261,7 @@ describe('getRecipePicture', () => {
     const result = await getRecipePicture('abc123', 'pic1');
 
     expect(result).toEqual({ id: 'abc123', name: 'pic1', picture: 'data:image/png;base64,...' });
-    expect(global.fetch).toHaveBeenCalledWith('/api/v1/recipes/r/abc123/pictures/pic1/');
+    expect(global.fetch).toHaveBeenCalledWith('/api/v1/recipes/abc123/pictures/pic1/');
   });
 });
 

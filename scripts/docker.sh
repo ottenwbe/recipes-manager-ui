@@ -68,6 +68,7 @@ Build options:
   --tag TAG          Image tag (default: version from package.json)
   --registry REG     Docker registry (default: docker.io)
   --type TYPE        Build type: dev, production (default: production)
+  --skip-validation  Skip npm validation (use Docker build only)
 
 Push options:
   --tag TAG          Image tag to push
@@ -82,6 +83,7 @@ Examples:
   $0 build --type dev
   $0 build --multi --push --type production
   $0 build --type dev --push
+  $0 build --type dev --skip-validation
   $0 push --tag 1.0.0 -u user
 EOF
     exit 1
@@ -117,9 +119,18 @@ docker_login() {
     local registry="${3:-docker.io}"
 
     if [ -n "$username" ] && [ -n "$password" ]; then
-        echo "$password" | docker login -u "$username" "$registry" --password-stdin
+        # Use podman if docker is not available
+        if command -v podman &> /dev/null; then
+            echo "$password" | podman login -u "$username" "$registry" --password-stdin
+        else
+            echo "$password" | docker login -u "$username" "$registry" --password-stdin
+        fi
     elif [ -n "${DOCKER_USERNAME:-}" ] && [ -n "${DOCKER_PASSWORD:-}" ]; then
-        echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" "$registry" --password-stdin
+        if command -v podman &> /dev/null; then
+            echo "$DOCKER_PASSWORD" | podman login -u "$DOCKER_USERNAME" "$registry" --password-stdin
+        else
+            echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" "$registry" --password-stdin
+        fi
     else
         echo "Warning: No Docker credentials provided for ${registry}. Trying without login."
     fi
@@ -133,6 +144,7 @@ cmd_build() {
     local tag=""
     local registry="docker.io"
     local build_type="production"
+    local skip_validation=false
 
     while [ $# -gt 0 ]; do
         case "$1" in
@@ -141,6 +153,7 @@ cmd_build() {
             --tag) tag="$2"; shift 2 ;;
             --registry) registry="$2"; shift 2 ;;
             --type) build_type="$2"; shift 2 ;;
+            --skip-validation) skip_validation=true; shift ;;
             *) usage ;;
         esac
     done
@@ -167,7 +180,11 @@ cmd_build() {
     validate_tag "$tag"
 
     # Run npm validation (tests and build) before Docker build
-    run_npm_validation "$build_type"
+    if [ "$skip_validation" = false ]; then
+        run_npm_validation "$build_type"
+    else
+        echo "Skipping npm validation (using Docker build only)"
+    fi
 
     local full_image="${registry:+${registry}/}${IMAGE_NAME}:${tag}"
 
@@ -197,7 +214,12 @@ cmd_build() {
             build_args+=("--output" "type=cacheonly")
         fi
     else
-        build_args=("docker" "${build_args[@]}")
+        # Use podman if docker is not available
+        if command -v podman &> /dev/null; then
+            build_args=("podman" "${build_args[@]}")
+        else
+            build_args=("docker" "${build_args[@]}")
+        fi
     fi
 
     echo "Building ${full_image}..."
@@ -256,7 +278,12 @@ cmd_push() {
     docker_login "$username" "$password" "$registry"
 
     echo "Pushing ${full_image}..."
-    docker push "${full_image}"
+    # Use podman if docker is not available
+    if command -v podman &> /dev/null; then
+        podman push "${full_image}"
+    else
+        docker push "${full_image}"
+    fi
     echo "Success: pushed ${full_image}"
 }
 
