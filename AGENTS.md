@@ -55,13 +55,13 @@ test/
 
 | Endpoint | Response shape | Notes |
 |----------|---------------|-------|
-| `GET /api/v1/recipes/num` | bare number as string | `c.String()` in Go — parse with `parseInt` |
+| `GET /api/v1/recipes-count` | bare number as string | `c.String()` in Go — parse with `parseInt` |
 | `GET /api/v1/recipes` | `{ recipes: string[] }` | `RecipeList` struct |
 | `GET /api/v1/recipes?name=&description=` | `{ recipes: string[] }` | search |
-| `GET /api/v1/recipes/r/:id?servings=` | `Recipe` object directly | no envelope |
-| `GET /api/v1/recipes/rand` | `Recipe` object directly | no envelope |
-| `DELETE /api/v1/recipes/r/:id` | 200 empty | |
-| `GET /api/v1/recipes/r/:id/pictures/:name/` | `{ id, name, picture }` JSON | |
+| `GET /api/v1/recipes/:id?servings=` | `Recipe` object directly | no envelope |
+| `GET /api/v1/recipes-random` | `Recipe` object directly | no envelope |
+| `DELETE /api/v1/recipes/:id` | 200 empty | |
+| `GET /api/v1/recipes/:id/pictures/:name/` | `{ id, name, picture }` JSON | |
 | `GET /api/v1/recommendation/:id/components` | `{ recipes: string[] }` | Python recommender |
 
 ## Gotchas

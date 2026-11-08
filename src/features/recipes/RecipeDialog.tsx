@@ -44,7 +44,7 @@ export class RecipeDialog extends Component<RecipeDialogProps, RecipeDialogState
 
     submitRecipe = (): void => {
         this.setState({ loading: true })
-        fetch('/api/v1/recipes/r/' + this.state.recipe.id, {
+        fetch('/api/v1/recipes/' + this.state.recipe.id, {
             method: 'put',
             body: JSON.stringify(this.state.recipe)
         })

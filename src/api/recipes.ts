@@ -127,10 +127,10 @@ export async function searchRecipes(params: RecipeSearchParams): Promise<string[
 
 /**
  * Get a single recipe by ID.
- * GET /api/v1/recipes/r/:id → Recipe object directly (no envelope)
+ * GET /api/v1/recipes/:id → Recipe object directly (no envelope)
  */
 export async function getRecipeById(recipeId: string, servings?: number): Promise<Recipe> {
-  let url = `${API_BASE_URL}/recipes/r/${recipeId}`;
+  let url = `${API_BASE_URL}/recipes/${recipeId}`;
 
   if (servings !== undefined && servings > 0) {
     url += `?servings=${servings}`;
@@ -146,11 +146,11 @@ export async function getRecipeById(recipeId: string, servings?: number): Promis
 
 /**
  * Get the total number of recipes.
- * GET /api/v1/recipes/num → bare number returned as string (c.String in Go)
+ * GET /api/v1/recipes-count → bare number returned as string (c.String in Go)
  */
 export async function getRecipeCount(): Promise<number> {
   try {
-    const response = await fetch(`${API_BASE_URL}/recipes/num`);
+    const response = await fetch(`${API_BASE_URL}/recipes-count`);
     if (!response.ok) {
       const errorText = await response.text().catch(() => 'Unknown error');
       throw new Error(`HTTP ${response.status}: ${errorText}`);
@@ -183,11 +183,11 @@ export async function getSimilarRecipes(recipeId: string): Promise<string[]> {
 
 /**
  * Get a random recipe.
- * GET /api/v1/recipes/rand → Recipe object directly (no envelope)
+ * GET /api/v1/recipes-random → Recipe object directly (no envelope)
  */
 export async function getRandomRecipe(): Promise<Recipe> {
   try {
-    const response = await fetch(`${API_BASE_URL}/recipes/rand`);
+    const response = await fetch(`${API_BASE_URL}/recipes-random`);
     return await checkResponse<Recipe>(response, validateRecipe);
   } catch (error) {
     return handleApiError(error);
@@ -196,11 +196,11 @@ export async function getRandomRecipe(): Promise<Recipe> {
 
 /**
  * Delete a recipe by ID.
- * DELETE /api/v1/recipes/r/:id → 200 on success
+ * DELETE /api/v1/recipes/:id → 200 on success
  */
 export async function deleteRecipe(recipeId: string): Promise<void> {
   try {
-    const response = await fetch(`${API_BASE_URL}/recipes/r/${recipeId}`, {
+    const response = await fetch(`${API_BASE_URL}/recipes/${recipeId}`, {
       method: 'DELETE',
     });
 
@@ -225,11 +225,11 @@ export interface RecipePictureResponse {
 
 /**
  * Get a recipe picture metadata.
- * GET /api/v1/recipes/r/:id/pictures/:name → { id, name, picture } JSON
+ * GET /api/v1/recipes/:id/pictures/:name → { id, name, picture } JSON
  */
 export async function getRecipePicture(recipeId: string, pictureId: string): Promise<RecipePictureResponse> {
   try {
-    const response = await fetch(`${API_BASE_URL}/recipes/r/${recipeId}/pictures/${pictureId}/`);
+    const response = await fetch(`${API_BASE_URL}/recipes/${recipeId}/pictures/${pictureId}/`);
     return await checkResponse<RecipePictureResponse>(response);
   } catch (error) {
     return handleApiError(error);

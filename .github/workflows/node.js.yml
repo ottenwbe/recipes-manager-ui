@@ -47,4 +47,7 @@ jobs:
     - name: Docker Buildx (build)
       if: success() && github.event_name == 'pull_request'
       run: |
-        bash scripts/docker.sh build --multi
+        # Build for the default platform only (amd64) to keep CI fast.
+        # To build multi-arch (linux/arm64/v8,linux/amd64) again, use:
+        #   bash scripts/docker.sh build --multi
+        bash scripts/docker.sh build
